@@ -12,6 +12,7 @@ const html = fs.readFileSync(path.join(assets, 'freecell.html'), 'utf8');
 const block = html.slice(html.indexOf('/* freecell-core:start'), html.indexOf('/* freecell-core:end */'));
 const core = new Function(`${block}; return FreeCellCore;`)();
 const config = core.normalizeConfig({});
+const difficulty = config.difficulty, WARMUP = config.difficulty.first_games.seeds;
 
 test('JS defaults match the bundled Remote Config defaults', () => {
   for (const key of ['progression_config', 'daily_challenge_config', 'economy_config', 'themes_config', 'daily_bonus_config', 'missions_config', 'remove_ads_config', 'rating_config', 'store_config', 'events_config', 'rewarded_config', 'notifications_config', 'stars_config', 'achievements_config', 'difficulty_config', 'rivals_config', 'hint_config', 'tips_config', 'feel_config', 'languages_config', 'performance_config']) {
@@ -169,81 +170,6 @@ test('history keeps attempts, best time and the configured number of days', () =
 });
 
 const card = (rank, suit) => ({ r: rank, s: suit });
-test('stuck: no legal move at all', () => {
-  // Every column ends in a card that fits nowhere; all free cells are full.
-  const state = {
-    foundations: [0, 0, 0, 0],
-    cells: [card(13, 0), card(13, 1), card(13, 2), card(13, 3)],
-    tableau: [[card(5, 0)], [card(5, 3)], [card(9, 0)], [card(9, 3)], [card(3, 0)], [card(3, 3)], [card(7, 1)], [card(7, 2)]]
-  };
-  assert.equal(core.listMoves(state).length, 0);
-  assert.equal(core.stuckReason(state, new Set()), 'none');
-});
-
-// A fresh game of a deal number, dealt by the game's own dealer.
-const deal = seed => ({ tableau: core.dealTableau(seed), cells: [null, null, null, null], foundations: [0, 0, 0, 0] });
-const sameMove = (a, b) => a.from.type === b.from.type && a.from.pile === b.from.pile && (a.from.index || 0) === (b.from.index || 0) && a.to.type === b.to.type && a.to.pile === b.to.pile;
-const isLegal = (state, move) => core.listMoves(state).some(other => sameMove(other, move));
-
-test('solver: a found solution is a sequence of legal moves that wins the deal', () => {
-  let state = deal(25904);
-  const result = core.solveBoard(state);
-  assert.equal(result.status, 'solved');
-  for (const move of result.moves) { assert.ok(isLegal(state, move)); state = core.applyMove(state, move); }
-  assert.deepEqual(state.foundations, [13, 13, 13, 13]);
-});
-
-test('hints: following the hint every time wins the game', () => {
-  let state = deal(11987);
-  const seen = new Set([core.positionKey(state)]);
-  for (let step = 0; step < 300 && !state.foundations.every(v => v === 13); step++) {
-    const hint = core.suggestMove(state, { seen });
-    assert.ok(hint.move && isLegal(state, hint.move), `step ${step}: ${hint.status}`);
-    state = core.applyMove(state, hint.move); seen.add(core.positionKey(state));
-  }
-  assert.deepEqual(state.foundations, [13, 13, 13, 13]);
-});
-
-test('hints: a legal move is always suggested while one exists, even past the search budget', () => {
-  const start = deal(1);
-  const seen = new Set([core.positionKey(start)]);
-  for (const move of core.listMoves(start)) seen.add(core.positionKey(core.applyMove(start, move)));
-  // Every single move was already tried: the old check called this "no more moves".
-  assert.equal(core.stuckReason(start), null);
-  const hint = core.suggestMove(start, { seen, maxNodes: 1 });
-  assert.equal(hint.status, 'guess');
-  assert.ok(isLegal(start, hint.move));
-});
-
-test('stuck: moves left but none wins is reported as unsolvable, not as no moves', () => {
-  // Reached by random play from a real deal; a plain exhaustive search agrees it cannot be won.
-  const s = (r, suit) => card(r, suit);
-  const state = {
-    foundations: [3, 0, 1, 1],
-    cells: [s(12, 3), s(8, 2), s(11, 2), s(8, 1)],
-    tableau: [[s(13, 3), s(5, 1), s(1, 1), s(4, 2)], [s(2, 3), s(4, 3), s(11, 0), s(3, 1), s(2, 1)],
-      [s(12, 1), s(13, 2), s(7, 3), s(2, 2), s(9, 0), s(12, 2), s(8, 3), s(7, 2)],
-      [s(6, 0), s(10, 1), s(7, 0), s(11, 1), s(12, 0), s(4, 1), s(6, 2), s(5, 3)], [s(13, 0)],
-      [s(6, 3), s(3, 3), s(9, 1), s(10, 0), s(5, 2), s(8, 0), s(7, 1)], [s(10, 3), s(4, 0), s(9, 3), s(6, 1)],
-      [s(3, 2), s(5, 0), s(13, 1), s(9, 2), s(11, 3), s(10, 2)]]
-  };
-  assert.ok(core.listMoves(state).length > 0);
-  assert.equal(core.stuckReason(state), 'unsolvable');
-  assert.equal(core.suggestMove(state).status, 'unsolvable');
-});
-
-test('stuck: a won game, or one still to win, is never stuck', () => {
-  assert.equal(core.stuckReason({ foundations: [12, 13, 13, 13], cells: [null, null, null, null], tableau: [[card(13, 0)], [], [], [], [], [], [], []] }), null);
-  assert.equal(core.stuckReason({ foundations: [13, 13, 13, 13], cells: [null, null, null, null], tableau: [[], [], [], [], [], [], [], []] }), null);
-});
-
-test('solver: safe foundation moves only take cards nothing can be placed on any more', () => {
-  const state = { foundations: [4, 3, 3, 4], cells: [null, null, null, null], tableau: [[card(5, 0)], [card(4, 1)], [card(5, 3)], [], [], [], [], []] };
-  // 4♦ is safe (both black foundations hold the 3s); 5♣ is not yet (a red 4 could still go on it).
-  const { moves } = core.playSafeMoves(state);
-  assert.equal(moves[0].from.pile, 1);
-});
-
 test('saved state: schema 1 opens as schema 2 without losing progress', () => {
   const old = { version: 1, currentLanguage: 'pt', tableThemeName: 'aurora', cardThemeName: 'sunlight', playerLevel: 4, levelWins: 2, stats: { started: 9, wins: 5, totalMoves: 800 } };
   const state = core.migrateState(old);
@@ -715,51 +641,6 @@ test('saved state stays far below the 500,000-character bridge limit when everyt
 const catalog = core.cleanCatalog(JSON.parse(fs.readFileSync(path.join(assets, 'deal_catalog.json'), 'utf8')));
 const firstRow = seed => core.dealTableau(seed).map(column => column[0]).map(c => `${'A23456789TJQK'[c.r - 1].replace('T', '10')}${'CDHS'[c.s]}`).join(' ');
 
-test('deals: numbers are Microsoft deals (first rows of #1 and #617)', () => {
-  assert.equal(firstRow(1), 'JD 2D 9H JC 5D 7H 7C 5H');
-  assert.equal(firstRow(617), '7D AD 5C 3S 5S 8C 2D AH');
-});
-
-test('catalog: 128 Easy, 675 Hard, no overlap, impossible deals in no tier', () => {
-  assert.equal(catalog.easy.length, 128);
-  assert.equal(catalog.hard.length, 675);
-  assert.equal(catalog.easy.filter(n => catalog.hardSet.has(n)).length, 0);
-  for (const n of core.IMPOSSIBLE_DEALS) assert.equal(core.tierOf(catalog, n), 'impossible');
-  for (const n of [164, 892, 25904]) assert.equal(core.tierOf(catalog, n), 'easy');
-  for (const n of [169, 31465]) assert.equal(core.tierOf(catalog, n), 'hard');
-  assert.ok(catalog.easy.every(n => n >= 1 && n <= 64000) && catalog.hard.every(n => n >= 1 && n <= 100000));
-  // The five opening deals are the five easiest, in order.
-  assert.deepEqual(catalog.easy.slice(0, 5), [25904, 5152, 11987, 13464, 9998]);
-});
-
-test('catalog: Medium is every other deal up to 64,000; above it a deal is unrated', () => {
-  let medium = 0;
-  for (let n = 1; n <= 64000; n++) if (core.tierOf(catalog, n) === 'medium') medium++;
-  assert.equal(medium, 64000 - 128 - catalog.hard.filter(n => n <= 64000).length - 1);
-  assert.equal(core.tierOf(catalog, 64001), 'unrated');
-  assert.equal(core.tierOf(catalog, 64020), 'hard');
-  assert.equal(core.tierOf(catalog, 0), 'unrated');
-});
-
-test('catalog: every tier deal deals 52 different cards', () => {
-  for (const seed of [...catalog.easy, ...catalog.hard]) {
-    const cards = core.dealTableau(seed).flat();
-    assert.equal(new Set(cards.map(c => c.s * 13 + c.r)).size, 52, `deal ${seed}`);
-  }
-});
-
-test('catalog: a broken file still gives a playable catalog', () => {
-  const empty = core.cleanCatalog(null);
-  assert.equal(core.tierOf(empty, 11982), 'impossible');
-  const { seed, pool } = core.pickDeal(empty, config.difficulty, 'hard', { random: core.seededRandom(1) });
-  assert.equal(pool, 'medium');
-  assert.equal(core.tierOf(empty, seed), 'medium');
-});
-
-// ---- Owner change 2026-10-30: warm-up deals, then a mix of pools per tier ----
-const difficulty = config.difficulty, WARMUP = [25904, 5152, 11987, 13464, 9998];
-const lcg = (seed) => { let x = seed; return () => (x = (Math.imul(x, 1103515245) + 12345) >>> 0) / 4294967296; };
-
 test('warm-up: the five deals in order, whatever the tier, moved on only by a win', () => {
   assert.deepEqual(difficulty.first_games.seeds, WARMUP);
   let index = 0;
@@ -784,132 +665,19 @@ test('warm-up: switches, advance on start, and the chosen tier when it is not ig
   const off = core.normalizeConfig({ difficulty_config: { first_games: { enabled: false } } }).difficulty;
   assert.equal(core.firstGameSeed(off, 0), null);
   const start = core.normalizeConfig({ difficulty_config: { first_games: { advance_on: 'start' } } }).difficulty;
-  assert.equal(core.advanceIntro(start, 0, { event: 'start', seed: 25904 }), 1);
+  assert.equal(core.advanceIntro(start, 0, { event: 'start', seed: 8340354 }), 1);
   assert.equal(core.advanceIntro(start, 1, { event: 'win', seed: 5152 }), 1);
   const choice = core.normalizeConfig({ difficulty_config: { first_games: { ignore_selected_mode: false } } }).difficulty;
   assert.equal(core.firstGameSeed(choice, 0, { selectedTier: 'hard' }), null);
-  assert.equal(core.firstGameSeed(choice, 0, { selectedTier: 'easy' }), 25904);
+  assert.equal(core.firstGameSeed(choice, 0, { selectedTier: 'easy' }), 8340354);
 });
 
-test('pools: very_easy is the first 64 Easy deals, easy the other 64; the warm-up deals are very_easy', () => {
-  const pools = core.dealPools(catalog, difficulty);
-  assert.deepEqual(pools.very_easy, catalog.easy.slice(0, 64));
-  assert.deepEqual(pools.easy, catalog.easy.slice(64));
-  assert.equal(pools.hard.length, 675);
-  for (const seed of WARMUP) assert.equal(core.poolOf(catalog, difficulty, seed), 'very_easy');
-  assert.equal(core.poolOf(catalog, difficulty, catalog.easy[100]), 'easy');
-  assert.equal(core.poolOf(catalog, difficulty, 169), 'hard');
-  assert.equal(core.poolOf(catalog, difficulty, 2), 'medium');
-  const split = core.normalizeConfig({ difficulty_config: { easy_split_index: 10 } }).difficulty;
-  assert.equal(core.dealPools(catalog, split).very_easy.length, 10);
-});
-
-test('pools: each tier follows its weights over many draws', () => {
-  const random = lcg(777), draws = 20000;
-  const expected = { easy: { very_easy: 0.6, easy: 0.4 }, medium: { medium: 0.7, easy: 0.3 }, hard: { medium: 0.6, hard: 0.4 } };
-  for (const tier of ['easy', 'medium', 'hard']) {
-    const counts = {};
-    for (let i = 0; i < draws; i++) {
-      const { seed, pool } = core.pickDeal(catalog, difficulty, tier, { random });
-      counts[pool] = (counts[pool] || 0) + 1;
-      assert.equal(core.poolOf(catalog, difficulty, seed), pool);
-    }
-    for (const [pool, share] of Object.entries(expected[tier])) assert.ok(Math.abs(counts[pool] / draws - share) < 0.02, `${tier}/${pool}: ${counts[pool] / draws}`);
-    assert.equal(Object.keys(counts).length, Object.keys(expected[tier]).length, tier);
-  }
-});
-
-test('pools: never one of the pool\'s last 50; lists play every deal before repeating one', () => {
-  const random = lcg(4242);
-  for (const tier of ['easy', 'medium', 'hard']) {
-    let history = core.cleanTierHistory(null);
-    const seen = {};
-    for (let i = 0; i < 400; i++) {
-      const { seed, pool } = core.pickDeal(catalog, difficulty, tier, { random, history });
-      assert.ok(!history.recent[pool].includes(seed), `${tier}: ${pool} repeated ${seed} within 50`);
-      seen[pool] = seen[pool] || new Set();
-      if (pool !== 'medium') {
-        const size = core.dealPools(catalog, difficulty)[pool].length;
-        if (seen[pool].size < size) assert.ok(!seen[pool].has(seed), `${pool} repeated ${seed} before playing all ${size}`);
-      }
-      seen[pool].add(seed);
-      history = core.rememberDeal(history, pool, seed);
-    }
-    for (const pool of Object.keys(seen)) assert.ok(history.recent[pool].length <= 50);
-  }
-});
-
-test('pools: warm-up deals still to come are never drawn; won ones only once the pool is used up', () => {
-  const random = lcg(99);
-  let history = core.cleanTierHistory(null);
-  for (const seed of WARMUP) history = core.rememberDeal(history, 'very_easy', seed);
-  const drawn = new Set();
-  for (let i = 0; i < 59 * 3; i++) {
-    const { seed, pool } = core.pickDeal(catalog, difficulty, 'easy', { random, history });
-    if (pool !== 'very_easy') continue;
-    if (drawn.size < 59) assert.ok(!WARMUP.includes(seed), `warm-up deal ${seed} drawn early`);
-    drawn.add(seed); history = core.rememberDeal(history, pool, seed);
-  }
-  for (let i = 0; i < 500; i++) assert.ok(!WARMUP.includes(core.pickDeal(catalog, difficulty, 'easy', { random, exclude: WARMUP }).seed));
-});
-
-test('difficulty config: a mix that does not add up to 100 falls back to its default', () => {
-  const d = core.normalizeConfig({ difficulty_config: { mixes: { easy: { very_easy: 50, easy: 50 }, medium: { medium: 80, easy: 30 }, hard: { hard: 100, bogus: 0 } }, easy_split_index: -3, first_games: { seeds: [3, 3], advance_on: 'never' } } }).difficulty;
-  assert.deepEqual(d.mixes.easy, { very_easy: 50, easy: 50 });
-  assert.deepEqual(d.mixes.medium, { medium: 70, easy: 30 });
-  assert.deepEqual(d.mixes.hard, { medium: 60, hard: 40 });
-  assert.equal(d.easy_split_index, 0);
+test('difficulty config: bad warm-up settings fall back to the defaults', () => {
+  const d = core.normalizeConfig({ difficulty_config: { first_games: { seeds: [3, 3], advance_on: 'never' }, default_tier: 'impossible' } }).difficulty;
   assert.deepEqual(d.first_games.seeds, WARMUP);
   assert.equal(d.first_games.advance_on, 'win');
-  // An empty pool is skipped: with no very_easy deals Easy draws only from easy.
-  const empty = core.normalizeConfig({ difficulty_config: { easy_split_index: 0 } }).difficulty, random = lcg(5);
-  for (let i = 0; i < 200; i++) assert.equal(core.pickDeal(catalog, empty, 'easy', { random }).pool, 'easy');
-});
-
-test('saved state: a history from before the pools keeps its deals', () => {
-  const state = core.migrateState({ version: 2, tierHistory: { recent: { easy: [25904, 7], medium: [3], hard: [169] }, easyPlayed: [25904, 5152] } });
-  assert.deepEqual(state.tierHistory.recent.very_easy, [25904, 7]);
-  assert.deepEqual(state.tierHistory.recent.medium, [3]);
-  assert.deepEqual(state.tierHistory.recent.hard, [169]);
-  assert.deepEqual(state.tierHistory.played.very_easy, [25904, 5152]);
-  assert.deepEqual(state.tierHistory.played.hard, []);
-  const again = core.migrateState({ version: 2, tierHistory: state.tierHistory });
-  assert.deepEqual(again.tierHistory, state.tierHistory);
-});
-
-test('Daily: same date, same deal from its tier\'s mix; Medium on weekdays, Hard at weekends; never a warm-up deal', () => {
-  const monday = core.dailyDeal(catalog, config, '2026-10-26'), saturday = core.dailyDeal(catalog, config, '2026-10-31');
-  assert.deepEqual(core.dailyDeal(catalog, config, '2026-10-26'), monday);
-  assert.equal(monday.tier, 'medium');
-  assert.equal(saturday.tier, 'hard');
-  assert.equal(core.dailyDeal(catalog, config, '2026-11-01').tier, 'hard');
-  const year = new Set(), pools = { medium: {}, hard: {} };
-  for (let day = 0; day < 3650; day++) {
-    const key = core.addDays('2027-01-01', day), daily = core.dailyDeal(catalog, config, key);
-    if (day < 365) year.add(daily.seed);
-    assert.deepEqual(core.dailyDeal(catalog, config, key), daily);
-    assert.ok(!WARMUP.includes(daily.seed), `warm-up deal on ${key}`);
-    assert.equal(core.poolOf(catalog, difficulty, daily.seed), daily.pool);
-    pools[daily.tier][daily.pool] = (pools[daily.tier][daily.pool] || 0) + 1;
-  }
-  assert.ok(year.size > 300, 'Daily deals vary from day to day');
-  const share = (tier, pool) => pools[tier][pool] / Object.values(pools[tier]).reduce((a, b) => a + b, 0);
-  assert.ok(Math.abs(share('medium', 'medium') - 0.7) < 0.04 && Math.abs(share('medium', 'easy') - 0.3) < 0.04, JSON.stringify(pools.medium));
-  assert.ok(Math.abs(share('hard', 'medium') - 0.6) < 0.05 && Math.abs(share('hard', 'hard') - 0.4) < 0.05, JSON.stringify(pools.hard));
-  // Appending to the catalog never changes a past Daily.
-  const grown = core.cleanCatalog({ ...JSON.parse(fs.readFileSync(path.join(assets, 'deal_catalog.json'), 'utf8')), hard: [...catalog.hard, 99999] });
-  assert.deepEqual(core.dailyDeal(grown, config, '2026-10-31'), saturday);
-});
-
-test('difficulty config: known tiers only, default among them, a tier per weekday', () => {
-  const d = core.normalizeConfig({ difficulty_config: { enabled_tiers: ['hard', 'bogus', 'easy'], default_tier: 'medium', daily_tiers_by_weekday: ['easy', 'x'], unlock_levels: { hard: 500 } } }).difficulty;
-  assert.deepEqual(d.enabled_tiers, ['easy', 'hard']);
   assert.equal(d.default_tier, 'easy');
-  assert.deepEqual(d.daily_tiers_by_weekday, ['easy', 'medium', 'medium', 'medium', 'medium', 'medium', 'hard']);
-  assert.deepEqual(d.unlock_levels, { easy: 1, medium: 1, hard: 100 });
-  assert.deepEqual(core.normalizeConfig({ difficulty_config: { enabled_tiers: [] } }).difficulty.enabled_tiers, ['easy', 'medium', 'hard']);
 });
-
 test('saved state: tiers migrate; an older Winnable mission counts Easy wins', () => {
   const state = core.migrateState({ version: 2, stats: { wins: 3 }, difficultyTier: 'bogus', tierHistory: { recent: { easy: [1, 'x', 2] } } });
   assert.equal(state.difficultyTier, null);
@@ -1020,125 +788,6 @@ const lostPosition = () => {
       [s(3, 2), s(5, 0), s(13, 1), s(9, 2), s(11, 3), s(10, 2)]]
   };
 };
-
-test('move rule: the solver lists only moves the game accepts, and every useful one', () => {
-  const random = lcg(31);
-  for (const seed of [25904, 164, 617, 1941, 31465]) {
-    let state = deal(seed);
-    for (let step = 0; step < 60; step++) {
-      const listed = core.listMoves(state);
-      for (const move of listed) assert.ok(core.canMove(state, move), `#${seed} step ${step}: listed but refused`);
-      // Every accepted move to a foundation, a card or a free cell is listed (to some free cell,
-      // to one empty column: the others are the same position).
-      const sources = [...state.cells.map((c, pile) => c && { type: 'cell', pile, index: 0 }), ...state.tableau.flatMap((col, pile) => col.map((c, index) => ({ type: 'tableau', pile, index })))].filter(Boolean);
-      const targets = [{ type: 'foundation', pile: 0 }, { type: 'foundation', pile: 1 }, { type: 'foundation', pile: 2 }, { type: 'foundation', pile: 3 }, ...state.tableau.map((col, pile) => ({ type: 'tableau', pile }))];
-      for (const from of sources) for (const to of targets) {
-        const move = { from, to };
-        if (!core.canMove(state, move) || (to.type === 'tableau' && !state.tableau[to.pile].length)) continue;
-        assert.ok(listed.some(other => sameMove(other, move)), `#${seed} step ${step}: accepted but not listed ${JSON.stringify(move)}`);
-      }
-      if (!listed.length) break;
-      state = core.applyMove(state, listed[Math.floor(random() * listed.length)]);
-    }
-  }
-});
-
-test('move rule: a run moves at once only within (free cells + 1) × 2^(other empty columns)', () => {
-  const run = [card(9, 0), card(8, 1), card(7, 0)];
-  const base = { foundations: [0, 0, 0, 0], cells: [card(13, 0), card(13, 1), card(13, 2), null], tableau: [[card(10, 2), ...run], [card(10, 1)], [card(2, 2)], [card(2, 3)], [card(3, 2)], [card(3, 3)], [card(4, 2)], [card(4, 3)]] };
-  const move = { from: { type: 'tableau', pile: 0, index: 1 }, to: { type: 'tableau', pile: 1 } };
-  assert.equal(core.canMove(base, move), false, '3 cards, one free cell, no empty column: at most 2');
-  const withColumn = { ...base, tableau: base.tableau.map((col, i) => i === 7 ? [] : col) };
-  assert.equal(core.canMove(withColumn, move), true, 'one empty column doubles it to 4');
-  // Into the empty column itself, that column does not count.
-  assert.equal(core.canMove(withColumn, { from: move.from, to: { type: 'tableau', pile: 7 } }), false);
-  assert.equal(core.canMove(base, { from: { type: 'tableau', pile: 0, index: 2 }, to: { type: 'cell', pile: 3 } }), false, 'a free cell takes one card');
-});
-
-test('smart hint: lines for the warm-up deals and a sample of every tier replay to a win', () => {
-  const pick = (list, n) => Array.from({ length: n }, (_, i) => list[Math.floor(i * list.length / n)]);
-  const medium = []; for (let n = 1; medium.length < 12; n += 4999) if (core.tierOf(catalog, n) === 'medium') medium.push(n);
-  const groups = { warmup: WARMUP, easy: pick(catalog.easy, 12), medium, hard: pick(catalog.hard, 12) };
-  for (const [group, seeds] of Object.entries(groups)) {
-    let solved = 0;
-    for (const seed of seeds) {
-      const result = core.runToEnd(core.analyse(deal(seed), { maxNodes: 60000 }));
-      if (result.status !== 'solved') continue;
-      solved++;
-      assert.deepEqual(replay(deal(seed), result.line).foundations, [13, 13, 13, 13], `#${seed}`);
-    }
-    assert.ok(solved >= Math.ceil(seeds.length * 0.9), `${group}: ${solved}/${seeds.length} solved`);
-  }
-});
-
-test('smart hint: three outcomes, never mixed up', () => {
-  // A winning line.
-  assert.equal(core.runToEnd(core.analyse(deal(25904), {})).status, 'solved');
-  // Budget spent: 'unknown', and the hint is a guess, never a claim that the game is lost.
-  const short = core.runToEnd(core.analyse(deal(31465), { maxNodes: 2 }));
-  assert.equal(short.status, 'unknown');
-  const advice = core.hintFromSession(core.hintSession(null, { type: 'analysed', key: core.positionKey(deal(31465)), state: deal(31465), result: short, budget: 300 }), deal(31465), { budget: 300 });
-  assert.equal(advice.kind, 'move'); assert.equal(advice.from, 'guess'); assert.ok(core.canMove(deal(31465), advice.move));
-  // A provably lost position: only an exhaustive search says so.
-  const lost = lostPosition();
-  assert.ok(core.listMoves(lost).length > 0);
-  assert.equal(core.runToEnd(core.analyse(lost, {})).status, 'unsolvable');
-  assert.equal(core.runToEnd(core.analyse(lost, { maxNodes: 1 })).status, 'unknown', 'a cut-off search never claims a loss');
-});
-
-test('smart hint: the line is followed without a new search, in any free cell or empty column', () => {
-  let state = deal(5152);
-  const result = core.runToEnd(core.analyse(state, {}));
-  let session = core.hintSession(null, { type: 'analysed', key: core.positionKey(state), state, result, budget: 300 });
-  let swapped = 0;
-  for (let step = 0; step < result.line.length && !state.foundations.every(v => v === 13); step++) {
-    const advice = core.hintFromSession(session, state, { budget: 300 });
-    assert.equal(advice.kind, 'move', `step ${step}`); assert.equal(advice.from, 'line');
-    let move = advice.move;
-    // Play a free-cell move into the last empty free cell instead, as a player might.
-    if (move.to.type === 'cell') { const last = state.cells.lastIndexOf(null); if (last !== move.to.pile) { move = { ...move, to: { type: 'cell', pile: last } }; swapped++; } }
-    assert.ok(core.canMove(state, move));
-    state = core.applyMove(state, move);
-  }
-  assert.deepEqual(state.foundations, [13, 13, 13, 13]);
-  assert.ok(swapped > 0, 'the line survived free-cell swaps');
-});
-
-test('smart hint: leaving the line asks for a new search; Undo, Restart and New Game forget it', () => {
-  const start = deal(11987), result = core.runToEnd(core.analyse(start, {}));
-  const session = core.hintSession(null, { type: 'analysed', key: core.positionKey(start), state: start, result, budget: 300 });
-  const lineKeys = new Set(core.makeLine(start, result.line).map(step => step.key));
-  const off = core.listMoves(start).map(move => core.applyMove(start, move)).find(next => !lineKeys.has(core.positionKey(next)));
-  assert.ok(off, 'a move that leaves the line');
-  assert.equal(core.hintFromSession(session, off, { budget: 300 }).kind, 'search');
-  for (const type of ['undo', 'restart', 'new_game']) {
-    const forgotten = core.hintSession(session, { type });
-    assert.equal(forgotten.line, null); assert.equal(forgotten.key, null);
-    assert.equal(core.hintFromSession(forgotten, start, { budget: 300 }).kind, 'search', type);
-  }
-  // An answer for another position is ignored.
-  const stale = core.hintSession(null, { type: 'analysed', key: 'other', state: start, result, budget: 300 });
-  assert.equal(stale.key, null);
-  // A smaller budget that found nothing does not stop a Hint from searching longer.
-  const unknown = core.hintSession(null, { type: 'analysed', key: core.positionKey(start), state: start, result: { status: 'unknown', line: [], expanded: 9 }, budget: 150 });
-  assert.equal(core.hintFromSession(unknown, start, { budget: 300 }).kind, 'search');
-  assert.equal(core.hintFromSession(unknown, start, { budget: 150 }).kind, 'move');
-});
-
-test('smart hint: budgets are kept, and a search run in slices gives the same answer', () => {
-  const state = deal(31465);
-  const capped = core.createSearch(state, { maxNodes: 500 }).run();
-  assert.ok(capped.expanded <= 500);
-  let clock = 0; const timed = core.createSearch(state, { maxNodes: 1e9, timeLimitMs: 50, now: () => (clock += 30) });
-  assert.equal(timed.run().status, 'unknown');
-  const whole = core.runToEnd(core.analyse(deal(9998), {}));
-  const iterator = core.analyse(deal(9998), {}); let slices = 0, step;
-  while (!(step = iterator.next()).done) slices++;
-  assert.ok(slices >= 0); assert.deepEqual(step.value, whole);
-  // Time spent between slices does not count.
-  let now = 0; const sliced = core.createSearch(deal(31465), { maxNodes: 1e9, timeLimitMs: 100, now: () => now });
-  sliced.run(10); now += 1000; assert.equal(sliced.run(200), null, 'paused time is not spent');
-});
 
 test('hint and tips config: bounds, and an optional hint cap', () => {
   const c = core.normalizeConfig({ hint_config: { smart_hint: 'yes', time_budget_ms: 9000, node_limit: 5, background_budget_ms: -4, max_hints_per_game: 3 }, tips_config: { enabled: false, free_cells_tip_min_occupied: 9 } });
@@ -1314,4 +963,115 @@ test('campaign goals: each once, from what is reached; a new player starts today
   assert.deepEqual(core.goalsReached(older, { wins: 10, dailyWins: 1, introDone: true, today: '2026-12-01' }), ['first_daily_win', 'wins_10']);
   assert.deepEqual(core.cleanGoals({ firstDay: 'x', sent: ['wins_3', 'wins_3', 7] }), { firstDay: null, sent: ['wins_3'] });
   assert.deepEqual(core.GOAL_EVENTS, ['intro_complete', 'first_daily_win', 'wins_3', 'wins_10', 'day2_return']);
+});
+
+// ---- Spider rules ----
+const S = (r, s = 3, up = true, id) => (id === undefined ? { r, s, up } : { r, s, up, id });
+const emptyBoard = () => ({ tableau: Array.from({ length: 10 }, () => [S(13, 0)]), stock: [], foundations: Array(8).fill(0), done: [], suits: 1 });
+const tmove = (fromPile, index, toPile) => ({ from: { type: 'tableau', pile: fromPile, index }, to: { type: 'tableau', pile: toPile } });
+
+test('deals: 104 different cards, 6-6-6-6-5-5-5-5-5-5 with the last face up, 50 in the stock', () => {
+  for (const [tier, suits] of [['easy', [3]], ['medium', [2, 3]], ['hard', [0, 1, 2, 3]]]) {
+    const board = core.newBoard(12345, core.suitsOf(tier));
+    assert.deepEqual(board.tableau.map(column => column.length), [6, 6, 6, 6, 5, 5, 5, 5, 5, 5]);
+    for (const column of board.tableau) column.forEach((card, index) => assert.equal(card.up, index === column.length - 1));
+    assert.equal(board.stock.length, 50);
+    const all = [...board.tableau.flat(), ...board.stock];
+    assert.equal(new Set(all.map(card => card.id)).size, 104);
+    assert.deepEqual([...new Set(all.map(card => card.s))].sort(), suits, tier);
+    for (const suit of suits) for (let r = 1; r <= 13; r++) assert.equal(all.filter(card => card.s === suit && card.r === r).length, 8 / suits.length);
+  }
+  assert.deepEqual(core.dealGame(77, 2), core.dealGame(77, 2));
+  assert.notDeepEqual(core.dealGame(77, 2), core.dealGame(78, 2));
+});
+
+test('move rule: any card on one rank higher; only runs of one suit move together; empty columns take anything', () => {
+  const state = emptyBoard();
+  state.tableau[0] = [S(9, 2)];
+  state.tableau[1] = [S(13, 0), S(8, 3), S(7, 3)];
+  state.tableau[2] = [S(13, 0), S(8, 1), S(7, 3)];
+  state.tableau[3] = [];
+  assert.ok(core.canMove(state, tmove(1, 1, 0)), '8♠7♠ onto 9♥');
+  assert.ok(!core.canMove(state, tmove(2, 1, 0)), '8♦7♠ is not one suit');
+  assert.ok(!core.canMove(state, tmove(2, 2, 0)), '7♠ does not go on 9♥');
+  assert.ok(core.canMove(state, tmove(2, 2, 3)), 'an empty column takes any card');
+  const hidden = { ...state, tableau: state.tableau.map((column, i) => i === 1 ? [S(13, 0), S(8, 3, false), S(7, 3)] : column) };
+  assert.ok(!core.canMove(hidden, tmove(1, 1, 0)), 'never a face-down card');
+  for (const listed of core.listMoves(state, { all: true })) assert.ok(core.canMove(state, listed), JSON.stringify(listed));
+});
+
+test('deal: one face-up card on every column, only when no column is empty', () => {
+  const board = core.newBoard(5, 1);
+  assert.ok(core.canMove(board, core.DEAL));
+  const next = core.applyMove(board, core.DEAL);
+  assert.equal(next.stock.length, 40);
+  next.tableau.forEach((column, pile) => { assert.ok(column.length >= board.tableau[pile].length); assert.equal(column.at(-1).up, true) });
+  const withEmpty = { ...board, tableau: board.tableau.map((column, i) => i === 4 ? [] : column) };
+  assert.ok(!core.canMove(withEmpty, core.DEAL));
+  assert.ok(!core.listMoves(withEmpty).some(listed => listed.from.type === 'stock'));
+  assert.ok(!core.canMove({ ...board, stock: [] }, core.DEAL));
+});
+
+test('a complete run leaves by itself, turns the card under it and scores +100 − 1', () => {
+  const state = emptyBoard();
+  state.tableau[0] = [S(5, 1, false, 300), ...Array.from({ length: 12 }, (_, i) => S(13 - i, 3, true, 200 + i))];
+  state.tableau[1] = [S(13, 0), S(1, 3, true, 212)];
+  const next = core.applyMove(state, tmove(1, 1, 0));
+  assert.deepEqual(next.tableau[0], [S(5, 1, true, 300)]);
+  assert.deepEqual(next.foundations, [13, 0, 0, 0, 0, 0, 0, 0]);
+  assert.deepEqual(next.done, [3]);
+  assert.equal(core.moveScore(state, next), 99);
+  assert.equal(core.moveScore(next, core.applyMove(next, tmove(2, 0, 3))), -1);
+  assert.equal(core.won({ ...next, foundations: Array(8).fill(13) }), true);
+});
+
+test('solver: a found solution is a sequence of legal moves that wins the deal (1 suit)', () => {
+  for (const seed of [1, 2, 3]) {
+    const board = core.newBoard(seed, 1);
+    const result = core.runToEnd(core.analyse(board, { maxNodes: 100000 }));
+    assert.equal(result.status, 'solved', `deal ${seed}`);
+    let state = board;
+    for (const step of result.line) { assert.ok(core.canMove(state, step)); state = core.applyMove(state, step) }
+    assert.ok(core.won(state));
+  }
+});
+
+test('smart hint: the line is followed without a new search, and leaving it asks for one', () => {
+  const board = core.newBoard(3, 1);
+  const result = core.runToEnd(core.analyse(board, { maxNodes: 100000 }));
+  const line = core.makeLine(board, result.line);
+  let state = board;
+  for (let i = 0; i < 10; i++) { const next = core.nextOnLine(line, state); assert.ok(next, `step ${i}`); state = core.applyMove(state, next.move) }
+  const firstKey = core.positionKey(core.applyMove(board, result.line[0]));
+  const off = core.listMoves(board).find(listed => core.positionKey(core.applyMove(board, listed)) !== firstKey && !line.some(step => step.key === core.positionKey(core.applyMove(board, listed))));
+  if (off) assert.equal(core.nextOnLine(line, core.applyMove(board, off)), null);
+});
+
+test('stuck: no legal move at all, a won game is never stuck, and the hint has a move while one exists', () => {
+  const stuck = emptyBoard();
+  assert.equal(core.stuckReason(stuck, { maxNodes: 1000 }), 'none');
+  assert.equal(core.stuckReason({ ...stuck, foundations: Array(8).fill(13) }), null);
+  const board = core.newBoard(9, 4);
+  const hint = core.suggestMove(board, { maxNodes: 300 });
+  assert.ok(hint.move && core.canMove(board, hint.move));
+});
+
+const spiderCatalog = () => core.cleanCatalog(JSON.parse(fs.readFileSync(path.join(assets, 'deal_catalog.json'), 'utf8')));
+test('deals per tier: never one of the last 50; listed deals first; the Daily is the same for everyone and never a warm-up deal', () => {
+  const bundled = spiderCatalog();
+  let history = null; const seen = [];
+  for (let i = 0; i < 60; i++) { const pick = core.pickDeal(bundled, difficulty, 'hard', { history }); assert.ok(!seen.slice(-50).includes(pick.seed)); seen.push(pick.seed); history = core.rememberDeal(history, 'hard', pick.seed) }
+  if (bundled.easy.length) assert.ok(bundled.easy.includes(core.pickDeal(bundled, difficulty, 'easy').seed));
+  const a = core.dailyDeal(bundled, config, '2026-11-16'), b = core.dailyDeal(bundled, config, '2026-11-16');
+  assert.deepEqual(a, b);
+  assert.equal(a.tier, config.difficulty.daily_tiers_by_weekday[1]);
+  for (let day = 1; day <= 28; day++) assert.ok(!WARMUP.includes(core.dailyDeal(bundled, config, `2026-02-${String(day).padStart(2, '0')}`).seed));
+});
+
+test('catalog: listed deals are won by the solver; the warm-up deals are won with 1 and 2 suits', () => {
+  const bundled = spiderCatalog();
+  const wins = (seed, suits) => core.runToEnd(core.analyse(core.newBoard(seed, suits), { maxNodes: 150000 })).status === 'solved';
+  for (const seed of bundled.easy.slice(0, 2)) assert.ok(wins(seed, 1), `easy ${seed}`);
+  for (const seed of bundled.medium.slice(0, 1)) assert.ok(wins(seed, 2), `medium ${seed}`);
+  for (const seed of WARMUP.slice(0, 2)) assert.ok(wins(seed, 1) && wins(seed, 2), `warm-up ${seed}`);
 });

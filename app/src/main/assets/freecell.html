@@ -1335,7 +1335,7 @@
           hint_config:{smart_hint:true,time_budget_ms:300,node_limit:400000,background_analysis:true,background_budget_ms:150,max_hints_per_game:null},
           tips_config:{enabled:true,free_cells_tip_min_occupied:3},
           difficulty_config:{enabled_tiers:['easy','medium','hard'],default_tier:'easy',daily_tiers_by_weekday:['medium','easy','easy','easy','easy','easy','medium'],unlock_levels:{easy:1,medium:1,hard:1},
-            first_games:{enabled:true,ignore_selected_mode:true,advance_on:'win',seeds:[25904,5152,11987,13464,9998]}},
+            first_games:{enabled:true,ignore_selected_mode:true,advance_on:'win',seeds:[8340354,1181284,4553912,8989938,8458239]}},
           achievements_config:{enabled:true,items:[
             {id:'first_win',counter:'wins',target:1,reward:10},{id:'wins_10',counter:'wins',target:10,reward:30},{id:'wins_50',counter:'wins',target:50,reward:80},{id:'wins_100',counter:'wins',target:100,reward:150},
             {id:'no_undo_1',counter:'no_undo_wins',target:1,reward:15},{id:'no_undo_10',counter:'no_undo_wins',target:10,reward:50},{id:'no_undo_25',counter:'no_undo_wins',target:25,reward:100},
@@ -4744,7 +4744,7 @@
       }
 
       // ---- Sharing (v1.2 B2): no server, no personal data ----
-      const STORE_URL='https://play.google.com/store/apps/details?id=com.nexusplaylabss.freecell';
+      const STORE_URL='https://play.google.com/store/apps/details?id=com.nexusplaylabss.spider';
       function shareText(text){
         if(window.AndroidBridge?.shareText){window.AndroidBridge.shareText(text);return}
         showSharePreview(text,null);

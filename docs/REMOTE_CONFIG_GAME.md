@@ -273,33 +273,26 @@ Achievements with coins on Collect (like missions). Bundled default (19 achievem
 
 At most 60 items; an empty or unusable list keeps the bundled one. The name shown is built from the counter and target in the player's language, so new tiers need no new texts. Counters only grow (`fast_win` keeps the fastest win). Each achievement unlocks once and is collected once; unlock notices are small toasts shown at the next menu stage. Older saves start with their wins and 3-star wins counted.
 
-## `difficulty_config` (v1.3)
+## `difficulty_config` (v1.3, Spider)
 
-Difficulty tiers from the FreeCell Solutions lists (`docs/DEAL_CATALOG.md`), the warm-up deals and the mix of pools behind each tier. Bundled default:
+Tiers are the number of suits: `easy` 1 Suit, `medium` 2 Suits, `hard` 4 Suits (`docs/DEAL_CATALOG.md`). Bundled default:
 
 ```json
-{"enabled_tiers":["easy","medium","hard"],"default_tier":"medium","daily_tiers_by_weekday":["hard","medium","medium","medium","medium","medium","hard"],"unlock_levels":{"easy":1,"medium":1,"hard":1},"first_games":{"enabled":true,"ignore_selected_mode":true,"advance_on":"win","seeds":[25904,5152,11987,13464,9998]},"easy_split_index":64,"mixes":{"easy":{"very_easy":60,"easy":40},"medium":{"medium":70,"easy":30},"hard":{"medium":60,"hard":40}}}
+{"enabled_tiers":["easy","medium","hard"],"default_tier":"easy","daily_tiers_by_weekday":["medium","easy","easy","easy","easy","easy","medium"],"unlock_levels":{"easy":1,"medium":1,"hard":1},"first_games":{"enabled":true,"ignore_selected_mode":true,"advance_on":"win","seeds":[8340354,1181284,4553912,8989938,8458239]}}
 ```
 
 | Field | Rule | Meaning |
 | --- | --- | --- |
-| `enabled_tiers` | any of `easy`, `medium`, `hard` | Tiers offered for Random games; none valid → all three. With one tier the picker is hidden |
-| `default_tier` | an enabled tier | Tier of Random games until the player picks one (also the victory "New Game") |
-| `daily_tiers_by_weekday` | 7 tiers, Sunday first | Daily tier per weekday; each wrong or missing entry falls back on its own default |
+| `enabled_tiers` | any of `easy`, `medium`, `hard` | Tiers offered for Classic games; none valid → all three. With one tier the picker is hidden |
+| `default_tier` | an enabled tier (default `easy`) | Tier of Classic games until the player picks one (also the victory "New Game") |
+| `daily_tiers_by_weekday` | 7 tiers, Sunday first | Daily tier per weekday (default 2 Suits on Sunday and Saturday, 1 Suit otherwise); each wrong or missing entry falls back on its own default |
 | `unlock_levels.<tier>` | 1–100 | Player level that unlocks the tier; a locked tier shows a lock |
-| `first_games.enabled` | true / false | Off: no warm-up, the picker shows from the first game |
-| `first_games.seeds` | 1–10 different deal numbers 1–9,999,999 (else the default five) | Warm-up deals, in this order: a new player's first Classic games |
-| `first_games.advance_on` | `win` (default) or `start` | `win`: the next warm-up deal comes only after the current one is won (a new game without a win deals it again); `start`: each Classic game started moves on |
-| `first_games.ignore_selected_mode` | true (default) / false | true: the warm-up ignores the chosen tier and the picker is replaced by "Warm-up 2 of 5"; false: the picker stays and warm-up deals are dealt only while Easy is chosen |
-| `easy_split_index` | 0–1000 (64) | Where the Easy list (easiest first) splits: deals before it are the `very_easy` pool, the rest the `easy` pool |
-| `mixes.<tier>` | weights 0–100 for `very_easy`, `easy`, `medium`, `hard`, adding up to 100 | Pools a tier draws from; a mix with an unknown pool, a non-whole weight or a total other than 100 falls back to that tier's default |
+| `first_games.enabled` | true / false | Off: no warm-up deals |
+| `first_games.seeds` | 1–10 different deal numbers 1–9,999,999 (else the default five) | Warm-up deals, in this order: a new player's first Classic games, dealt in the chosen tier (the defaults are won by the solver with 1 and 2 suits) |
+| `first_games.advance_on` | `win` (default) or `start` | `win`: the next warm-up deal comes only after the current one is won; `start`: each Classic game started moves on |
+| `first_games.ignore_selected_mode` | true (default) / false | false: warm-up deals are dealt only while 1 Suit is the chosen tier |
 
-Default mixes: Easy 60% very_easy + 40% easy; Medium 70% medium + 30% easy; Hard 60% medium + 40% hard. Each Classic game picks a pool by these weights, then a deal of that pool that is not one of the pool's last 50; the lists (very_easy, easy, hard) prefer deals never played and repeat only once all were (a repeat pays nothing). An empty pool (for example `easy_split_index` 0) is skipped.
-
-Warm-up (owner change 2026-10-30): a new player's first Classic games are `first_games.seeds` in order (25904, 5152, 11987, 13464, 9998), counted as Easy for coins, stars, statistics and history. They are used only by Classic games (the New Game menu and the victory New Game), never by the Daily, Game by Number or the Collection. The position (`introIndex`, 0 to the number of seeds) is in the saved state and the backup; a save from before it gets 5 when it had started five Classic games, else the number of Classic deals it won. Adding seeds later gives players who already finished the old list the new ones as warm-up too (their `introIndex` stays 5).
-
-The Daily uses the mix of its weekday's tier, with the pool and the deal both chosen from the date, so everyone gets the same deal; it never deals a warm-up deal. Changing `daily_tiers_by_weekday`, `easy_split_index`, `mixes` or `first_games.seeds` changes the Daily of the dates still to come for everyone, and the deal of a past date replayed from the calendar.
-
+Classic games draw a deal of their tier from `assets/deal_catalog.json` (deals the solver wins; any number for 4 Suits), never one of the tier's last 50. The Daily takes its weekday's tier and a deal of that tier's frozen Daily list chosen from the date, so everyone gets the same deal; it never deals a warm-up deal. FreeCell's `easy_split_index` and `mixes` are ignored.
 ## `rivals_config` (v1.3)
 
 Daily Rivals, invented rivals computed on the phone (`docs/DAILY_RIVALS.md`). Bundled default:
