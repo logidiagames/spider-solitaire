@@ -35,7 +35,7 @@ Android Spider Solitaire, package `com.nexusplaylabss.spider`, publisher **Nexus
 
 ## Languages
 
-English is built in. Portuguese (Portugal and Brazil) has every new or changed Spider text (`tools/spider_texts.json`, applied with `node tools/apply_spider_texts.mjs`). **The other 15 languages show those texts in English for now** (rules, tutorial, tier names, the app name in share and rating texts); add their translations to `tools/spider_texts.json` and run the script.
+English is built in. All 18 languages have every new or changed Spider text (rules, tutorial, tier names, stock texts, the game name in share and rating texts): `tools/spider_texts.json`, applied with `node tools/apply_spider_texts.mjs`. The 15 non-Portuguese ones (es, fr, it, de, nl, pl, tr, ru, uk, ja, ko, zh-Hans, id, sv, cs) are first drafts that need a native review. They use the local game name where one is usual (Solitario Spider, Spider Solitär, Pasjans Pająk, Örümcek Solitaire, пасьянс «Паук», пасьянс «Павук», スパイダーソリティア, 스파이더 솔리테어, 蜘蛛纸牌, Pavouk; Spider Solitaire in fr, nl, id, sv); the launcher name (`app_name`) is localized only for pt-PT. Fix a text in `tools/spider_texts.json` and rerun the script, never in the packs directly.
 
 ## Build and preview
 
