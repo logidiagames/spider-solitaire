@@ -13,7 +13,7 @@ Android Spider Solitaire, package `com.nexusplaylabss.spider`, publisher **Nexus
 - Do not build or upload an AAB unless the owner asks. Spider needs its own upload key and Firebase project (owner tasks); FreeCell's are for FreeCell only. `app/google-services.json` is not in the repo; without it the build skips Firebase's Gradle plugins.
 - Every coin gain is shown with `celebrateCoins`. One font stack for UI text, `Roboto,Arial,sans-serif`; only the card ranks keep `sans-serif-condensed`. No text may be pure white: light text is cream `#fdf2d8`.
 - Test builds (debug and qa) have the "DEV · Tools" button; it must never be in a release build or AAB (`AndroidBridge.isDebugBuild()` / `BuildConfig.TEST_TOOLS`, `DevToolsGateTest`).
-- Commits: small, messages in English. The repository has **no GitHub remote yet**: the owner creates it (for example `logidiagames/spider-solitaire`); then push every commit to it. Never push to or touch the FreeCell or Solitaire repositories from here. No secrets tracked (`google-services.json`, keystores, `local.properties`, APK/AAB are ignored).
+- Commits: small, messages in English. Push every commit right away to `origin`, the private repo https://github.com/logidiagames/spider-solitaire (branch `main`). Never push to or touch the FreeCell or Solitaire repositories from here. No secrets tracked (`google-services.json`, keystores, `local.properties`, APK/AAB are ignored).
 
 ## Spider rules (all in `FreeCellCore`, between `freecell-core:start` and `freecell-core:end`)
 
@@ -45,4 +45,4 @@ Browser preview: `.claude/launch.json` (ignored) has `spider-preview`, which run
 
 ## Owner tasks (not for Claude)
 
-Create the GitHub repository; create Spider Solitaire in AdMob (App ID and ad units), Firebase (project, `google-services.json`, Remote Config parameters from `docs/REMOTE_CONFIG_ALL.md`), the Play Console listing and product `remove_ads`, an upload key; a privacy policy page for Spider (the app still links FreeCell's policy URL until then: `PRIVACY_POLICY_URL` in the page and `MainActivity`); a 512×512 Spider icon (the launcher icons are still FreeCell's art).
+Create Spider Solitaire in AdMob (App ID and ad units), Firebase (project, `google-services.json`, Remote Config parameters from `docs/REMOTE_CONFIG_ALL.md`), the Play Console listing and product `remove_ads`, an upload key; a privacy policy page for Spider (the app still links FreeCell's policy URL until then: `PRIVACY_POLICY_URL` in the page and `MainActivity`); a 512×512 Spider icon (the launcher icons are still FreeCell's art).
