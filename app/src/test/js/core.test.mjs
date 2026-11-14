@@ -322,7 +322,7 @@ test('missions: a set stays until all three are collected, then new ones after 1
 });
 
 test('missions: progress from the new events, capped, and claimed once', () => {
-  const list = ['win_no_hint', 'win_under_moves', 'empty_columns', 'complete_suits', 'win_numbered', 'foundation_cards']
+  const list = ['win_no_hint', 'win_under_moves', 'empty_columns', 'complete_suits', 'win_random', 'foundation_cards']
     .map(type => config.missions.definitions.find(d => d.type === type)).map(d => ({ ...d, progress: 0, claimed: false }));
   let state = { list };
   state = core.applyMissionEvent(state, { type: 'win', mode: 'numbered', usedUndo: true, usedHint: false, seconds: 900, moves: 110 });
@@ -665,11 +665,11 @@ test('warm-up: switches, advance on start, and the chosen tier when it is not ig
   const off = core.normalizeConfig({ difficulty_config: { first_games: { enabled: false } } }).difficulty;
   assert.equal(core.firstGameSeed(off, 0), null);
   const start = core.normalizeConfig({ difficulty_config: { first_games: { advance_on: 'start' } } }).difficulty;
-  assert.equal(core.advanceIntro(start, 0, { event: 'start', seed: 8340354 }), 1);
+  assert.equal(core.advanceIntro(start, 0, { event: 'start', seed: 5965327 }), 1);
   assert.equal(core.advanceIntro(start, 1, { event: 'win', seed: 5152 }), 1);
   const choice = core.normalizeConfig({ difficulty_config: { first_games: { ignore_selected_mode: false } } }).difficulty;
   assert.equal(core.firstGameSeed(choice, 0, { selectedTier: 'hard' }), null);
-  assert.equal(core.firstGameSeed(choice, 0, { selectedTier: 'easy' }), 8340354);
+  assert.equal(core.firstGameSeed(choice, 0, { selectedTier: 'easy' }), 5965327);
 });
 
 test('difficulty config: bad warm-up settings fall back to the defaults', () => {
@@ -1068,10 +1068,28 @@ test('deals per tier: never one of the last 50; listed deals first; the Daily is
   for (let day = 1; day <= 28; day++) assert.ok(!WARMUP.includes(core.dailyDeal(bundled, config, `2026-02-${String(day).padStart(2, '0')}`).seed));
 });
 
-test('catalog: listed deals are won by the solver; the warm-up deals are won with 1 and 2 suits', () => {
+test('catalog: listed deals are won by the solver, easiest first; the warm-up deals are won with 1 suit', () => {
   const bundled = spiderCatalog();
   const wins = (seed, suits) => core.runToEnd(core.analyse(core.newBoard(seed, suits), { maxNodes: 150000 })).status === 'solved';
   for (const seed of bundled.easy.slice(0, 2)) assert.ok(wins(seed, 1), `easy ${seed}`);
   for (const seed of bundled.medium.slice(0, 1)) assert.ok(wins(seed, 2), `medium ${seed}`);
-  for (const seed of WARMUP.slice(0, 2)) assert.ok(wins(seed, 1) && wins(seed, 2), `warm-up ${seed}`);
+  for (const seed of WARMUP) assert.ok(wins(seed, 1), `warm-up ${seed}`);
+});
+
+test('adaptive difficulty: starts at the easiest band, half a band up per win, a band down per loss', () => {
+  let level = core.cleanAdapt(null);
+  assert.deepEqual(level, { easy: 0, medium: 0, hard: 0 });
+  level = core.adaptAfter(level, 'easy', true); assert.equal(core.adaptBand(level, 'easy'), 0);
+  level = core.adaptAfter(level, 'easy', true); assert.equal(core.adaptBand(level, 'easy'), 1);
+  for (let i = 0; i < 20; i++) level = core.adaptAfter(level, 'easy', true);
+  assert.equal(core.adaptBand(level, 'easy'), core.ADAPT_BANDS - 1);
+  level = core.adaptAfter(level, 'easy', false); assert.equal(core.adaptBand(level, 'easy'), core.ADAPT_BANDS - 2);
+  for (let i = 0; i < 20; i++) level = core.adaptAfter(level, 'easy', false);
+  assert.equal(level.easy, 0); assert.equal(level.medium, 0);
+  const list = Array.from({ length: 100 }, (_, i) => i + 1);
+  assert.deepEqual(core.bandSlice(list, 0), list.slice(0, 20));
+  assert.deepEqual(core.bandSlice(list, 4), list.slice(80));
+  const catalog = core.cleanCatalog({ easy: list });
+  for (let i = 0; i < 30; i++) assert.ok(core.pickDeal(catalog, difficulty, 'easy', { band: 1 }).seed > 20 && core.pickDeal(catalog, difficulty, 'easy', { band: 1 }).seed <= 40);
+  assert.equal(core.migrateState({ version: 2, adaptLevel: { easy: 3.5, medium: 99 } }).adaptLevel.medium, core.ADAPT_BANDS - 1);
 });

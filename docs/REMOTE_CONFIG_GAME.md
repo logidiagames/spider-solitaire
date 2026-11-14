@@ -288,7 +288,7 @@ Tiers are the number of suits: `easy` 1 Suit, `medium` 2 Suits, `hard` 4 Suits (
 | `daily_tiers_by_weekday` | 7 tiers, Sunday first | Daily tier per weekday (default 2 Suits on Sunday and Saturday, 1 Suit otherwise); each wrong or missing entry falls back on its own default |
 | `unlock_levels.<tier>` | 1–100 | Player level that unlocks the tier; a locked tier shows a lock |
 | `first_games.enabled` | true / false | Off: no warm-up deals |
-| `first_games.seeds` | 1–10 different deal numbers 1–9,999,999 (else the default five) | Warm-up deals, in this order: a new player's first Classic games, dealt in the chosen tier (the defaults are won by the solver with 1 and 2 suits) |
+| `first_games.seeds` | 1–10 different deal numbers 1–9,999,999 (else the default five) | Warm-up deals, in this order: a new player's first Classic games, dealt in the chosen tier (the defaults are 1 Suit deals from the ranked list: an easy one, a harder one, then three easy ones) |
 | `first_games.advance_on` | `win` (default) or `start` | `win`: the next warm-up deal comes only after the current one is won; `start`: each Classic game started moves on |
 | `first_games.ignore_selected_mode` | true (default) / false | false: warm-up deals are dealt only while 1 Suit is the chosen tier |
 

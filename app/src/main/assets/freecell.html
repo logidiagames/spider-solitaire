@@ -1335,13 +1335,12 @@
           hint_config:{smart_hint:true,time_budget_ms:300,node_limit:400000,background_analysis:true,background_budget_ms:150,max_hints_per_game:null},
           tips_config:{enabled:true,free_cells_tip_min_occupied:3},
           difficulty_config:{enabled_tiers:['easy','medium','hard'],default_tier:'easy',daily_tiers_by_weekday:['medium','easy','easy','easy','easy','easy','medium'],unlock_levels:{easy:1,medium:1,hard:1},
-            first_games:{enabled:true,ignore_selected_mode:true,advance_on:'win',seeds:[8340354,1181284,4553912,8989938,8458239]}},
+            first_games:{enabled:true,ignore_selected_mode:true,advance_on:'win',seeds:[5965327,8898097,728965,6260071,1056576]}},
           achievements_config:{enabled:true,items:[
             {id:'first_win',counter:'wins',target:1,reward:10},{id:'wins_10',counter:'wins',target:10,reward:30},{id:'wins_50',counter:'wins',target:50,reward:80},{id:'wins_100',counter:'wins',target:100,reward:150},
             {id:'no_undo_1',counter:'no_undo_wins',target:1,reward:15},{id:'no_undo_10',counter:'no_undo_wins',target:10,reward:50},{id:'no_undo_25',counter:'no_undo_wins',target:25,reward:100},
             {id:'streak_3',counter:'daily_streak',target:3,reward:30},{id:'streak_7',counter:'daily_streak',target:7,reward:70},{id:'streak_30',counter:'daily_streak',target:30,reward:250},
             {id:'daily_10',counter:'daily_wins',target:10,reward:60},{id:'daily_50',counter:'daily_wins',target:50,reward:200},
-            {id:'numbered_10',counter:'numbered_deals',target:10,reward:40},{id:'numbered_50',counter:'numbered_deals',target:50,reward:120},{id:'numbered_100',counter:'numbered_deals',target:100,reward:200},
             {id:'stars_10',counter:'three_star_wins',target:10,reward:50},{id:'stars_50',counter:'three_star_wins',target:50,reward:150},
             {id:'fast_5',counter:'fast_win',target:300,reward:40},{id:'first_item',counter:'items_bought',target:1,reward:20},
             {id:'rivals_top3_1',counter:'rivals_top3',target:1,reward:0},{id:'rivals_top3_10',counter:'rivals_top3',target:10,reward:0}]},
@@ -1354,13 +1353,12 @@
             {id:'moves_120',type:'win_under_moves',target:1,moves:120,reward:35},
             {id:'daily_1',type:'win_daily',target:1,reward:30},
             {id:'random_2',type:'win_random',target:2,reward:35},{id:'winnable_2',type:'win_winnable',target:2,reward:20},
-            {id:'numbered_1',type:'win_numbered',target:1,reward:30},
             {id:'cards_30',type:'foundation_cards',target:30,reward:20},{id:'cards_80',type:'foundation_cards',target:80,reward:40},
             {id:'suits_4',type:'complete_suits',target:4,reward:25},{id:'suits_8',type:'complete_suits',target:8,reward:40},
             {id:'columns_3',type:'empty_columns',target:3,reward:25},
             {id:'play_3',type:'play_games',target:3,reward:15},{id:'play_5',type:'play_games',target:5,reward:25}]}
         };
-        const MISSION_TYPES=['win_games','win_no_undo','win_no_hint','win_fast','win_under_moves','win_daily','win_random','win_winnable','win_numbered','foundation_cards','complete_suits','empty_columns','play_games'];
+        const MISSION_TYPES=['win_games','win_no_undo','win_no_hint','win_fast','win_under_moves','win_daily','win_random','win_winnable','foundation_cards','complete_suits','empty_columns','play_games'];
         const THEME_IDS=['classic','aurora','sunlight','neon','moonstone','emberwood'];
         // Store catalogs (v1.2): every item the app can draw, per category, and each category's
         // free default. Remote Config prices and lists only what is sold; it cannot invent items.
@@ -2346,8 +2344,8 @@
         // A deal for a tier: one of the tier's listed deals that is not among its last 50, deals
         // never played first (a repeat pays nothing: payKey); with no list, any deal number not among
         // the last 50. Deals in exclude (warm-up deals still to come) are never picked.
-        function pickDeal(catalog,difficulty,tier,{random=Math.random,history=null,exclude=[]}={}){
-          const state=cleanTierHistory(history),skip=new Set(exclude),list=(catalog[tier]||[]).filter(n=>!skip.has(n));
+        function pickDeal(catalog,difficulty,tier,{random=Math.random,history=null,exclude=[],band=null}={}){
+          const state=cleanTierHistory(history),skip=new Set(exclude),list=bandSlice(catalog[tier]||[],band).filter(n=>!skip.has(n));
           const pick=items=>items[Math.floor(random()*items.length)%items.length];
           const recent=new Set(state.recent[tier]||[]);
           if(list.length){
@@ -2356,6 +2354,25 @@
           }
           for(let tries=0;tries<100;tries++){const n=1+Math.floor(random()*MAX_DEAL_NUMBER);if(!skip.has(n)&&!recent.has(n))return{seed:n,pool:'any'}}
           return{seed:1,pool:'any'};
+        }
+        // Adaptive difficulty (owner request 2026-11-14): each tier's list is sorted easiest first
+        // (tools/rank_deal_catalog.mjs) and cut into five bands. A player's level per tier starts at
+        // 0 (the easiest band); a win raises it by half a band, a lost game (a new deal started
+        // before winning the one in play) lowers it by a whole band, so the deals settle where the
+        // player wins about two games in three.
+        const ADAPT_BANDS=5,ADAPT_WIN_STEP=0.5,ADAPT_LOSS_STEP=1;
+        function cleanAdapt(value){const source=object(value);return Object.fromEntries(TIERS.map(tier=>[tier,num(source[tier],0,ADAPT_BANDS-1,0)]))}
+        function adaptAfter(value,tier,won){
+          const state=cleanAdapt(value);if(!TIERS.includes(tier))return state;
+          const level=won?state[tier]+ADAPT_WIN_STEP:state[tier]-ADAPT_LOSS_STEP;
+          return{...state,[tier]:Math.max(0,Math.min(ADAPT_BANDS-1,level))};
+        }
+        const adaptBand=(value,tier)=>Math.floor(cleanAdapt(value)[tier]||0);
+        // The deals of a band: a fifth of the list, the easiest fifth for band 0.
+        function bandSlice(list,band){
+          if(!Number.isInteger(band)||list.length<ADAPT_BANDS)return list;
+          const b=Math.max(0,Math.min(ADAPT_BANDS-1,band));
+          return list.slice(Math.floor(list.length*b/ADAPT_BANDS),Math.floor(list.length*(b+1)/ADAPT_BANDS));
         }
         // Deals played per tier: the last 50, and every deal played (up to 2,000).
         function cleanTierHistory(value){
@@ -2392,7 +2409,9 @@
         function dailyDeal(catalog,config,dateKey){
           const parts=parseKey(dateKey);if(!parts)return null;
           const difficulty=config.difficulty,weekday=new Date(Date.UTC(parts.year,parts.month-1,parts.day)).getUTCDay(),tier=difficulty.daily_tiers_by_weekday[weekday];
-          const skip=new Set(difficulty.first_games.seeds),list=(catalog[tier]||[]).slice(0,catalog.dailyCount?.[tier]??0).filter(n=>!skip.has(n));
+          // The Daily is for everyone: it draws from the easier three fifths of the list.
+          const frozen=(catalog[tier]||[]).slice(0,catalog.dailyCount?.[tier]??0);
+          const skip=new Set(difficulty.first_games.seeds),list=frozen.slice(0,Math.max(1,Math.ceil(frozen.length*3/ADAPT_BANDS))).filter(n=>!skip.has(n));
           let hash=hashText(`spider-daily:${dateKey}`);
           if(list.length)return{seed:list[hash%list.length],tier,pool:tier};
           for(let tries=0;tries<100;tries++){const n=1+hash%MAX_DEAL_NUMBER;if(!skip.has(n))return{seed:n,tier,pool:'any'};hash=hashText(String(hash))}
@@ -2505,6 +2524,7 @@
             // The warm-up deals won so far (owner change 2026-10-30). A save from before it: 5 when it
             // already started five Classic games (introGamesStarted, or games started before that
             // field), else the Classic deals it won (paid keys), at most 5.
+            adaptLevel:cleanAdapt(state.adaptLevel),
             introIndex:typeof state.introIndex==='number'?int(state.introIndex,0,10,0)
               :(typeof state.introGamesStarted==='number'?int(state.introGamesStarted,0,1e9,0):int(stats.started,0,1e9,0))>=5?5
               :Math.min(5,(Array.isArray(state.paidKeys)?state.paidKeys:[]).filter(key=>/^(random|winnable):/.test(String(key))).length),
@@ -2513,7 +2533,7 @@
           };
         }
 
-        return{DEFAULTS,THEME_IDS,STORE_CATEGORIES,STORE_ITEMS,STORE_DEFAULTS,storeAccess,buyItem,equippableItem,storeItems,MISSION_TYPES,MILESTONES,normalizeConfig,activeEvents,eventProgress,eventDaysLeft,recordEventWin,eventIntroDue,rewardedOffer,openOffer,dropOffer,creditOffer,rewardedToday,cleanCollection,recordNumbered,encodeCollection,decodeCollection,collectionPageCount,collectionPageOf,collectionPage,collectionFromStars,ACHIEVEMENT_COUNTERS,cleanAchievements,achievementProgress,updateAchievements,claimAchievement,achievementsToCollect,starsFor,starBonusFor,recordStars,cleanStarBest,cleanReminders,dailyWinCount,reminderAskDue,markReminderAsked,reminderPayload,markEventIntro,itemCategory,promoState,countPromoGame,choosePromo,recordPromoShown,bonusStatus,claimBonus,pickMissions,refreshMissions,missionsNextAt,applyMissionEvent,claimMission,claimMissionsBonus,dateKey,isDateKey,addDays,today,winReward,payKey,claimPayment,addCoins,themeAccess,buyTheme,equippableTheme,pruneHistory,recordDailyAttempt,recordDailyWin,streakInfo,dailyComparison,formatDuration,formatDelta,monthSummary,listMoves,applyMove,positionKey,playSafeMoves,boardScore,solveBoard,suggestMove,stuckReason,LANGUAGES,LANGUAGE_CODES,languageForTag,pickLanguage,cleanLanguagePack,calendarOffset,chainTiming,normalizePerformance,EFFECT_SETTINGS,effectsDecision,frameStats,foundationPitch,landingFeel,SIZE_CHOICES,displaySizes,foundationGain,canMove,createSearch,analyse,runToEnd,guessMove,makeLine,nextOnLine,hintSession,hintFromSession,TIERS,COLUMNS,RUNS,DEAL,orderedFrom,cardFrom,completedRunStart,collectRuns,turnsCard,runsDone,SCORING,moveScore,won,MAX_DEAL_NUMBER,SUITS_BY_TIER,suitsOf,dealGame,newBoard,cleanCatalog,pickDeal,seededRandom,cleanTierHistory,rememberDeal,firstGameSeed,warmupActive,advanceIntro,dailyDeal,normalizeDifficulty,cleanRoster,rivalsTable,rivalsRank,rivalStreak,rivalsStreakBoard,cleanRivalsResults,recordRivalsResult,GOAL_EVENTS,cleanGoals,goalsReached,markGoals,migrateState};
+        return{DEFAULTS,THEME_IDS,STORE_CATEGORIES,STORE_ITEMS,STORE_DEFAULTS,storeAccess,buyItem,equippableItem,storeItems,MISSION_TYPES,MILESTONES,normalizeConfig,activeEvents,eventProgress,eventDaysLeft,recordEventWin,eventIntroDue,rewardedOffer,openOffer,dropOffer,creditOffer,rewardedToday,cleanCollection,recordNumbered,encodeCollection,decodeCollection,collectionPageCount,collectionPageOf,collectionPage,collectionFromStars,ACHIEVEMENT_COUNTERS,cleanAchievements,achievementProgress,updateAchievements,claimAchievement,achievementsToCollect,starsFor,starBonusFor,recordStars,cleanStarBest,cleanReminders,dailyWinCount,reminderAskDue,markReminderAsked,reminderPayload,markEventIntro,itemCategory,promoState,countPromoGame,choosePromo,recordPromoShown,bonusStatus,claimBonus,pickMissions,refreshMissions,missionsNextAt,applyMissionEvent,claimMission,claimMissionsBonus,dateKey,isDateKey,addDays,today,winReward,payKey,claimPayment,addCoins,themeAccess,buyTheme,equippableTheme,pruneHistory,recordDailyAttempt,recordDailyWin,streakInfo,dailyComparison,formatDuration,formatDelta,monthSummary,listMoves,applyMove,positionKey,playSafeMoves,boardScore,solveBoard,suggestMove,stuckReason,LANGUAGES,LANGUAGE_CODES,languageForTag,pickLanguage,cleanLanguagePack,calendarOffset,chainTiming,normalizePerformance,EFFECT_SETTINGS,effectsDecision,frameStats,foundationPitch,landingFeel,SIZE_CHOICES,displaySizes,foundationGain,canMove,createSearch,analyse,runToEnd,guessMove,makeLine,nextOnLine,hintSession,hintFromSession,TIERS,COLUMNS,RUNS,DEAL,orderedFrom,cardFrom,completedRunStart,collectRuns,turnsCard,runsDone,SCORING,moveScore,won,MAX_DEAL_NUMBER,ADAPT_BANDS,cleanAdapt,adaptAfter,adaptBand,bandSlice,SUITS_BY_TIER,suitsOf,dealGame,newBoard,cleanCatalog,pickDeal,seededRandom,cleanTierHistory,rememberDeal,firstGameSeed,warmupActive,advanceIntro,dailyDeal,normalizeDifficulty,cleanRoster,rivalsTable,rivalsRank,rivalStreak,rivalsStreakBoard,cleanRivalsResults,recordRivalsResult,GOAL_EVENTS,cleanGoals,goalsReached,markGoals,migrateState};
       })();
       /* freecell-core:end */
       // Saved-state schema 2 (v1.1); a schema 1 state is migrated without losing progress. The
@@ -2994,7 +3014,7 @@
       // Wall-clock time that never goes backwards (mission refresh waits); debug can move it forward.
       let debugHoursOffset=0;
       const nowMs=()=>{const value=Math.max(Date.now()+debugHoursOffset*36e5,latestTime);latestTime=value;return value};
-      let dailyBonus=savedState.dailyBonus,missionsState=savedState.missions,missionsCelebrationPending=savedState.missionsCelebrationPending,introIndex=savedState.introIndex,tipsState=savedState.tips,gameFoundationPeak=0,lastSeenDay=null;
+      let dailyBonus=savedState.dailyBonus,missionsState=savedState.missions,missionsCelebrationPending=savedState.missionsCelebrationPending,adaptLevel=FreeCellCore.cleanAdapt(savedState.adaptLevel),introIndex=savedState.introIndex,tipsState=savedState.tips,gameFoundationPeak=0,lastSeenDay=null;
       // v1.1 Part 3: promotional popups and Remove Ads.
       let promos=savedState.promos,suppressInterstitial=false,stageCelebrated=false;
       // The Android shell counts launches; the browser preview counts its own page loads.
@@ -3215,8 +3235,13 @@
       function measureColumnRoom(){
         const size=CARD_SIZES[options.cardSize];
         if(!size){columnRoom=399;return}
+        // Spider bug fix: measured while the board was not laid out yet (loading screen, hidden page)
+        // the room came out tiny and every column was squeezed after a deal. Such a reading is
+        // ignored; render() measures again each time, so the room follows the real screen.
         const columns=find('#fc-columns').getBoundingClientRect(),status=find('#fc-status').getBoundingClientRect();
-        columnRoom=Math.max(size.strip*3,status.top-columns.top-size.height-6);
+        const room=status.top-columns.top-size.height-6;
+        if(!columns.height||!status.height||room<size.strip*6){if(!(columnRoom>=size.strip*6))columnRoom=399;return}
+        columnRoom=room;
       }
       function applySizes(){
         const sizes=FreeCellCore.displaySizes(options);
@@ -3238,7 +3263,8 @@
       }
       // Random, Daily and numbered deals all come from the same dealer, so a friend replays one by
       // typing its number in Game by Number. Older Winnable deals (another dealer) are not shareable.
-      const shareableDeal=()=>['random','daily','numbered'].includes(currentMode)&&currentSeed>=0&&currentSeed<=9999999;
+      // Spider (owner decision 2026-11-14): no Game by Number, so only the Daily is shared: everyone plays the same Daily.
+      const shareableDeal=()=>currentMode==='daily';
       const tierName=tier=>['easy','medium','hard','impossible'].includes(tier)?t(`tier_${tier}`):'';
       // The status line names the tier: "Level 5 · Medium", "Deal #164 · Easy". Owner decision
       // (2026-11-04): no deal number for Classic and Daily games, and nothing that tells a warm-up deal
@@ -3268,6 +3294,8 @@
         // ads_config.availability.interstitials.skip_after_loss is on (the default). Only a new game after
         // a win (or the first game of a launch) can show one.
         const afterLoss=gameplayActive&&currentMode!=='developer'&&!foundations.every(value=>value===13);
+        // Adaptive difficulty: a Classic game left unwon after at least one move counts as lost.
+        if(!replay&&afterLoss&&currentMode==='random'&&moves>0&&FreeCellCore.TIERS.includes(currentTier))adaptLevel=FreeCellCore.adaptAfter(adaptLevel,currentTier,false);
         if(gameplayActive&&currentMode!=='developer'&&!foundations.every(value=>value===13)){
           track('game_abandon',{game_mode:currentMode,level:currentLevelNumber,moves,duration_seconds:seconds,difficulty_tier:currentTier,deal_pool:currentPool||undefined});
         }
@@ -3292,7 +3320,7 @@
               introIndex=FreeCellCore.advanceIntro(difficulty,introIndex,{event:'start',seed:warmup});
             }else{
               const exclude=FreeCellCore.warmupActive(difficulty,introIndex)?difficulty.first_games.seeds.slice(introIndex):[];
-              const pick=FreeCellCore.pickDeal(dealCatalog,difficulty,chosen,{random:dealRandom(),history:warmupPlayed(),exclude});
+              const pick=FreeCellCore.pickDeal(dealCatalog,difficulty,chosen,{random:dealRandom(),history:warmupPlayed(),exclude,band:FreeCellCore.adaptBand(adaptLevel,chosen)});
               currentSeed=pick.seed;currentTier=chosen;currentPool=pick.pool;
               if(mode==='random')tierHistory=FreeCellCore.rememberDeal(tierHistory,chosen,pick.seed);
             }
@@ -3396,6 +3424,7 @@
         return stuck;
       }
       function render(){
+        measureColumnRoom();
         unmovableNow=unmovableCards();
         find('#fc-score').textContent=String(score);
         find('#fc-moves').textContent=String(moves);
@@ -3473,6 +3502,7 @@
           if(!onboardingTutorial&&FreeCellCore.reminderAskDue(reminders,gameConfig,{dailyWins:FreeCellCore.dailyWinCount(dailyHistory),now:Date.now()}))pendingReminderAsk=true;
           syncReminders();
         }
+        if(currentMode==='random'&&!quickWinUsed&&FreeCellCore.TIERS.includes(currentTier))adaptLevel=FreeCellCore.adaptAfter(adaptLevel,currentTier,true);
         if(currentPool==='first_games'&&currentMode==='random')introIndex=FreeCellCore.advanceIntro(gameConfig.difficulty,introIndex,{event:'win',seed:currentSeed});
         const reward=FreeCellCore.winReward(gameConfig,{mode:currentMode,tier:currentTier,usedUndo:gameUsedUndo,seconds,dailyStreak});
         const dealKey=FreeCellCore.payKey({mode:currentMode,seed:currentSeed,dealId,dailyDate:currentDailyDate});
@@ -4256,7 +4286,7 @@
       const accessibilitySettingsMarkup=()=>`<section class="settings-group"><div class="settings-group-title">${t('accessibility')}</div>${sizeControl('cardSize',t('cardSize'))}<div class="card-size-preview" aria-hidden="true"></div></section>`;
       function settings(){
         const language=FreeCellCore.LANGUAGES.find(item=>item.code===currentLanguage)?.name||'English';
-        showModal(t('settings'),`${removeAdsSettingsCard()}<div class="settings-list"><section class="settings-group"><div class="settings-group-title">${t('game')}</div>${check('tap',t('tapToMove'))}${check('autoHint',t('automaticHints'))}${check('highlight',t('highlightMovable'))}</section>${accessibilitySettingsMarkup()}<section class="settings-group"><div class="settings-group-title">${t('soundAnimation')}</div>${check('sound',t('sound'))}${check('vibration',t('vibration'))}${check('celebration',t('victoryCelebration'))}${effectsControl()}</section>${reminderSettingsMarkup()}<section class="settings-group"><div class="settings-group-title">${t('language')}</div><button type="button" class="setting-action" data-language><span>${t('appLanguage')}</span><span class="setting-value">${language}</span></button></section><details class="settings-more"><summary>${t('displayControls')}</summary><div>${check('showScore',t('score'))}${check('showTime',t('time'))}${check('showMoves',t('moves'))}${check('leftHanded',t('leftHanded'))}${check('lockOrientation',t('lockOrientation'))}<button type="button" class="setting-action" data-direction><span>${t('stockPosition')}</span><span class="setting-value">${options.stockRight?t('right'):t('left')}</span></button></div></details><details class="settings-more"><summary>${t('records')}</summary><div><button type="button" class="setting-action" data-info="levels">${t('levelProgress')}</button><button type="button" class="setting-action" data-info="history">${t('gameHistory')}</button>${gameConfig.achievements.enabled?`<button type="button" class="setting-action" data-info="achievements">${t('achievementsTitle')}</button>`:''}<button type="button" class="setting-action" data-info="stats">${t('statistics')}</button><button type="button" class="setting-action" data-info="numbered">${t('numberedCollection')}</button></div></details><details class="settings-more"><summary>${t('helpLegal')}</summary><div><button type="button" class="setting-action" data-info="tutorial">${t('tutorial')}</button><button type="button" class="setting-action" data-info="rules">${t('rules')}</button><button type="button" class="setting-action" data-info="privacy">${t('privacyPolicy')}</button><button type="button" class="setting-action" data-info="contact">${t('contactUs')}</button></div></details></div>`,'settings')
+        showModal(t('settings'),`${removeAdsSettingsCard()}<div class="settings-list"><section class="settings-group"><div class="settings-group-title">${t('game')}</div>${check('tap',t('tapToMove'))}${check('autoHint',t('automaticHints'))}${check('highlight',t('highlightMovable'))}</section>${accessibilitySettingsMarkup()}<section class="settings-group"><div class="settings-group-title">${t('soundAnimation')}</div>${check('sound',t('sound'))}${check('vibration',t('vibration'))}${check('celebration',t('victoryCelebration'))}${effectsControl()}</section>${reminderSettingsMarkup()}<section class="settings-group"><div class="settings-group-title">${t('language')}</div><button type="button" class="setting-action" data-language><span>${t('appLanguage')}</span><span class="setting-value">${language}</span></button></section><details class="settings-more"><summary>${t('displayControls')}</summary><div>${check('showScore',t('score'))}${check('showTime',t('time'))}${check('showMoves',t('moves'))}${check('leftHanded',t('leftHanded'))}${check('lockOrientation',t('lockOrientation'))}<button type="button" class="setting-action" data-direction><span>${t('stockPosition')}</span><span class="setting-value">${options.stockRight?t('right'):t('left')}</span></button></div></details><details class="settings-more"><summary>${t('records')}</summary><div><button type="button" class="setting-action" data-info="levels">${t('levelProgress')}</button><button type="button" class="setting-action" data-info="history">${t('gameHistory')}</button>${gameConfig.achievements.enabled?`<button type="button" class="setting-action" data-info="achievements">${t('achievementsTitle')}</button>`:''}<button type="button" class="setting-action" data-info="stats">${t('statistics')}</button></div></details><details class="settings-more"><summary>${t('helpLegal')}</summary><div><button type="button" class="setting-action" data-info="tutorial">${t('tutorial')}</button><button type="button" class="setting-action" data-info="rules">${t('rules')}</button><button type="button" class="setting-action" data-info="privacy">${t('privacyPolicy')}</button><button type="button" class="setting-action" data-info="contact">${t('contactUs')}</button></div></details></div>`,'settings')
         refreshCardPreview();
       }
       let languageReturn='settings';
@@ -5118,7 +5148,7 @@
         const deck=`<span class="menu-deck" aria-hidden="true"><i></i><i></i></span>`;
         const trophy=gameConfig.achievements.enabled?`<button type="button" class="menu-chip icon-only" data-achievements aria-label="${t('achievementsTitle')}"><i data-lucide="trophy" aria-hidden="true"></i>${FreeCellCore.achievementsToCollect(achievementsState,gameConfig).length?'<i class="chip-dot" aria-hidden="true"></i>':''}</button>`:'';
         const gift=`<div class="menu-extras">${deck}<span class="menu-chips">${trophy}${bonus.enabled?`<button type="button" class="menu-chip" data-daily-bonus><i data-lucide="gift" aria-hidden="true"></i><span>${t('dailyBonusTitle')}</span>${bonus.available?'<i class="chip-dot" aria-hidden="true"></i>':''}</button>`:''}</span></div>`;
-        showModal(t('newGame'),`${gift}${eventBannerMarkup()}${levelProgressMarkup()}${tierPickerMarkup()}<div class="modal-list game-menu"><button type="button" data-game="random"><i data-lucide="dices" aria-hidden="true"></i><span>${t('randomGame')}</span></button><button type="button" data-game="number"><i data-lucide="list" aria-hidden="true"></i><span>${t('gameByNumber')}</span></button>${dailyMenuButton()}<button type="button" data-game="replay"><i data-lucide="rotate-ccw" aria-hidden="true"></i><span>${t('restart')}</span></button></div>`,'new-game')
+        showModal(t('newGame'),`${gift}${eventBannerMarkup()}${levelProgressMarkup()}${tierPickerMarkup()}<div class="modal-list game-menu"><button type="button" data-game="random"><i data-lucide="dices" aria-hidden="true"></i><span>${t('randomGame')}</span></button>${dailyMenuButton()}<button type="button" data-game="replay"><i data-lucide="rotate-ccw" aria-hidden="true"></i><span>${t('restart')}</span></button></div>`,'new-game')
       }
       // 0 = Sunday, 1 = Monday: from Intl's week info when the WebView has it, else the language's default.
       function firstWeekday(){
@@ -5391,7 +5421,7 @@
         showModal(t('gameHistory'),rows,'standard',{back:settings})
       }
       function levelsView(){
-        const modes=[['R','randomMix','randomMixRule'],['T','tiersInfo','tiersInfoRule'],['D','dailyStable','dailyStableRule'],['#','numberedXp','numberedXpRule']];
+        const modes=[['R','randomMix','randomMixRule'],['T','tiersInfo','tiersInfoRule'],['D','dailyStable','dailyStableRule']];
         const road=modes.map(mode=>`<div class="level-tier"><b>${mode[0]}</b><span><strong>${t(mode[1])}</strong><small>${t(mode[2])}</small></span></div>`).join('');
         showModal(t('levelProgress'),`<div class="level-summary">${levelProgressMarkup()}<p>${t('winToAdvance')}</p></div><div class="level-road">${road}</div>`,'levels',{back:settings})
       }
@@ -5830,7 +5860,7 @@ self.onmessage=event=>{const {id,state,budget}=event.data,started=performance.no
       function remember(){
         clearTimeout(saveTimer);saveTimer=0;
         const persistent={version:2,currentLanguage,tableThemeName,cardThemeName,playerLevel,levelWins,currentLevelNumber,levelAwarded,options:{...options},stats:{...stats},gameLog:gameLog.slice(0,8),
-          coins,owned,cardBackName,victoryEffectName,events:eventState,rewarded:rewardedState,reminders,starBest,achievements:achievementsState,paidKeys,dealCounter,dailyHistory,latestDate,debugDayOffset,dailyBonus,missions:missionsState,missionSets,latestTime,missionsCelebrationPending,introIndex,tips:tipsState,promos,previewSessions,difficultyTier,tierHistory,rivals:rivalsResults,goals:goals||savedState.goals||null,
+          coins,owned,cardBackName,victoryEffectName,events:eventState,rewarded:rewardedState,reminders,starBest,achievements:achievementsState,paidKeys,dealCounter,dailyHistory,latestDate,debugDayOffset,dailyBonus,missions:missionsState,missionSets,latestTime,missionsCelebrationPending,introIndex,adaptLevel,tips:tipsState,promos,previewSessions,difficultyTier,tierHistory,rivals:rivalsResults,goals:goals||savedState.goals||null,
           game:{tableau:copyBoard(tableau),stock:copyStock(stock),foundations:[...foundations],done:[...done],suits:suitsMode,score,history:history.slice(-40),moves,seconds,currentSeed,currentMode,currentLabel,dealId,usedUndo:gameUsedUndo,undos:gameUndos,dailyDate:currentDailyDate,foundationPeak:gameFoundationPeak,usedHint:gameUsedHint,suitPeak:gameSuitPeak,emptiedColumns:gameEmptiedColumns,tier:currentTier,pool:currentPool,hints:gameHints}};
         updateMissionsButton();updateEventButton();saveCollection();
         try{if(window.AndroidBridge?.saveState)window.AndroidBridge.saveState(JSON.stringify(persistent));else localStorage.setItem('freecellState',JSON.stringify(persistent))}catch(error){}
