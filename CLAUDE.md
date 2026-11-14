@@ -1,0 +1,48 @@
+# Spider Solitaire (Nexus Play Labs) — notes for Claude
+
+Android Spider Solitaire, package `com.nexusplaylabss.spider`, publisher **Nexus Play Labs**. Built on 2026-11-14 from the FreeCell code base (`logidiagames/freecell-solitaire`, commit e5da69f), the same way Solitaire (`logidiagames/solitaire-classic`) was: same stack, screens, themes, card style, animations, economy, missions, Daily Challenge, rivals, store, ads and analytics; only the rules changed. The game UI is one HTML page (`app/src/main/assets/freecell.html`, the file name is kept) in a WebView; Java under `app/src/main/java/nexus/nexusplaylabss/spider/` (package `com.nexusplaylabss.spider`) handles ads, consent, analytics and the JS bridge (`MainActivity.AndroidBridge`). Internal names keep the FreeCell word where renaming would only churn (log tags, prefs files, `FreeCellCore`, `#freecell-live-preview`, `window.freecell*` callbacks).
+
+`docs/FREECELL_NOTES.md` is FreeCell's CLAUDE.md at the time of the copy: every owner decision there about shared systems (popups, coins, victory panel, Daily Bonus, missions, rating, Remove Ads, reminders, languages, performance) still applies unless this file says otherwise.
+
+## Hard rules
+
+- The AdMob publisher is `ca-app-pub-1626295360729995`. This is the only publisher number allowed in the repository: the owner keeps a list of another account's number that must never appear here. Google's own test IDs (`ca-app-pub-3940256099942544`) are allowed. **Until the owner creates Spider Solitaire in AdMob, the App ID (`res/values/strings.xml`) and the ad units (`assets/ad_config_defaults.json`, `assets/config_admbob_mediator_defaults.json`) are Google's test IDs.** FreeCell's IDs belong to FreeCell and must never be used here (`AdConfigTest` checks).
+- The only studio name in code, assets, resources, docs, tools and README is Nexus Play Labs. The owner has a previous studio name that must not appear anywhere; ask the owner for the exact strings and run a case-insensitive search before committing.
+- Ads config is **Android only**. Never write iOS ad unit codes into any file.
+- Banner auto-refresh interval is **15 s** (owner decision). Do not change it.
+- Do not build or upload an AAB unless the owner asks. Spider needs its own upload key and Firebase project (owner tasks); FreeCell's are for FreeCell only. `app/google-services.json` is not in the repo; without it the build skips Firebase's Gradle plugins.
+- Every coin gain is shown with `celebrateCoins`. One font stack for UI text, `Roboto,Arial,sans-serif`; only the card ranks keep `sans-serif-condensed`. No text may be pure white: light text is cream `#fdf2d8`.
+- Test builds (debug and qa) have the "DEV · Tools" button; it must never be in a release build or AAB (`AndroidBridge.isDebugBuild()` / `BuildConfig.TEST_TOOLS`, `DevToolsGateTest`).
+- Commits: small, messages in English. The repository has **no GitHub remote yet**: the owner creates it (for example `logidiagames/spider-solitaire`); then push every commit to it. Never push to or touch the FreeCell or Solitaire repositories from here. No secrets tracked (`google-services.json`, keystores, `local.properties`, APK/AAB are ignored).
+
+## Spider rules (all in `FreeCellCore`, between `freecell-core:start` and `freecell-core:end`)
+
+- Board: `{tableau, stock, foundations, done, suits}`. Ten columns of `{s, r, up, id}` (`up:false` = face down; `id` 0–103 tells the two copies of a card apart, so board elements and saved games stay stable), the stock as `{s, r, id}` with the next row last (the last card goes to the first column), `foundations` eight slots (13 once a run fills it, in the order the runs are made), `done` the suit of each completed run, `suits` 1, 2 or 4.
+- Tiers keep FreeCell's keys so the economy, rivals, missions, Java `GameConfig` and the 18 languages carry over: `easy` = 1 suit (8 × spades), `medium` = 2 suits (4 × spades and hearts), `hard` = 4 suits. Names on screen: "1 Suit", "2 Suits", "4 Suits" (`tier_*`). Default for a new player: `easy` (`difficulty_config.default_tier`); the Daily is 2 suits on Sunday and Saturday, 1 suit on weekdays.
+- `dealGame(seed, suits)`: Microsoft's LCG shuffles the 104 cards; 54 are dealt row by row into ten columns (6 in the first four, 5 in the others; last card face up), 50 make the stock. `newBoard(seed, suits)`. Game by Number replays any number 1–9,999,999 in the player's current tier.
+- `canMove` is the one move rule (game, solver, hint): a face-up run of one suit in order moves onto any card one rank higher (any suit) or into an empty column; dealing (`DEAL`: stock → one face-up card on every column) needs every column to hold a card. `applyMove` turns the uncovered face-down card face up and sends a complete King-to-Ace run of one suit to the next foundation by itself (`collectRuns`), also after a deal.
+- Scoring (`SCORING`, `moveScore`): 500 at the start, −1 per move (a deal and an Undo included), +100 per complete run; never below 0.
+- Solver: the FreeCell best-first search on Spider moves (`listMoves` leaves out a run that already sits on the next card of its suit; `analyse` retries with every move before saying "unsolvable"). It knows the face-down cards and the stock. `tools/spider_solver_check.mjs` replays it on fresh deals: on the PC 1 suit is solved in about 0.2 s, 2 suits about two thirds of deals within 150,000 positions, 4 suits almost never (the hint then falls back to its best guess, as FreeCell does when the budget runs out).
+- Deal catalog (`assets/deal_catalog.json`, `tools/make_deal_catalog.mjs`): deal numbers the solver wins, for `easy` and `medium`; `hard` has no list (any number). Classic games draw from the list of their tier (unplayed first, never one of the last 50); the Daily from the frozen `daily.<tier>` part. Entries are only ever appended.
+- No Autocomplete and no card-by-card foundation moves (runs leave by themselves): `canAutocomplete` is always false and the "Auto-move to foundation" setting is gone. "Stock position" replaces "Free cell position" (`options.stockRight`).
+
+## Table
+
+- Top row of ten: the stock (card back with the number of deals left; a tap deals), a gap, the eight foundations. Ten columns, cards 58 / 66 / 74 px tall (Normal / Large / Extra large); face-down cards show a 7–9 px strip, face-up ones 20–26 px, squeezed when a column would run past its room (`columnTops`, room measured for every size).
+- A complete run flies to its foundation Ace first (`flyCompletedRuns`) with the suit-complete sound, haptic and ring; a deal slides the ten cards from the stock (`animateDealRow`). A tap moves a run onto the next card of its own suit first, then any next card, then an empty column (`autoMove`). The hint names the run's top card or pulses the stock ("Deal a new row from the stock").
+- Saved game (`remember` / `restoreSavedGame`): tableau with face-down flags and ids, stock, foundations, done, suits, score; `validBoard` checks every one of the 104 ids appears once. Saves from FreeCell are not read (another app).
+- Tutorial (6 steps) and Rules are redrawn for Spider (`TUTORIAL_COLUMNS`, `miniBoardMarkup`, `rulesView`).
+
+## Languages
+
+English is built in. Portuguese (Portugal and Brazil) has every new or changed Spider text (`tools/spider_texts.json`, applied with `node tools/apply_spider_texts.mjs`). **The other 15 languages show those texts in English for now** (rules, tutorial, tier names, the app name in share and rating texts); add their translations to `tools/spider_texts.json` and run the script.
+
+## Build and preview
+
+Windows PC (Git Bash): `export JAVA_HOME='C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot' PATH="/c/Program Files/nodejs:$PATH"` then `./gradlew test lintDebug assembleDebug`. `local.properties`: `sdk.dir=C\:/Users/acoel/AppData/Local/Android/Sdk`. JS tests alone: `node --test app/src/test/js/core.test.mjs`.
+
+Browser preview: `.claude/launch.json` (ignored) has `spider-preview`, which runs `.claude/preview-server.mjs` on http://localhost:5182 (FreeCell uses 5180); it reads `freecell.html` on every request.
+
+## Owner tasks (not for Claude)
+
+Create the GitHub repository; create Spider Solitaire in AdMob (App ID and ad units), Firebase (project, `google-services.json`, Remote Config parameters from `docs/REMOTE_CONFIG_ALL.md`), the Play Console listing and product `remove_ads`, an upload key; a privacy policy page for Spider (the app still links FreeCell's policy URL until then: `PRIVACY_POLICY_URL` in the page and `MainActivity`); a 512×512 Spider icon (the launcher icons are still FreeCell's art).

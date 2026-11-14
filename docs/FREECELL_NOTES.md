@@ -1,4 +1,4 @@
-# FreeCell (Nexus Play Labs) — notes for Claude
+# FreeCell notes (copied from FreeCell's CLAUDE.md at commit e5da69f; shared systems only — the rules in CLAUDE.md win)
 
 Android FreeCell game, package `com.nexusplaylabss.freecell`, publisher **Nexus Play Labs**. The game UI is a single HTML page (`app/src/main/assets/freecell.html`) in a WebView; Java under `app/src/main/java/nexus/nexusplaylabss/freecell/` (package `com.nexusplaylabss.freecell`) handles ads, consent, analytics and the JS bridge (`MainActivity.AndroidBridge`).
 
