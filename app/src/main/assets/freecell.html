@@ -1201,12 +1201,56 @@
     #freecell-live-preview .game-phone[data-effects="low"] .theme-unlock-shine{display:none}
     #freecell-live-preview .effects-note{color:rgba(253,242,216,.7);font-size:11px}
     #freecell-live-preview .perf-overlay{position:absolute;z-index:300;left:6px;top:46px;padding:2px 7px;border-radius:6px;background:rgba(0,0,0,.66);color:#fdf2d8;font:600 11px/16px Roboto,Arial,sans-serif;pointer-events:none}
+    /* ---- Spider table ----
+       Ten columns and a top row of ten: the stock, a gap and the eight foundations. Ten columns make
+       the cards narrower, so every size is shorter too: Normal 58 px, Large 66 px, Extra large 74 px. */
+    #freecell-live-preview .top-row,#freecell-live-preview .columns{grid-template-columns:repeat(10,minmax(0,1fr));gap:2px}
+    #freecell-live-preview .top-row{height:57px}
+    #freecell-live-preview .slot{height:55px;line-height:55px}
+    #freecell-live-preview .slot.top-gap{visibility:hidden}
+    #freecell-live-preview .slot.foundation-empty::before{width:min(26px,calc(100% - 4px));border-width:2px}
+    #freecell-live-preview .playing-card,#freecell-live-preview .drag-ghost .playing-card{height:58px}
+    #freecell-live-preview .column:empty::before{height:58px}
+    #freecell-live-preview .playing-card .pip{font-size:min(30px,86cqw);top:64%}
+    #freecell-live-preview .playing-card .court{top:22px;width:min(28px,86%);height:32px}
+    #freecell-live-preview .game-phone[data-card-size="large"] .top-row{height:65px}
+    #freecell-live-preview .game-phone[data-card-size="large"] .slot{height:63px;line-height:63px}
+    #freecell-live-preview .game-phone[data-card-size="large"] .playing-card,#freecell-live-preview .game-phone[data-card-size="large"] .drag-ghost .playing-card,#freecell-live-preview .game-phone[data-card-size="large"] .column:empty::before{height:66px}
+    #freecell-live-preview .game-phone[data-card-size="large"] .playing-card .pip{font-size:min(34px,90cqw)}
+    #freecell-live-preview .game-phone[data-card-size="large"] .playing-card .court{top:25px;height:36px}
+    #freecell-live-preview .game-phone[data-card-size="xl"] .top-row{height:73px}
+    #freecell-live-preview .game-phone[data-card-size="xl"] .slot{height:71px;line-height:71px}
+    #freecell-live-preview .game-phone[data-card-size="xl"] .playing-card,#freecell-live-preview .game-phone[data-card-size="xl"] .drag-ghost .playing-card,#freecell-live-preview .game-phone[data-card-size="xl"] .column:empty::before{height:74px}
+    #freecell-live-preview .game-phone[data-card-size="xl"] .playing-card .pip{font-size:min(38px,94cqw)}
+    #freecell-live-preview .game-phone[data-card-size="xl"] .playing-card .court{top:28px;height:40px}
+    /* The stock: a card back with the number of deals left; a stack edge for each further deal. */
+    #freecell-live-preview .stock-slot{cursor:pointer;-webkit-tap-highlight-color:transparent;overflow:visible}
+    #freecell-live-preview .stock-slot.has-cards::before{content:"";position:absolute;inset:-1px;box-sizing:border-box;border:2px solid #f4efe3;border-radius:inherit;background:var(--card-back,#8e1f2b);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25),calc(var(--stock-depth,0) * 1.5px) calc(var(--stock-depth,0) * -1.5px) 0 -1px #e9e2d2,0 2px 3px rgba(0,0,0,.34)}
+    #freecell-live-preview .stock-slot.has-cards::after{content:attr(data-count);position:absolute;right:2px;bottom:2px;min-width:15px;padding:0 3px;box-sizing:border-box;border-radius:8px;background:rgba(0,0,0,.55);color:#fdf2d8;font:700 10px/15px Roboto,Arial,sans-serif;text-align:center}
+    #freecell-live-preview .stock-slot.hint{animation:stock-hint .65s ease-in-out 2}
+    @keyframes stock-hint{50%{box-shadow:0 0 0 3px #f2d07c,0 0 16px rgba(255,223,118,.8)}}
+    #freecell-live-preview .game-phone.stock-right .top-row .stock-slot{order:3}
+    #freecell-live-preview .game-phone.stock-right .top-row .top-gap{order:2}
+    /* Face-down cards show the equipped card back, also while the deal flies (no flip for them). */
+    #freecell-live-preview .playing-card.face-down::after,#freecell-live-preview .game-phone[data-effects] .playing-card.face-down.dealing::after{content:"";position:absolute;z-index:6;inset:-1px;box-sizing:border-box;border:2px solid #f4efe3;border-radius:inherit;background:var(--card-back,#8e1f2b);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25);animation:none;transform:none;visibility:visible;display:block}
+    @media(prefers-reduced-motion:reduce){#freecell-live-preview .game-phone .playing-card.face-down.dealing::after{display:block}}
+    #freecell-live-preview .playing-card.face-down{cursor:default}
+    #freecell-live-preview .playing-card.turning{animation:card-turn .26s ease-out}
+    @keyframes card-turn{0%{transform:scaleX(.1)}100%{transform:scaleX(1)}}
+    /* Spider tutorial, intro picture and rules: ten columns, stock (card back) and eight foundations. */
+    #freecell-live-preview .tutorial-board-top,#freecell-live-preview .tutorial-board-columns,#freecell-live-preview .tutorial-intro-preview .mini-top,#freecell-live-preview .tutorial-intro-preview .mini-deal{grid-template-columns:repeat(10,minmax(0,1fr));gap:2px}
+    #freecell-live-preview .tutorial-board-slot.gap,#freecell-live-preview .mini-slot.gap{visibility:hidden}
+    #freecell-live-preview .tutorial-demo-card.back{border:2px solid #f4efe3;background:var(--card-back,#8e1f2b);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25),0 2px 2px rgba(0,0,0,.3)}
+    #freecell-live-preview .tutorial-board-slot>.tutorial-demo-card,#freecell-live-preview .mini-slot>.tutorial-demo-card{position:absolute;inset:0;height:100%}
+    #freecell-live-preview .tutorial-focus.foundations{left:calc(20% + 1px);right:4px;top:8px;height:75px}
+    #freecell-live-preview .tutorial-focus.stock{left:4px;width:calc(10% - 2px);top:8px;height:75px}
+    #freecell-live-preview .rules-stack .tutorial-demo-card.back{position:absolute}
   </style>
 
-  <section class="game-phone" data-card-style="classic" aria-label="Playable FreeCell">
-    <section class="loading-screen" id="fc-loading" aria-live="polite" aria-label="Loading FreeCell">
+  <section class="game-phone" data-card-style="classic" aria-label="Playable Spider Solitaire">
+    <section class="loading-screen" id="fc-loading" aria-live="polite" aria-label="Loading Spider Solitaire">
       <div class="loading-pattern" aria-hidden="true"><span>♣</span><span>♦</span><span>♥</span><span>♠</span><span>♠</span><span>♣</span><span>♦</span><span>♥</span><span>♥</span><span>♠</span><span>♣</span><span>♦</span><span>♦</span><span>♥</span><span>♠</span><span>♣</span><span>♣</span><span>♦</span><span>♥</span><span>♠</span></div>
-      <div class="loading-brand"><h1 class="loading-title">FREECELL</h1></div>
+      <div class="loading-brand"><h1 class="loading-title">SPIDER</h1></div>
       <div class="loading-crest" aria-hidden="true"><div class="loading-card-fan"><span class="loading-card"><b>A</b><i>♣</i></span><span class="loading-card red"><b>A</b><i>♦</i></span><span class="loading-card red"><b>A</b><i>♥</i></span><span class="loading-card"><b>A</b><i>♠</i></span></div></div>
       <div class="loading-progress"><div class="loading-suits" aria-hidden="true"><span class="loading-suit">♣</span><span class="loading-suit red">♦</span><span class="loading-suit red">♥</span><span class="loading-suit">♠</span></div><div class="loading-track" aria-hidden="true"><i id="fc-loading-fill"></i></div><p class="loading-label" data-i18n="loading">Loading…</p></div>
     </section>
@@ -1217,7 +1261,7 @@
       <div><b data-i18n="moves">Moves</b> <span id="fc-moves">0</span></div>
     </header>
     <main class="playfield">
-      <div class="top-row" id="fc-top" aria-label="Free cells and foundations"></div>
+      <div class="top-row" id="fc-top" aria-label="Stock and foundations"></div>
       <div class="columns" id="fc-columns" aria-label="Tableau"></div>
     </main>
     <div class="winning" id="fc-status">Winning</div>
@@ -1290,9 +1334,8 @@
           feel_config:{sounds:true,haptics:true,sound_volume:0.6,suit_complete_effect:true},
           hint_config:{smart_hint:true,time_budget_ms:300,node_limit:400000,background_analysis:true,background_budget_ms:150,max_hints_per_game:null},
           tips_config:{enabled:true,free_cells_tip_min_occupied:3},
-          difficulty_config:{enabled_tiers:['easy','medium','hard'],default_tier:'medium',daily_tiers_by_weekday:['hard','medium','medium','medium','medium','medium','hard'],unlock_levels:{easy:1,medium:1,hard:1},
-            first_games:{enabled:true,ignore_selected_mode:true,advance_on:'win',seeds:[25904,5152,11987,13464,9998]},easy_split_index:64,
-            mixes:{easy:{very_easy:60,easy:40},medium:{medium:70,easy:30},hard:{medium:60,hard:40}}},
+          difficulty_config:{enabled_tiers:['easy','medium','hard'],default_tier:'easy',daily_tiers_by_weekday:['medium','easy','easy','easy','easy','easy','medium'],unlock_levels:{easy:1,medium:1,hard:1},
+            first_games:{enabled:true,ignore_selected_mode:true,advance_on:'win',seeds:[25904,5152,11987,13464,9998]}},
           achievements_config:{enabled:true,items:[
             {id:'first_win',counter:'wins',target:1,reward:10},{id:'wins_10',counter:'wins',target:10,reward:30},{id:'wins_50',counter:'wins',target:50,reward:80},{id:'wins_100',counter:'wins',target:100,reward:150},
             {id:'no_undo_1',counter:'no_undo_wins',target:1,reward:15},{id:'no_undo_10',counter:'no_undo_wins',target:10,reward:50},{id:'no_undo_25',counter:'no_undo_wins',target:25,reward:100},
@@ -1330,7 +1373,7 @@
         const STORE_DEFAULTS={card_faces:'classic',card_backs:'classic_back',backgrounds:'classic',victory_effects:'classic_confetti'};
         // 'winnable' only survives in older saves: v1.3 replaced it with the Easy tier.
         const MODES=['random','winnable','numbered','daily'];
-        const TIERS=['easy','medium','hard'],REWARD_KEYS=[...TIERS,'daily'],POOLS=['very_easy','easy','medium','hard'],LIST_POOLS=['very_easy','easy','hard'];
+        const TIERS=['easy','medium','hard'],REWARD_KEYS=[...TIERS,'daily'];
         const MILESTONES=[3,7,14,30];
         const PAID_KEYS_KEPT=300;
         const object=value=>value&&typeof value==='object'&&!Array.isArray(value)?value:{};
@@ -1393,12 +1436,6 @@
             tier_multipliers:Object.fromEntries(TIERS.map(tier=>[tier,num(multipliers[tier],0.3,3,fallback[tier])])),
             rewards:{enabled:typeof object(value.rewards).enabled==='boolean'?object(value.rewards).enabled:false}};
         }
-        // A tier's mix: whole weights 0–100 for known pools that add up to 100, else the default mix.
-        function cleanMix(raw,fallback){
-          const value=object(raw),entries=Object.entries(value);
-          const valid=entries.length>0&&entries.every(([pool,weight])=>POOLS.includes(pool)&&Number.isInteger(weight)&&weight>=0&&weight<=100);
-          return valid&&entries.reduce((sum,[,weight])=>sum+weight,0)===100?Object.fromEntries(POOLS.filter(pool=>pool in value).map(pool=>[pool,value[pool]])):{...fallback};
-        }
         // Warm-up deals: 1–10 different deal numbers (else the default five), advanced on a win or
         // on a start.
         function cleanFirstGames(raw,fallback){
@@ -1414,11 +1451,10 @@
           const fallback=DEFAULTS.difficulty_config,given=Array.isArray(value.enabled_tiers)?value.enabled_tiers:TIERS;
           const enabled=TIERS.filter(tier=>given.includes(tier)),tiers=enabled.length?enabled:[...TIERS];
           const daily=Array.isArray(value.daily_tiers_by_weekday)?value.daily_tiers_by_weekday:[],unlock=object(value.unlock_levels);
-          return{enabled_tiers:tiers,default_tier:tiers.includes(value.default_tier)?value.default_tier:tiers.includes('medium')?'medium':tiers[0],
+          return{enabled_tiers:tiers,default_tier:tiers.includes(value.default_tier)?value.default_tier:tiers.includes(fallback.default_tier)?fallback.default_tier:tiers[0],
             daily_tiers_by_weekday:fallback.daily_tiers_by_weekday.map((tier,day)=>TIERS.includes(daily[day])?daily[day]:tier),
             unlock_levels:Object.fromEntries(TIERS.map(tier=>[tier,int(unlock[tier],1,100,1)])),
-            first_games:cleanFirstGames(value.first_games,fallback.first_games),easy_split_index:int(value.easy_split_index,0,1000,fallback.easy_split_index),
-            mixes:Object.fromEntries(TIERS.map(tier=>[tier,cleanMix(object(value.mixes)[tier],fallback.mixes[tier])]))};
+            first_games:cleanFirstGames(value.first_games,fallback.first_games)};
         }
         // Known items only (one entry per category and id); the default of each category is always
         // listed and always free. With no usable items the bundled catalog is used.
@@ -1894,116 +1930,119 @@
           return{enabled:rules.enabled&&value.enabled,hour:value.hour??rules.default_hour,riskHour:rules.streak_risk_hour,minStreak:rules.min_streak_for_risk,streak:int(streak,0,100000,0),lastDailyWin:wins[wins.length-1]||'',texts};
         }
 
-        // Stuck detection works on plain board data: {tableau, cells, foundations}.
+        // Spider rules on plain board data: {tableau, stock, foundations, done, suits}.
+        // tableau: 10 columns of {s, r, up} (up false = face down); stock: the cards still to deal,
+        // the last ten are the next row (the last card goes to the first column); foundations: 8
+        // slots, 13 once a run fills it; done: the suit of each completed run, in order; suits: 1, 2
+        // or 4 (the tier: Easy, Medium, Hard).
         const red=card=>card.s===1||card.s===2;
+        const COLUMNS=10,RUNS=8;
+        const DEAL={from:{type:'stock',pile:0,index:0},to:{type:'deal',pile:0,index:0}};
+        // A face-up run of one suit, each card one lower than the card under it.
         function orderedFrom(column,index){
-          for(let i=index;i<column.length-1;i++){const a=column[i],b=column[i+1];if(a.r!==b.r+1||red(a)===red(b))return false}
+          if(!column[index]||column[index].up===false)return false;
+          for(let i=index;i<column.length-1;i++){const a=column[i],b=column[i+1];if(b.up===false||a.s!==b.s||a.r!==b.r+1)return false}
           return true;
         }
+        // Any card (or run) goes on a face-up card one rank higher, whatever its suit.
+        const fitsOn=(below,card)=>below.up!==false&&below.r===card.r+1;
+        function cardFrom(state,from){return from?.type==='tableau'?state.tableau[from.pile]?.[from.index]||null:null}
         // The move rules, shared by the game (legalMove), the solver and the hint: one source of
-        // truth. A run moves at once when it is ordered and no longer than (free cells + 1) × 2^(empty
-        // columns other than the destination).
-        const fitsOn=(below,card)=>below.r===card.r+1&&red(below)!==red(card);
-        const maxRun=(state,toPile)=>(state.cells.filter(card=>!card).length+1)*Math.pow(2,state.tableau.filter((column,index)=>index!==toPile&&column.length===0).length);
+        // truth. A face-up run of one suit moves onto a card one rank higher or into an empty
+        // column. Dealing (stock → a new face-up card on every column) needs every column filled.
         function canMove(state,move){
-          const from=move?.from,to=move?.to;if(!from||!to||from.type==='foundation')return false;
-          const column=from.type==='tableau'?state.tableau[from.pile]:null;
-          const card=column?column[from.index]:from.type==='cell'?state.cells[from.pile]:null;if(!card)return false;
-          if(column&&!orderedFrom(column,from.index))return false;
-          const length=column?column.length-from.index:1;
-          if(to.type==='foundation')return length===1&&to.pile===card.s&&state.foundations[to.pile]+1===card.r;
-          if(to.type==='cell')return length===1&&to.pile>=0&&to.pile<state.cells.length&&!state.cells[to.pile]&&!(from.type==='cell'&&from.pile===to.pile);
-          if(to.type!=='tableau'||(from.type==='tableau'&&from.pile===to.pile))return false;
+          const from=move?.from,to=move?.to;if(!from||!to)return false;
+          if(from.type==='stock')return to.type==='deal'&&state.stock.length>0&&state.tableau.every(column=>column.length>0);
+          if(from.type!=='tableau'||to.type!=='tableau'||from.pile===to.pile)return false;
+          const column=state.tableau[from.pile];if(!column||!orderedFrom(column,from.index))return false;
           const destination=state.tableau[to.pile];if(!destination)return false;
           const top=destination[destination.length-1];
-          return(!top||fitsOn(top,card))&&length<=maxRun(state,to.pile);
+          return top?fitsOn(top,column[from.index]):true;
         }
-        // Every useful move (canMove allows them all): no free cell to free cell, one empty column.
-        function listMoves(state){
-          const {tableau,cells,foundations}=state,list=[];
-          const emptyCell=cells.findIndex(card=>!card);
-          const sources=[];
-          cells.forEach((card,pile)=>{if(card)sources.push({from:{type:'cell',pile,index:0},run:[card]})});
-          tableau.forEach((column,pile)=>{for(let index=column.length-1;index>=0;index--){if(!orderedFrom(column,index))break;sources.push({from:{type:'tableau',pile,index},run:column.slice(index)})}});
-          for(const {from,run} of sources){
-            const card=run[0],single=run.length===1;
-            if(single&&foundations[card.s]+1===card.r)list.push({from,to:{type:'foundation',pile:card.s}});
-            if(single&&from.type==='tableau'&&emptyCell>=0)list.push({from,to:{type:'cell',pile:emptyCell}});
-            let emptyColumnUsed=false;
-            tableau.forEach((column,pile)=>{
-              if(from.type==='tableau'&&from.pile===pile)return;
-              const top=column[column.length-1];
-              if(!top){if(emptyColumnUsed)return;emptyColumnUsed=true}
-              else if(!fitsOn(top,card))return;
-              if(run.length>maxRun(state,pile))return;
-              list.push({from,to:{type:'tableau',pile}});
-            });
+        // Where a complete run (King down to Ace, one suit, face up) ends a column, or -1.
+        function completedRunStart(column){
+          const start=column.length-13;
+          return start>=0&&column[start].r===13&&orderedFrom(column,start)?start:-1;
+        }
+        const turnUp=column=>{const last=column[column.length-1];return last&&last.up===false?[...column.slice(0,-1),{...last,up:true}]:column};
+        // Complete runs at the end of these columns go to the next empty foundation by themselves;
+        // the card under a run turns face up.
+        function collectRuns(state,piles){
+          let tableau=state.tableau,foundations=state.foundations,done=state.done;
+          for(const pile of piles){
+            const column=tableau[pile],start=completedRunStart(column);if(start<0)continue;
+            const slot=foundations.indexOf(0);if(slot<0)continue;
+            if(tableau===state.tableau)tableau=tableau.slice();
+            if(foundations===state.foundations){foundations=foundations.slice();done=done.slice()}
+            tableau[pile]=turnUp(column.slice(0,start));foundations[slot]=13;done.push(column[start].s);
           }
-          return list;
+          return tableau===state.tableau?state:{...state,tableau,foundations,done};
         }
         // Only the columns a move touches are copied, so a search can keep many positions in memory.
+        // A column whose last face-down card is uncovered turns it face up as part of the same move.
         function applyMove(state,move){
-          const tableau=state.tableau.slice(),cells=state.cells.slice(),foundations=state.foundations.slice();
-          let run;
-          if(move.from.type==='cell'){run=[cells[move.from.pile]];cells[move.from.pile]=null}
-          else{const column=tableau[move.from.pile];run=column.slice(move.from.index);tableau[move.from.pile]=column.slice(0,move.from.index)}
-          if(move.to.type==='foundation')foundations[move.to.pile]++;
-          else if(move.to.type==='cell')cells[move.to.pile]=run[0];
-          else tableau[move.to.pile]=tableau[move.to.pile].concat(run);
-          return{tableau,cells,foundations};
+          if(move.from.type==='stock'){
+            const n=Math.min(COLUMNS,state.stock.length),row=state.stock.slice(-n).reverse();
+            const tableau=state.tableau.map((column,pile)=>pile<n?column.concat({...row[pile],up:true}):column);
+            return collectRuns({...state,tableau,stock:state.stock.slice(0,-n)},tableau.map((_,pile)=>pile));
+          }
+          const tableau=state.tableau.slice(),column=tableau[move.from.pile];
+          tableau[move.from.pile]=turnUp(column.slice(0,move.from.index));
+          tableau[move.to.pile]=tableau[move.to.pile].concat(column.slice(move.from.index));
+          return collectRuns({...state,tableau},[move.to.pile]);
         }
-        // Free cells and columns are compared as sets: the same cards in other slots are the same position.
-        function positionKey(state){
-          const code=card=>card.s*13+card.r;
-          const columns=state.tableau.map(column=>column.map(code).join('.')).sort().join('|');
-          const cells=state.cells.map(card=>card?code(card):0).sort((a,b)=>a-b).join('.');
-          return `${state.foundations.join('.')}/${cells}/${columns}`;
-        }
-        // Hint solver. A card is safe on its foundation once both foundations of the other colour
-        // hold the card below it: nothing can be placed on it any more, so playing it never costs a
-        // win. The search plays those by itself and tries every other legal move.
-        const won=state=>state.foundations.every(value=>value===13);
-        function safeOnFoundation(card,foundations){
-          if(foundations[card.s]+1!==card.r)return false;
-          if(card.r<=2)return true;
-          const [a,b]=red(card)?[0,3]:[1,2];
-          return foundations[a]>=card.r-1&&foundations[b]>=card.r-1;
-        }
-        function playSafeMoves(state){
-          let current=state;const moves=[];
-          for(let found=true;found;){
-            found=false;
-            const candidates=[...current.cells.map((card,pile)=>({card,from:{type:'cell',pile,index:0}})),
-              ...current.tableau.map((column,pile)=>({card:column[column.length-1],from:{type:'tableau',pile,index:column.length-1}}))];
-            for(const {card,from} of candidates){
-              if(!card||!safeOnFoundation(card,current.foundations))continue;
-              const move={from,to:{type:'foundation',pile:card.s}};
-              current=applyMove(current,move);moves.push(move);found=true;break;
+        // True when the move turns a face-down tableau card face up.
+        const turnsCard=(state,move)=>move.from.type==='tableau'&&move.from.index>0&&state.tableau[move.from.pile][move.from.index-1].up===false;
+        const runsDone=state=>state.foundations.filter(value=>value===13).length;
+        // Every useful move: each run onto a card one higher, to the first empty column (not a whole
+        // column), and the deal. A run already sitting on the next higher card of its own suit is
+        // left where it is (all: listed too; a check that a game is lost uses it). An empty list
+        // means no move can help any more ("No more moves possible").
+        function listMoves(state,{all=false}={}){
+          const {tableau}=state,list=[],firstEmpty=tableau.findIndex(column=>!column.length);
+          tableau.forEach((column,pile)=>{
+            for(let index=column.length-1;index>=0;index--){
+              if(!orderedFrom(column,index))break;
+              const card=column[index],under=column[index-1];
+              if(!all&&under&&under.up!==false&&under.s===card.s&&under.r===card.r+1)continue;
+              tableau.forEach((target,to)=>{
+                if(to===pile)return;const top=target[target.length-1];
+                if(top?fitsOn(top,card):to===firstEmpty&&index>0)list.push({from:{type:'tableau',pile,index},to:{type:'tableau',pile:to}});
+              });
             }
-          }
-          return{state:current,moves};
+          });
+          if(canMove(state,DEAL))list.push({from:{...DEAL.from},to:{...DEAL.to}});
+          return list;
         }
-        // Lower is better: cards still to play, how deep the next card of each suit is buried,
-        // cards resting on a card they do not follow, full free cells and empty columns.
+        // Columns are compared as a set; the stock always deals in the same order, so its size
+        // tells it apart.
+        function positionKey(state){
+          const columns=state.tableau.map(column=>column.map(card=>(card.up===false?'d':'')+(card.s*13+card.r)).join('.')).sort().join('|');
+          return `${runsDone(state)}/${state.stock.length}/${columns}`;
+        }
+        // Hint solver. It knows the face-down cards and the stock (the deal is fixed by its number),
+        // so a verdict is about this very deal. Complete runs leave by themselves (applyMove), so
+        // there are no other safe moves to play.
+        const won=state=>state.foundations.every(value=>value===13);
+        function playSafeMoves(state){return{state,moves:[]}}
+        // Lower is better: runs still to complete, face-down cards, cards left in the stock, cards
+        // resting on a card they do not follow (more when the rank does not follow either), and the
+        // empty columns.
         function boardScore(state){
-          const {tableau,cells,foundations}=state;
-          let score=(52-foundations.reduce((sum,value)=>sum+value,0))*8;
-          for(let suit=0;suit<4;suit++){
-            const rank=foundations[suit]+1;if(rank>13)continue;
-            for(const column of tableau){const index=column.findIndex(card=>card.s===suit&&card.r===rank);if(index>=0){score+=(column.length-1-index)*3;break}}
+          let score=(RUNS-runsDone(state))*30+state.stock.length;
+          for(const column of state.tableau)for(let i=0;i<column.length;i++){
+            const card=column[i];if(card.up===false){score+=9;continue}
+            const next=column[i+1];if(next&&next.up!==false)score+=next.r!==card.r-1?6:next.s!==card.s?2:0;
           }
-          for(const column of tableau)for(let i=1;i<column.length;i++){const below=column[i-1],above=column[i];if(below.r!==above.r+1||red(below)===red(above))score+=2}
-          score+=cells.filter(Boolean).length*3;
-          score-=tableau.filter(column=>!column.length).length*4;
+          score-=state.tableau.filter(column=>!column.length).length*5;
           return score;
         }
-        // Best-first search from a position. 'solved' with every move to a win (safe foundation
-        // moves included), 'unsolvable' when every reachable position was tried, 'unknown' when
-        // the budget ran out first. Positions are compared as sets (positionKey), which is the
-        // search's transposition table. run(limit) expands at most limit positions and returns null
-        // while the search goes on, so it can run in slices; the time budget counts only the time
-        // spent in run().
-        function createSearch(state,{maxNodes=20000,timeLimitMs=0,now=Date.now}={}){
+        // Best-first search from a position. 'solved' with every move to a win, 'unsolvable' when
+        // every reachable position was tried, 'unknown' when the budget ran out first. positionKey
+        // is the search's transposition table. run(limit) expands at most limit positions and
+        // returns null while the search goes on, so it can run in slices; the time budget counts
+        // only the time spent in run().
+        function createSearch(state,{maxNodes=20000,timeLimitMs=0,now=Date.now,all=false}={}){
           const pathTo=node=>{const parts=[];for(let at=node;at;at=at.parent)parts.push(at.moves);return parts.reverse().flat()};
           const start=playSafeMoves(state);
           const root={state:start.state,moves:start.moves,parent:null,g:0};
@@ -2020,12 +2059,12 @@
               if(!heap.length){result={status:'unsolvable',expanded};break}
               if(expanded>=maxNodes||(timeLimitMs>0&&(expanded&127)===0&&spent+now()-sliceStart>timeLimitMs)){result={status:'unknown',expanded};break}
               const node=pop();expanded++;
-              for(const move of listMoves(node.state)){
+              for(const move of listMoves(node.state,{all})){
                 const next=playSafeMoves(applyMove(node.state,move)),key=positionKey(next.state);
                 if(seen.has(key))continue;seen.add(key);
                 const child={state:next.state,moves:[move,...next.moves],parent:node,g:node.g+1};
                 if(won(child.state)){result={status:'solved',moves:pathTo(child),expanded};break}
-                child.f=boardScore(child.state)+child.g*2;push(child);
+                child.f=boardScore(child.state)+child.g;push(child);
               }
               node.state=null;
             }
@@ -2035,27 +2074,23 @@
         }
         function solveBoard(state,budget={}){return createSearch(state,budget).run()}
         // The analysis behind a hint, as a generator that yields between slices (a Web Worker runs it
-        // straight through; without Workers the page runs one slice at a time). 'solved' gives a
-        // whole winning line; players expect a card that can go up to be named first, so when one
-        // can and the game can still be won after it, the line starts with it.
+        // straight through; without Workers the page runs one slice at a time).
         const SEARCH_SLICE=400;
         function* analyse(state,budget={}){
           if(won(state))return{status:'won',line:[],expanded:0};
           const moves=listMoves(state);if(!moves.length)return{status:'none',line:[],expanded:0};
           const search=createSearch(state,budget);let result;
           while(!(result=search.run(SEARCH_SLICE)))yield;
-          if(result.status!=='solved')return{status:result.status,line:[],expanded:result.expanded};
-          let line=result.moves,expanded=result.expanded;
-          if(line[0].to.type!=='foundation'){
-            const quick={...budget,maxNodes:Math.ceil((budget.maxNodes||20000)/4),timeLimitMs:Math.ceil((budget.timeLimitMs||0)/4)};
-            for(const move of moves.filter(move=>move.to.type==='foundation')){
-              const sub=createSearch(applyMove(state,move),quick);let found;
-              while(!(found=sub.run(SEARCH_SLICE)))yield;
-              expanded+=found.expanded;
-              if(found.status==='solved'){line=[move,...found.moves];break}
-            }
+          // The search above leaves out runs that only change places, so it proves nothing when it
+          // runs out of positions: then every move is tried, with the rest of the budget.
+          if(result.status==='unsolvable'){
+            const rest={...budget,maxNodes:Math.max(1000,(budget.maxNodes||20000)-result.expanded),all:true};
+            const full=createSearch(state,rest);let checked;
+            while(!(checked=full.run(SEARCH_SLICE)))yield;
+            result={...checked,expanded:result.expanded+checked.expanded};
           }
-          return{status:'solved',line,expanded};
+          if(result.status!=='solved')return{status:result.status,line:[],expanded:result.expanded};
+          return{status:'solved',line:result.moves,expanded:result.expanded};
         }
         function runToEnd(iterator){for(;;){const step=iterator.next();if(step.done)return step.value}}
         // When the search found nothing in time: the move to the best-looking position not seen yet
@@ -2064,13 +2099,13 @@
           const seenKeys=seen instanceof Set?seen:new Set(seen||[]);let best=null;
           for(const move of listMoves(state)){
             const next=playSafeMoves(applyMove(state,move)).state;
-            const score=boardScore(next)+(seenKeys.has(positionKey(next))?1000:0);
+            const score=boardScore(next)+(seenKeys.has(positionKey(next))?1000:0)+(move.from.type==='stock'?4:0);
             if(!best||score<best.score)best={move,score};
           }
           return best?best.move:null;
         }
         // The hint: the first move of a found winning line; when the budget runs out first, the best
-        // guess. Never null while a legal move exists, except when the search proved that no
+        // guess. Never null while a useful move exists, except when the search proved that no
         // sequence of moves wins any more ('unsolvable').
         function suggestMove(state,{seen=null,...budget}={}){
           const result=runToEnd(analyse(state,budget));
@@ -2078,30 +2113,36 @@
           if(result.status==='unknown')return{status:'guess',move:guessMove(state,seen)};
           return{status:result.status,move:null};
         }
-        // A winning line is kept as the positions it passes through and, for each, the card to move
-        // and where (onto which card, or an empty column or free cell). A player who follows it, in
-        // any free cell or empty column or with the game's automatic foundation moves, stays on it
-        // and gets the next move without a new search; any other position is off the line.
+        // A winning line is kept as the positions it passes through and, for each, the card to move,
+        // its column and where it goes (onto which card, or an empty column), or a deal. A player who
+        // follows it stays on it and gets the next move without a new search; any other position is
+        // off the line.
         function makeLine(state,moves){
           const steps=[];let current=state;
           for(const move of moves){
-            const card=move.from.type==='cell'?current.cells[move.from.pile]:current.tableau[move.from.pile][move.from.index];
-            const destination=move.to.type==='tableau'?current.tableau[move.to.pile]:null,top=destination?.[destination.length-1];
-            steps.push({key:positionKey(current),card:{s:card.s,r:card.r},to:move.to.type,onto:top?{s:top.s,r:top.r}:null});
+            if(move.from.type==='stock'){steps.push({key:positionKey(current),deal:true});current=applyMove(current,DEAL);continue}
+            const card=current.tableau[move.from.pile][move.from.index];
+            const destination=current.tableau[move.to.pile],top=destination[destination.length-1];
+            steps.push({key:positionKey(current),from:{type:'tableau',pile:move.from.pile,index:move.from.index},toPile:move.to.pile,card:{s:card.s,r:card.r},onto:top?{s:top.s,r:top.r}:null});
             current=applyMove(current,move);
           }
           return steps;
         }
+        // The step's move in this position: the same column first (two decks hold two of each card),
+        // else the same card anywhere.
         function resolveStep(state,step){
-          const same=(a,b)=>Boolean(a&&b&&a.s===b.s&&a.r===b.r);let from=null,to=null;
-          state.cells.forEach((card,pile)=>{if(same(card,step.card))from={type:'cell',pile,index:0}});
-          state.tableau.forEach((column,pile)=>column.forEach((card,index)=>{if(same(card,step.card))from={type:'tableau',pile,index}}));
+          if(step.deal)return canMove(state,DEAL)?{from:{...DEAL.from},to:{...DEAL.to}}:null;
+          const same=(a,b)=>Boolean(a&&b&&a.s===b.s&&a.r===b.r);
+          const at=step.from?state.tableau[step.from.pile]?.[step.from.index]:null;
+          let from=at&&at.up!==false&&same(at,step.card)?{type:'tableau',pile:step.from.pile,index:step.from.index}:null;
+          if(!from)state.tableau.forEach((column,pile)=>column.forEach((card,index)=>{if(!from&&card.up!==false&&same(card,step.card)&&orderedFrom(column,index))from={type:'tableau',pile,index}}));
           if(!from)return null;
-          if(step.to==='foundation')to={type:'foundation',pile:step.card.s};
-          else if(step.to==='cell'){const pile=state.cells.findIndex(card=>!card);if(pile>=0)to={type:'cell',pile}}
-          else{const pile=state.tableau.findIndex((column,index)=>step.onto?same(column[column.length-1],step.onto):column.length===0&&!(from.type==='tableau'&&from.pile===index));if(pile>=0)to={type:'tableau',pile}}
-          const move=to?{from,to}:null;
-          return move&&canMove(state,move)?move:null;
+          const fits=(column,index)=>index!==from.pile&&(step.onto?same(column[column.length-1],step.onto):column.length===0);
+          let pile=state.tableau[step.toPile]&&fits(state.tableau[step.toPile],step.toPile)?step.toPile:-1;
+          if(pile<0)pile=state.tableau.findIndex(fits);
+          if(pile<0)return null;
+          const move={from,to:{type:'tableau',pile}};
+          return canMove(state,move)?move:null;
         }
         // The next move of the line from this position, or null when the position is off the line.
         function nextOnLine(steps,state){
@@ -2109,6 +2150,10 @@
           for(let i=0;i<(steps?steps.length:0);i++)if(steps[i].key===key){const move=resolveStep(state,steps[i]);return move?{move,index:i}:null}
           return null;
         }
+        // Scoring (the classic Spider numbers): 500 to start, −1 for every move (a deal included) and
+        // +100 for every complete run. The page never lets the score go below 0.
+        const SCORING={start:500,move:1,run:100};
+        const moveScore=(before,after)=>(runsDone(after)-runsDone(before))*SCORING.run-SCORING.move;
         // Card size (v1.4 Part 2, Settings → Accessibility). Owner decision (2026-11-01): Normal cards
         // until the player chooses. Only a size picked in Settings is kept (`cardSizeChosen`): saves from
         // when Large was the default stored it without a choice, and go back to Normal.
@@ -2264,89 +2309,65 @@
         function stuckReason(state,budget={}){
           if(won(state))return null;
           if(!listMoves(state).length)return 'none';
-          return solveBoard(state,budget).status==='unsolvable'?'unsolvable':null;
+          return runToEnd(analyse(state,budget)).status==='unsolvable'?'unsolvable':null;
         }
 
-        // ---- Deal tiers (v1.3 Part 2) from the lists published by FreeCell Solutions ----
-        // Deal numbers are the game's seeds: Microsoft's dealing (LCG 214013/2531011, suits clubs,
-        // diamonds, hearts, spades, dealt left to right), so deal #1 and #617 are the classic ones.
-        function dealTableau(seed){
+        // ---- Deals ----
+        // A deal number is the seed of the shuffle (Microsoft's random number generator, LCG
+        // 214013/2531011). The tier sets the suits of the two decks: Easy 1 suit (8 × spades),
+        // Medium 2 suits (4 × spades and hearts), Hard 4 suits (2 × each). The 104 cards are
+        // shuffled, then 54 are dealt row by row into ten columns (6 in the first four, 5 in the
+        // others), the last card of each face up; the 50 left make the stock (five deals of ten).
+        // Game by Number replays any number from 1 to 9,999,999 with the same cards.
+        const MAX_DEAL_NUMBER=9999999,RECENT_DEALS_KEPT=50;
+        const SUITS_BY_TIER={easy:1,medium:2,hard:4};
+        const suitsOf=tier=>SUITS_BY_TIER[tier]||1;
+        function dealGame(seed,suits=1){
           let msSeed=Number(seed)>>>0;
-          const deck=[];for(let r=1;r<=13;r++)for(let s=0;s<4;s++)deck.push({s,r});
-          const columns=Array.from({length:8},()=>[]);
-          for(let remaining=52,index=0;remaining>0;remaining--,index++){msSeed=(Math.imul(msSeed,214013)+2531011)&0x7fffffff;const pick=((msSeed>>>16)&0x7fff)%remaining;columns[index%8].push({...deck[pick]});deck[pick]=deck[remaining-1]}
-          return columns;
+          const used=suits===4?[0,1,2,3]:suits===2?[3,2]:[3],deck=[];
+          for(let copy=0;copy<8/used.length;copy++)for(let r=1;r<=13;r++)for(const s of used)deck.push({s,r,id:deck.length});
+          const order=[];
+          for(let remaining=deck.length;remaining>0;remaining--){msSeed=(Math.imul(msSeed,214013)+2531011)&0x7fffffff;const pick=((msSeed>>>16)&0x7fff)%remaining;order.push(deck[pick]);deck[pick]=deck[remaining-1]}
+          const tableau=Array.from({length:COLUMNS},()=>[]);
+          for(let i=0;i<54;i++)tableau[i%COLUMNS].push({...order[i],up:false});
+          tableau.forEach(column=>{column[column.length-1].up=true});
+          return{tableau,stock:order.slice(54).map(card=>({...card}))};
         }
-        const IMPOSSIBLE_DEALS=[11982,146692,186216,455889,495505,512118,517776,781948],RECENT_DEALS_KEPT=50;
-        // assets/deal_catalog.json, checked. Entries are only ever appended, never reordered or
-        // removed, and daily.easyCount/hardCount freeze the part of each list the Daily draws from, so
-        // a past Daily always deals the same cards.
+        // A whole new board for a deal and a number of suits.
+        const newBoard=(seed,suits)=>({...dealGame(seed,suits),foundations:Array(RUNS).fill(0),done:[],suits:[1,2,4].includes(suits)?suits:1});
+        // assets/deal_catalog.json (optional): per tier, deals the game's solver has won. Entries are
+        // only ever appended, and daily.<tier> freezes the part of each list the Daily draws from, so
+        // a past Daily always deals the same cards. Without lists, any deal number is used.
         function cleanCatalog(raw){
-          const value=object(raw),numbers=list=>Array.isArray(list)?[...new Set(list.map(Number).filter(n=>Number.isInteger(n)&&n>=1&&n<=9999999))]:[];
-          const impossibleSet=new Set([...IMPOSSIBLE_DEALS,...numbers(value.impossible)]);
-          const easy=numbers(value.easy).filter(n=>!impossibleSet.has(n)),easySet=new Set(easy);
-          const hard=numbers(value.hard).filter(n=>!impossibleSet.has(n)&&!easySet.has(n)),daily=object(value.daily);
-          return{version:int(value.catalogVersion,0,1e6,0),easy,hard,mediumMax:int(object(value.medium).max,1,9999999,64000),
-            dailyEasyCount:int(daily.easyCount,0,easy.length,easy.length),dailyHardCount:int(daily.hardCount,0,hard.length,hard.length),
-            easySet,hardSet:new Set(hard),impossibleSet};
+          const value=object(raw),numbers=list=>Array.isArray(list)?[...new Set(list.map(Number).filter(n=>Number.isInteger(n)&&n>=1&&n<=MAX_DEAL_NUMBER))]:[];
+          const lists=Object.fromEntries(TIERS.map(tier=>[tier,numbers(value[tier])])),daily=object(value.daily);
+          return{version:int(value.catalogVersion,0,1e6,0),...lists,dailyCount:Object.fromEntries(TIERS.map(tier=>[tier,int(daily[tier],0,lists[tier].length,lists[tier].length)]))};
         }
-        // 'easy' and 'hard' from the lists, 'impossible', 'medium' for every other deal up to
-        // mediumMax (64,000, where the Easy list ends), and 'unrated' above it.
-        function tierOf(catalog,seed){
-          const n=Number(seed);
-          if(catalog.impossibleSet.has(n))return 'impossible';
-          if(catalog.easySet.has(n))return 'easy';
-          if(catalog.hardSet.has(n))return 'hard';
-          return Number.isInteger(n)&&n>=1&&n<=catalog.mediumMax?'medium':'unrated';
-        }
-        // The pools a tier mixes (owner change 2026-10-30): very_easy is the start of the Easy list (it is
-        // sorted easiest first) up to easy_split_index, easy the rest of it, hard the Hard list; medium
-        // is not a list (every Medium deal). The Daily takes only the frozen Daily part of each list.
-        function dealPools(catalog,difficulty,{daily=false}={}){
-          const easy=daily?catalog.easy.slice(0,catalog.dailyEasyCount):catalog.easy,split=Math.min(difficulty.easy_split_index,easy.length);
-          return{very_easy:easy.slice(0,split),easy:easy.slice(split),hard:daily?catalog.hard.slice(0,catalog.dailyHardCount):catalog.hard};
-        }
-        function poolOf(catalog,difficulty,seed){
-          const n=Number(seed),index=catalog.easy.indexOf(n);
-          if(index>=0)return index<difficulty.easy_split_index?'very_easy':'easy';
-          const tier=tierOf(catalog,n);return tier==='hard'||tier==='medium'?tier:null;
-        }
-        // A pool by the tier's weights, among the pools that have deals (none left: null).
-        function choosePool(mix,random,usable){
-          const entries=Object.entries(mix).filter(([pool,weight])=>weight>0&&usable(pool)),total=entries.reduce((sum,[,weight])=>sum+weight,0);
-          if(!total)return null;
-          let left=random()*total;for(const [pool,weight] of entries)if((left-=weight)<0)return pool;
-          return entries[entries.length-1][0];
-        }
-        // A deal of a tier: the pool by the mix, then a deal of that pool that is not one of its last
-        // 50. The lists prefer deals never played and repeat only once all were (a repeat pays
-        // nothing: payKey). Deals in exclude (warm-up deals still to come) are never picked.
+        // A deal for a tier: one of the tier's listed deals that is not among its last 50, deals
+        // never played first (a repeat pays nothing: payKey); with no list, any deal number not among
+        // the last 50. Deals in exclude (warm-up deals still to come) are never picked.
         function pickDeal(catalog,difficulty,tier,{random=Math.random,history=null,exclude=[]}={}){
-          const pools=dealPools(catalog,difficulty),state=cleanTierHistory(history),skip=new Set(exclude);
-          const lists=Object.fromEntries(LIST_POOLS.map(pool=>[pool,pools[pool].filter(n=>!skip.has(n))]));
-          const usable=pool=>pool==='medium'||lists[pool].length>0;
-          const pool=choosePool(difficulty.mixes[tier]||difficulty.mixes.medium,random,usable)||(usable(tier)?tier:'medium');
-          const avoid=new Set(state.recent[pool]),pick=list=>list[Math.floor(random()*list.length)%list.length];
-          if(pool!=='medium'){
-            const list=lists[pool],played=new Set(state.played[pool]),fresh=list.filter(n=>!played.has(n)),notRecent=list.filter(n=>!avoid.has(n));
-            return{seed:pick(fresh.length?fresh:notRecent.length?notRecent:list),pool};
+          const state=cleanTierHistory(history),skip=new Set(exclude),list=(catalog[tier]||[]).filter(n=>!skip.has(n));
+          const pick=items=>items[Math.floor(random()*items.length)%items.length];
+          const recent=new Set(state.recent[tier]||[]);
+          if(list.length){
+            const played=new Set(state.played[tier]),fresh=list.filter(n=>!played.has(n)),notRecent=list.filter(n=>!recent.has(n));
+            return{seed:pick(fresh.length?fresh:notRecent.length?notRecent:list),pool:tier};
           }
-          for(let tries=0;tries<1000;tries++){const n=1+Math.floor(random()*catalog.mediumMax);if(tierOf(catalog,n)==='medium'&&!avoid.has(n)&&!skip.has(n))return{seed:n,pool}}
-          return{seed:1,pool};
+          for(let tries=0;tries<100;tries++){const n=1+Math.floor(random()*MAX_DEAL_NUMBER);if(!skip.has(n)&&!recent.has(n))return{seed:n,pool:'any'}}
+          return{seed:1,pool:'any'};
         }
-        // Deals played per pool: the last 50 of each, and every deal played of each list. A save from
-        // before the pools (recent per tier, easyPlayed) gives its Easy deals to both Easy pools:
-        // only the deals of a pool's own list ever match it.
+        // Deals played per tier: the last 50, and every deal played (up to 2,000).
         function cleanTierHistory(value){
-          const source=object(value),recent=object(source.recent),played=object(source.played),old=!source.played;
-          const list=(items,limit)=>Array.isArray(items)?items.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<=9999999).slice(-limit):[];
-          return{recent:Object.fromEntries(POOLS.map(pool=>[pool,list(old&&pool==='very_easy'?recent.easy:recent[pool],RECENT_DEALS_KEPT)])),
-            played:Object.fromEntries(LIST_POOLS.map(pool=>[pool,[...new Set(list(old&&pool!=='hard'?source.easyPlayed:played[pool],1000))]]))};
+          const source=object(value),recent=object(source.recent),played=object(source.played);
+          const list=(items,limit)=>Array.isArray(items)?items.map(Number).filter(n=>Number.isInteger(n)&&n>=0&&n<=MAX_DEAL_NUMBER).slice(-limit):[];
+          return{recent:Object.fromEntries(TIERS.map(tier=>[tier,list(recent[tier],RECENT_DEALS_KEPT)])),
+            played:Object.fromEntries(TIERS.map(tier=>[tier,[...new Set(list(played[tier],2000))]]))};
         }
-        function rememberDeal(value,pool,seed){
-          const state=cleanTierHistory(value),n=Number(seed);if(!POOLS.includes(pool)||!Number.isInteger(n))return state;
-          return{recent:{...state.recent,[pool]:[...state.recent[pool].filter(other=>other!==n),n].slice(-RECENT_DEALS_KEPT)},
-            played:LIST_POOLS.includes(pool)&&!state.played[pool].includes(n)?{...state.played,[pool]:[...state.played[pool],n].slice(-1000)}:state.played};
+        function rememberDeal(value,tier,seed){
+          const state=cleanTierHistory(value),n=Number(seed);if(!TIERS.includes(tier)||!Number.isInteger(n))return state;
+          return{recent:{...state.recent,[tier]:[...state.recent[tier].filter(other=>other!==n),n].slice(-RECENT_DEALS_KEPT)},
+            played:state.played[tier].includes(n)?state.played:{...state.played,[tier]:[...state.played[tier],n].slice(-2000)}};
         }
         // The warm-up deal of the next New Game, or null: only Classic games, while warm-up deals are
         // left; with ignore_selected_mode off, only while Easy is the chosen tier.
@@ -2366,19 +2387,16 @@
         // unrelated numbers, or rivals would play long runs of days together.
         const hashText=text=>{let hash=0x811c9dc5;for(let i=0;i<text.length;i++){hash^=text.charCodeAt(i);hash=Math.imul(hash,16777619)>>>0}hash^=hash>>>16;hash=Math.imul(hash,0x85ebca6b);hash^=hash>>>13;hash=Math.imul(hash,0xc2b2ae35);hash^=hash>>>16;return hash>>>0};
         // The Daily of a date, the same for everyone: its tier comes from the weekday
-        // (difficulty.daily_tiers_by_weekday, Sunday first), then its pool from that tier's mix and its
-        // deal from that pool, both by hashes of the date. Lists take the frozen Daily part; Medium
-        // follows a hash chain that skips every number that is not Medium. Never a warm-up deal.
+        // (difficulty.daily_tiers_by_weekday, Sunday first), its deal from the frozen Daily part of
+        // that tier's list (or any number) by a hash of the date. Never a warm-up deal.
         function dailyDeal(catalog,config,dateKey){
           const parts=parseKey(dateKey);if(!parts)return null;
           const difficulty=config.difficulty,weekday=new Date(Date.UTC(parts.year,parts.month-1,parts.day)).getUTCDay(),tier=difficulty.daily_tiers_by_weekday[weekday];
-          const skip=new Set(difficulty.first_games.seeds),pools=dealPools(catalog,difficulty,{daily:true});
-          const lists=Object.fromEntries(LIST_POOLS.map(pool=>[pool,pools[pool].filter(n=>!skip.has(n))])),usable=pool=>pool==='medium'||lists[pool].length>0;
-          const pool=choosePool(difficulty.mixes[tier],seededRandom(hashText(`freecell-daily-pool:${dateKey}`)),usable)||'medium';
-          let hash=hashText(`freecell-daily:${dateKey}`);
-          if(pool!=='medium')return{seed:lists[pool][hash%lists[pool].length],tier,pool};
-          for(let tries=0;tries<10000;tries++){const n=1+hash%catalog.mediumMax;if(tierOf(catalog,n)==='medium'&&!skip.has(n))return{seed:n,tier,pool};hash=hashText(String(hash))}
-          return{seed:1,tier,pool};
+          const skip=new Set(difficulty.first_games.seeds),list=(catalog[tier]||[]).slice(0,catalog.dailyCount?.[tier]??0).filter(n=>!skip.has(n));
+          let hash=hashText(`spider-daily:${dateKey}`);
+          if(list.length)return{seed:list[hash%list.length],tier,pool:tier};
+          for(let tries=0;tries<100;tries++){const n=1+hash%MAX_DEAL_NUMBER;if(!skip.has(n))return{seed:n,tier,pool:'any'};hash=hashText(String(hash))}
+          return{seed:1,tier,pool:'any'};
         }
 
         // ---- Daily Rivals (v1.3 Part 3): simulated players made on the device ----
@@ -2495,7 +2513,7 @@
           };
         }
 
-        return{DEFAULTS,THEME_IDS,STORE_CATEGORIES,STORE_ITEMS,STORE_DEFAULTS,storeAccess,buyItem,equippableItem,storeItems,MISSION_TYPES,MILESTONES,normalizeConfig,activeEvents,eventProgress,eventDaysLeft,recordEventWin,eventIntroDue,rewardedOffer,openOffer,dropOffer,creditOffer,rewardedToday,cleanCollection,recordNumbered,encodeCollection,decodeCollection,collectionPageCount,collectionPageOf,collectionPage,collectionFromStars,ACHIEVEMENT_COUNTERS,cleanAchievements,achievementProgress,updateAchievements,claimAchievement,achievementsToCollect,starsFor,starBonusFor,recordStars,cleanStarBest,cleanReminders,dailyWinCount,reminderAskDue,markReminderAsked,reminderPayload,markEventIntro,itemCategory,promoState,countPromoGame,choosePromo,recordPromoShown,bonusStatus,claimBonus,pickMissions,refreshMissions,missionsNextAt,applyMissionEvent,claimMission,claimMissionsBonus,dateKey,isDateKey,addDays,today,winReward,payKey,claimPayment,addCoins,themeAccess,buyTheme,equippableTheme,pruneHistory,recordDailyAttempt,recordDailyWin,streakInfo,dailyComparison,formatDuration,formatDelta,monthSummary,listMoves,applyMove,positionKey,playSafeMoves,boardScore,solveBoard,suggestMove,stuckReason,LANGUAGES,LANGUAGE_CODES,languageForTag,pickLanguage,cleanLanguagePack,calendarOffset,chainTiming,normalizePerformance,EFFECT_SETTINGS,effectsDecision,frameStats,foundationPitch,landingFeel,SIZE_CHOICES,displaySizes,foundationGain,canMove,createSearch,analyse,runToEnd,guessMove,makeLine,nextOnLine,hintSession,hintFromSession,TIERS,POOLS,IMPOSSIBLE_DEALS,dealTableau,cleanCatalog,tierOf,dealPools,poolOf,pickDeal,seededRandom,cleanTierHistory,rememberDeal,firstGameSeed,warmupActive,advanceIntro,dailyDeal,normalizeDifficulty,cleanRoster,rivalsTable,rivalsRank,rivalStreak,rivalsStreakBoard,cleanRivalsResults,recordRivalsResult,GOAL_EVENTS,cleanGoals,goalsReached,markGoals,migrateState};
+        return{DEFAULTS,THEME_IDS,STORE_CATEGORIES,STORE_ITEMS,STORE_DEFAULTS,storeAccess,buyItem,equippableItem,storeItems,MISSION_TYPES,MILESTONES,normalizeConfig,activeEvents,eventProgress,eventDaysLeft,recordEventWin,eventIntroDue,rewardedOffer,openOffer,dropOffer,creditOffer,rewardedToday,cleanCollection,recordNumbered,encodeCollection,decodeCollection,collectionPageCount,collectionPageOf,collectionPage,collectionFromStars,ACHIEVEMENT_COUNTERS,cleanAchievements,achievementProgress,updateAchievements,claimAchievement,achievementsToCollect,starsFor,starBonusFor,recordStars,cleanStarBest,cleanReminders,dailyWinCount,reminderAskDue,markReminderAsked,reminderPayload,markEventIntro,itemCategory,promoState,countPromoGame,choosePromo,recordPromoShown,bonusStatus,claimBonus,pickMissions,refreshMissions,missionsNextAt,applyMissionEvent,claimMission,claimMissionsBonus,dateKey,isDateKey,addDays,today,winReward,payKey,claimPayment,addCoins,themeAccess,buyTheme,equippableTheme,pruneHistory,recordDailyAttempt,recordDailyWin,streakInfo,dailyComparison,formatDuration,formatDelta,monthSummary,listMoves,applyMove,positionKey,playSafeMoves,boardScore,solveBoard,suggestMove,stuckReason,LANGUAGES,LANGUAGE_CODES,languageForTag,pickLanguage,cleanLanguagePack,calendarOffset,chainTiming,normalizePerformance,EFFECT_SETTINGS,effectsDecision,frameStats,foundationPitch,landingFeel,SIZE_CHOICES,displaySizes,foundationGain,canMove,createSearch,analyse,runToEnd,guessMove,makeLine,nextOnLine,hintSession,hintFromSession,TIERS,COLUMNS,RUNS,DEAL,orderedFrom,cardFrom,completedRunStart,collectRuns,turnsCard,runsDone,SCORING,moveScore,won,MAX_DEAL_NUMBER,SUITS_BY_TIER,suitsOf,dealGame,newBoard,cleanCatalog,pickDeal,seededRandom,cleanTierHistory,rememberDeal,firstGameSeed,warmupActive,advanceIntro,dailyDeal,normalizeDifficulty,cleanRoster,rivalsTable,rivalsRank,rivalStreak,rivalsStreakBoard,cleanRivalsResults,recordRivalsResult,GOAL_EVENTS,cleanGoals,goalsReached,markGoals,migrateState};
       })();
       /* freecell-core:end */
       // Saved-state schema 2 (v1.1); a schema 1 state is migrated without losing progress. The
@@ -2518,7 +2536,7 @@
       const developerToolsEnabled=(()=>{if(!window.AndroidBridge)return true;try{return Boolean(window.AndroidBridge.isDebugBuild&&window.AndroidBridge.isDebugBuild())}catch(error){return false}})();
       // Must match the allow-list in MainActivity.openExternal.
       const PRIVACY_POLICY_URL='https://sites.google.com/view/freecellsolitaireprivacypolicy';
-      const SUPPORT_EMAIL='nexusplaylabss@gmail.com',SUPPORT_MAILTO=`mailto:${SUPPORT_EMAIL}?subject=FreeCell%20Support`;
+      const SUPPORT_EMAIL='nexusplaylabss@gmail.com',SUPPORT_MAILTO=`mailto:${SUPPORT_EMAIL}?subject=Spider%20Solitaire%20Support`;
       // The ads consent check runs natively while this page loads. The handler is installed
       // before the pending flag is read, so an answer arriving in between is never lost.
       let consentResolved=false,afterConsent=null;
@@ -2580,9 +2598,15 @@
         "newGame":"New Game",
         "hint":"Hint",
         "undo":"Undo",
-        "playable":"Playable FreeCell",
-        "topAria":"Free cells and foundations",
+        "playable":"Playable Spider Solitaire",
+        "topAria":"Stock and foundations",
         "tableauAria":"Tableau",
+        "stockAria":"Stock, {number} deals left: tap to deal",
+        "stockEmpty":"Stock empty",
+        "stockPosition":"Stock position",
+        "faceDownCard":"Face-down card",
+        "hintDeal":"Deal a new row from the stock",
+        "dealNeedsColumns":"Fill every empty column before dealing",
         "freeCell":"Free cell",
         "foundation":"foundation",
         "column":"Column",
@@ -2649,18 +2673,18 @@
         "statisticsReset":"Statistics reset",
         "resetStatsConfirm":"Are you sure you want to reset your statistics? Games, wins, moves and stars go back to zero. Your coins and level stay. This cannot be undone.",
         "rulesGoalTitle":"Goal",
-        "rulesGoalText":"Move all 52 cards to the four foundations: one pile per suit, built in order from Ace to King.",
+        "rulesGoalText":"Build eight runs from King down to Ace, each in one suit. A complete run leaves the table by itself for a foundation; when all eight are there, you win.",
         "rulesBoardTitle":"The table",
-        "rulesBoardText":"Top left: four free cells. Top right: the four foundations. Below, the cards are dealt face up into eight columns. You can move the last card of any column.",
+        "rulesBoardText":"Two decks, 104 cards. 54 are dealt into ten columns, only the last card of each face up; the other 50 wait in the stock, top left, for five deals. The eight foundations take the complete runs.",
         "rulesColumnsTitle":"Building columns",
-        "rulesColumnsText":"A card goes on the last card of a column when it is one rank lower and the opposite colour, like a black 8 on a red 9.",
-        "rulesCellsTitle":"Free cells and empty columns",
-        "rulesCellsText":"A free cell holds any one card for as long as you need. An empty column takes any card or ordered sequence.",
-        "rulesRunsTitle":"Moving several cards",
-        "rulesRunsText":"An ordered sequence moves at once when there is room: one card more than your empty free cells, doubled for each empty column. With 2 empty free cells and 1 empty column, you can move 6 cards.",
+        "rulesColumnsText":"A card goes on any card one rank higher, whatever its suit: a 7 on any 8. When a face-down card is uncovered, it turns over.",
+        "rulesCellsTitle":"Empty columns and the stock",
+        "rulesCellsText":"An empty column takes any card or run. Tap the stock to deal one new card onto every column; every column must hold a card first.",
+        "rulesRunsTitle":"Moving runs",
+        "rulesRunsText":"Several cards move together only when they are in order and all of one suit. A run in mixed suits has to be taken apart card by card.",
         "rulesTipsTitle":"Tips",
-        "rulesTipsText":"Free the Aces and low cards first. Keep the free cells empty when you can: an empty column is your strongest tool. Stuck? Try Hint or Undo.",
-        "privacyOne":"Read how FreeCell collects and uses data, including advertising (Google AdMob) and analytics (Firebase).",
+        "rulesTipsText":"Build in one suit whenever you can, turn over the face-down cards and keep a column empty as long as possible. Stuck? Try Hint or Undo.",
+        "privacyOne":"Read how Spider Solitaire collects and uses data, including advertising (Google AdMob) and analytics (Firebase).",
         "contactOne":"Ask for help, report a problem or send feedback about the game.",
         "sendEmail":"Send an e-mail",
         "contactTip":"Tell us what happened and your phone model: it helps us answer faster.",
@@ -2726,18 +2750,18 @@
         "sizeNormal":"Normal",
         "sizeLarge":"Large",
         "sizeExtraLarge":"Extra large",
-        "tipFreeCells":"Tip: free cells are only for temporary storage. Try to keep them empty.",
+        "tipFreeCells":"Tip: build runs of one suit. Only they move together, and a full run from King to Ace leaves the table. Undo lets you try another way.",
         "gotIt":"Got it",
         "noHintsLeft":"No hints left in this game",
-        "tier_easy":"Easy",
-        "tier_medium":"Medium",
-        "tier_hard":"Hard",
+        "tier_easy":"1 Suit",
+        "tier_medium":"2 Suits",
+        "tier_hard":"4 Suits",
         "tier_impossible":"Unwinnable",
-        "difficulty":"Difficulty",
+        "difficulty":"Suits",
         "winsTier":"Wins · {tier}",
         "earnWinTier":"Win a game · {tier}",
-        "tiersInfo":"Difficulty",
-        "tiersInfoRule":"Easy: 128 deals solvable without free cells · Hard: 675 deals that need all four · Medium: every other deal",
+        "tiersInfo":"Suits",
+        "tiersInfoRule":"1 Suit: spades only, the easiest · 2 Suits: spades and hearts · 4 Suits: every suit, the hardest",
         "randomMixRule":"Every completed game adds 1 level win",
         "dailyStableRule":"One shared deal per day · counts as 1 win",
         "missionWinWinnable":"Win Winnable Games",
@@ -2787,7 +2811,7 @@
         "missionEmptyColumns":"Empty columns",
         "missionsCompleteAll":"Collect all three for new missions",
         "removeAdsTitle":"Remove ads",
-        "removeAdsLead":"Play FreeCell without interruptions.",
+        "removeAdsLead":"Play Spider Solitaire without interruptions.",
         "removeAdsBanner":"No banner at the bottom",
         "removeAdsFullScreen":"No full-screen ads between games",
         "removeAdsAppOpen":"No ads when you open the app",
@@ -2800,12 +2824,12 @@
         "purchaseOffline":"You're offline. Try again when you're connected.",
         "purchaseFailed":"The purchase didn't go through. Please try again later.",
         "purchaseUnavailable":"Purchases are not available on this device right now.",
-        "rateTitle":"Rate FreeCell",
+        "rateTitle":"Rate Spider Solitaire",
         "notNow":"Not now",
-        "rateStarsText":"Enjoying FreeCell? Tap a star to rate us on Google Play.",
+        "rateStarsText":"Enjoying Spider Solitaire? Tap a star to rate us on Google Play.",
         "rateStar":"{number} of 5 stars",
         "reportProblem":"Having a problem? Tell us",
-        "storePreview":"In the app, this opens FreeCell on the Play Store.",
+        "storePreview":"In the app, this opens Spider Solitaire on the Play Store.",
         "feedbackTitle":"Tell us",
         "feedbackIntro":"Something wrong or something we could do better? Write it here.",
         "feedbackPlaceholder":"Your message…",
@@ -2846,15 +2870,15 @@
         "challengeFriend":"Challenge a friend",
         "shareShort":"Share",
         "shareResult":"Share your result",
-        "shareChallengeText":"I beat FreeCell deal #{number} in {time} with {moves} moves. Think you can do better?",
+        "shareChallengeText":"I beat Spider Solitaire deal #{number} in {time} with {moves} moves. Think you can do better?",
         "shareHowTo":"Same cards for you: {newGame} → {byNumber} → {number}",
         "shareGetApp":"Free on Google Play:",
-        "shareDailyText":"FreeCell Daily Challenge, {date}: solved in {time} with {moves} moves. Can you beat my time today?",
+        "shareDailyText":"Spider Solitaire Daily Challenge, {date}: solved in {time} with {moves} moves. Can you beat my time today?",
         "shareStreak":"Streak: {streak} {days}",
         "imgDay":"day",
         "imgDays":"days",
         "imgBeatIt":"Can you beat it?",
-        "imgGetIt":"FreeCell on Google Play",
+        "imgGetIt":"Spider Solitaire on Google Play",
         "reminderChannel":"Daily reminders",
         "reminderDailyTitle":"Daily Challenge",
         "reminderDailyBody":"Today's Daily Challenge is ready. Can you solve it?",
@@ -2866,7 +2890,7 @@
         "reminderNotNow":"Not now",
         "reminderOn":"Reminders on at {time}",
         "reminderOff":"Reminders off",
-        "reminderBlocked":"Notifications are off for FreeCell. You can turn them on in Android settings.",
+        "reminderBlocked":"Notifications are off for Spider Solitaire. You can turn them on in Android settings.",
         "reminderTime":"Reminder time",
         "dailyRemindersSetting":"Daily Challenge reminder",
         "starsLabel":"{number} of 3 stars",
@@ -2914,7 +2938,7 @@
         "numberedXpRule":"Any deal number · counts as 1 win"
       };
       // Tutorial steps: English title and body, the part of the board in focus and the gesture shown.
-      const EN_TUTORIAL=[["Main objective","Move every card to the four foundations, sorted by suit from Ace to King.","foundations","foundation-ace"],["Collect matching suits","Only the next card of the same suit can enter each foundation.","foundations","foundation-two"],["Move cards","Build downward on the tableau, alternating red and black.","tableau","move"],["Move a sequence","Ordered alternating runs can move together when enough spaces are free.","tableau","sequence"],["Use free cells","Park one card in each free cell to uncover useful cards.","freecells","cell"],["Complete the game","Use everything you learned to clear the board.","board","finish"]];
+      const EN_TUTORIAL=[["Main objective","Build runs from King down to Ace in one suit. A complete run goes to a foundation by itself.","foundations",""],["Build down","Put a card on any card one rank higher, whatever its suit.","tableau","move"],["Runs of one suit","Cards in order and all of one suit move together. Build in one suit whenever you can.","tableau","sequence"],["Uncover and use empty columns","Uncovered face-down cards turn over. Any card or run can go into an empty column.","tableau","empty"],["Deal from the stock","Tap the stock to deal one card onto every column. Every column must hold a card first.","stock",""],["Complete the game","Make all eight runs to clear the table.","board","finish"]];
       const EN_PRAISE=["Brilliant!","Great move!","Well played!","Superb!","Nice one!"];
       let languagePack=null;
       function loadLanguagePack(code){
@@ -2925,13 +2949,25 @@
       }
       const tutorialSteps=()=>EN_TUTORIAL.map(([title,body,focus,gesture],index)=>{const own=languagePack?.tutorial?.[index];return[own?.[0]||title,own?.[1]||body,focus,gesture]});
       const localeTag=()=>FreeCellCore.LANGUAGES.find(language=>language.code===currentLanguage)?.locale||'en-US';
-      let tableau=[],cells=[null,null,null,null],foundations=[0,0,0,0],history=[],gameLog=[],moves=0,seconds=0,currentSeed=20261020,currentMode='random',currentLabel='Random Game',initialTableau=[],selected=null,suppressClick=false,drag=null,tableThemeName=String(savedState.tableThemeName||'classic'),cardThemeName=String(savedState.cardThemeName||'classic'),currentLanguage=String(savedState.currentLanguage||'en'),isDealing=false,dealTimer=0,victoryTimer=0,confettiTimer=0,playerLevel=Math.max(1,Number(savedState.playerLevel)||1),levelWins=Math.max(0,Number(savedState.levelWins)||0),currentLevelNumber=Math.max(1,Number(savedState.currentLevelNumber)||1),levelAwarded=Boolean(savedState.levelAwarded),lastLevelResult=null,tutorialStep=0,tutorialTrackedSteps=new Set(),dailyMonthOffset=0,onboardingTutorial=false,gameplayActive=false,startupFlowComplete=false;
+      let tableau=[],stock=[],foundations=[0,0,0,0,0,0,0,0],done=[],suitsMode=1,score=0,justTurned=null,history=[],gameLog=[],moves=0,seconds=0,currentSeed=20261020,currentMode='random',currentLabel='Random Game',selected=null,suppressClick=false,drag=null,tableThemeName=String(savedState.tableThemeName||'classic'),cardThemeName=String(savedState.cardThemeName||'classic'),currentLanguage=String(savedState.currentLanguage||'en'),isDealing=false,dealTimer=0,victoryTimer=0,confettiTimer=0,playerLevel=Math.max(1,Number(savedState.playerLevel)||1),levelWins=Math.max(0,Number(savedState.levelWins)||0),currentLevelNumber=Math.max(1,Number(savedState.currentLevelNumber)||1),levelAwarded=Boolean(savedState.levelAwarded),lastLevelResult=null,tutorialStep=0,tutorialTrackedSteps=new Set(),dailyMonthOffset=0,onboardingTutorial=false,gameplayActive=false,startupFlowComplete=false;
       // Card size: card height and the most a covered card shows; Normal keeps the original numbers
       // (a fixed 399 px of room), Large and Extra large measure the room the columns have.
-      const CARD_SIZES={normal:{height:70,strip:32},large:{height:80,strip:37},xl:{height:90,strip:42}};
+      const CARD_SIZES={normal:{height:58,strip:20},large:{height:66,strip:23},xl:{height:74,strip:26}};
       let columnRoom=399;
-      const stackOffset=length=>length<=1?0:Math.min(CARD_SIZES[options.cardSize]?.strip||32,columnRoom/(length-1));
-      const options=Object.assign({sound:true,vibration:true,tap:true,autoComplete:true,autoHint:true,highlight:false,celebration:true,showScore:true,showTime:true,showMoves:true,lockOrientation:false,freecellRight:false,leftHanded:false},savedState.options||{});
+      // Each card's top in a column: face-down cards show a thin strip, face-up ones the size's strip,
+      // squeezed (face-up gaps first) when the column would run past its room.
+      const DOWN_STRIPS={normal:7,large:8,xl:9};
+      function columnTops(column){
+        const tops=[0];if(column.length<2)return tops;
+        const down=DOWN_STRIPS[options.cardSize]||9,gaps=column.slice(0,-1).map(card=>card.up===false);
+        const downCount=gaps.filter(Boolean).length,upCount=gaps.length-downCount;
+        let up=CARD_SIZES[options.cardSize]?.strip||20,downStrip=down;
+        if(upCount&&downCount*down+upCount*up>columnRoom)up=Math.max(Math.min(down,up),(columnRoom-downCount*down)/upCount);
+        if(downCount*downStrip+upCount*up>columnRoom)downStrip=Math.max(3,(columnRoom-upCount*up)/Math.max(1,downCount));
+        gaps.forEach((faceDown,index)=>tops.push(tops[index]+(faceDown?downStrip:up)));
+        return tops;
+      }
+      const options=Object.assign({sound:true,vibration:true,tap:true,autoComplete:true,autoHint:true,highlight:false,celebration:true,showScore:true,showTime:true,showMoves:true,lockOrientation:false,stockRight:false,leftHanded:false},savedState.options||{});
       // Owner request (2026-11-05): Highlight movable cards is off by default. Saves stored the old default
       // (on), so only a choice made in Settings is kept (highlightChosen).
       if(options.highlightChosen!==true)options.highlight=false;
@@ -3074,7 +3110,7 @@
       // The only clock for dates (Daily history, streak, rewards): never earlier than a date already seen.
       const todayKey=()=>{const key=FreeCellCore.today(new Date(),latestDate,debugDayOffset);if(!latestDate||key>latestDate)latestDate=key;return key};
       const keyToDate=key=>{const [year,month,day]=key.split('-').map(Number);return new Date(year,month-1,day)};
-      const currentPositionKey=()=>FreeCellCore.positionKey({tableau,cells,foundations});
+      const currentPositionKey=()=>FreeCellCore.positionKey(boardState());
       const t=(key,values={})=>{
         let value=languagePack?.strings?.[key]??EN_STRINGS[key]??key;
         if(value&&typeof value==='object'){const count=Number(values.number??values.count??0);let form='other';try{form=new Intl.PluralRules(localeTag()).select(count)}catch(error){}value=value[form]??value.other}
@@ -3165,7 +3201,7 @@
       }
       const encode=loc=>`${loc.type}:${loc.pile}:${loc.index||0}`;
       const decode=value=>{const [type,pile,index]=String(value||'').split(':');return{type,pile:Number(pile),index:Number(index)}};
-      const snapshot=()=>({tableau:tableau.map(col=>col.map(c=>({...c}))),cells:cells.map(c=>c?{...c}:null),foundations:[...foundations],moves});
+      const snapshot=()=>({tableau:tableau.map(col=>col.map(c=>({...c}))),stock:stock.map(c=>({...c})),foundations:[...foundations],done:[...done],moves,score});
       // Toolbar labels never wrap and are never cut: a label too long for its button gets a smaller
       // size (12 px down to 9 px) on that button only.
       function fitToolLabels(){
@@ -3178,7 +3214,7 @@
       // Card size (v1.4 Part 2): a data attribute on the phone picks the card CSS.
       function measureColumnRoom(){
         const size=CARD_SIZES[options.cardSize];
-        if(options.cardSize==='normal'||!size){columnRoom=399;return}
+        if(!size){columnRoom=399;return}
         const columns=find('#fc-columns').getBoundingClientRect(),status=find('#fc-status').getBoundingClientRect();
         columnRoom=Math.max(size.strip*3,status.top-columns.top-size.height-6);
       }
@@ -3188,7 +3224,7 @@
         phone.dataset.cardSize=sizes.cardSize;
         measureColumnRoom();render();fitToolLabels();
       }
-      window.addEventListener('resize',()=>{fitToolLabels();if(options.cardSize!=='normal'){measureColumnRoom();render()}});
+      window.addEventListener('resize',()=>{fitToolLabels();measureColumnRoom();render()});
       function applyLanguage(){
         root.querySelectorAll('[data-i18n]').forEach(element=>{element.textContent=t(element.dataset.i18n)});
         phone.setAttribute('aria-label',t('playable'));find('#fc-top').setAttribute('aria-label',t('topAria'));find('#fc-columns').setAttribute('aria-label',t('tableauAria'));find('#fc-modal-close').setAttribute('aria-label',t('close'));
@@ -3223,7 +3259,7 @@
       // only once every other deal there was played.
       function warmupPlayed(){
         const difficulty=gameConfig.difficulty;let history=tierHistory;
-        for(const seed of difficulty.first_games.seeds.slice(0,introIndex)){const pool=FreeCellCore.poolOf(dealCatalog,difficulty,seed);if(pool&&!history.played[pool]?.includes(seed))history=FreeCellCore.rememberDeal(history,pool,seed)}
+        for(const seed of difficulty.first_games.seeds.slice(0,introIndex))for(const tier of FreeCellCore.TIERS)if(dealCatalog[tier].includes(seed)&&!history.played[tier]?.includes(seed))history=FreeCellCore.rememberDeal(history,tier,seed);
         return tierHistory=history;
       }
       function startDeal({mode='random',label=null,seed=null,replay=false,dailyDate=null,tier=null}={}){
@@ -3237,7 +3273,7 @@
         }
         clearVictorySequence();clearTimeout(dealTimer);cancelAutoFoundationAnimation();lastLevelResult=null;levelAwarded=false;quickWinUsed=false;isDealing=true;
         gameplayActive=true;
-        if(replay&&initialTableau.length){tableau=initialTableau.map(col=>col.map(card=>({...card})))}
+        if(replay){const fresh=FreeCellCore.newBoard(currentSeed,suitsMode);tableau=fresh.tableau;stock=fresh.stock}
         else{
           currentMode=mode;
           const usesProgression=mode!=='numbered'&&mode!=='developer';
@@ -3245,7 +3281,7 @@
           dealId=++dealCounter;
           currentDailyDate=mode==='daily'?(dailyDate instanceof Date?FreeCellCore.dateKey(dailyDate):todayKey()):null;
           if(mode==='daily'){const daily=FreeCellCore.dailyDeal(dealCatalog,gameConfig,currentDailyDate)||{seed:1,tier:'medium',pool:'medium'};currentSeed=daily.seed;currentTier=daily.tier;currentPool=daily.pool}
-          else if(mode==='numbered'){currentSeed=seed===null?0:(Number(seed)>>>0);currentTier=FreeCellCore.tierOf(dealCatalog,currentSeed);currentPool=null}
+          else if(mode==='numbered'){currentSeed=seed===null?0:(Number(seed)>>>0);currentTier=FreeCellCore.TIERS.includes(tier)?tier:preferredTier();currentPool=null}
           else{
             const chosen=tier||preferredTier();
             const difficulty=gameConfig.difficulty,warmup=FreeCellCore.firstGameSeed(difficulty,introIndex,{mode,selectedTier:chosen});
@@ -3258,17 +3294,16 @@
               const exclude=FreeCellCore.warmupActive(difficulty,introIndex)?difficulty.first_games.seeds.slice(introIndex):[];
               const pick=FreeCellCore.pickDeal(dealCatalog,difficulty,chosen,{random:dealRandom(),history:warmupPlayed(),exclude});
               currentSeed=pick.seed;currentTier=chosen;currentPool=pick.pool;
-              if(mode==='random')tierHistory=FreeCellCore.rememberDeal(tierHistory,pick.pool,pick.seed);
+              if(mode==='random')tierHistory=FreeCellCore.rememberDeal(tierHistory,chosen,pick.seed);
             }
           }
           gameFoundationPeak=0;gameSuitPeak=0;gameEmptiedColumns=[];
           if(mode!=='developer'){missionEvent({type:'game_start'});promos=FreeCellCore.countPromoGame(promos)}
           const modeLabel=label||t(mode==='daily'?'dailyChallenge':mode==='winnable'?'winnableGame':mode==='numbered'?'gameByNumber':'randomGame');
           currentLabel=usesProgression?t('level',{number:currentLevelNumber}):modeLabel;
-          tableau=FreeCellCore.dealTableau(currentSeed);
-          initialTableau=tableau.map(col=>col.map(card=>({...card})));
+          const fresh=FreeCellCore.newBoard(currentSeed,FreeCellCore.suitsOf(currentTier));tableau=fresh.tableau;stock=fresh.stock;
         }
-        cells=[null,null,null,null];foundations=[0,0,0,0];history=[];moves=0;seconds=0;selected=null;stats.started++;
+        suitsMode=FreeCellCore.suitsOf(currentTier);foundations=Array(8).fill(0);done=[];history=[];moves=0;score=FreeCellCore.SCORING.start;seconds=0;selected=null;justTurned=null;stats.started++;
         gameUsedUndo=false;gameUndos=0;gameUsedHint=false;gameHints=0;lastReward=null;seenPositions=new Set([currentPositionKey()]);resetAnalysis(replay?'restart':'new_game');hideStuckMessage();
         if(currentMode==='daily'&&currentDailyDate)dailyHistory=FreeCellCore.recordDailyAttempt(dailyHistory,currentDailyDate);
         syncCrashContext();if(window.AndroidBridge?.onGameStarted)window.AndroidBridge.onGameStarted(currentMode,Boolean(replay),suppressInterstitial,afterLoss);suppressInterstitial=false;
@@ -3284,7 +3319,7 @@
         perfWatch('deal',DEAL_MS+170);maybeSampleFrames();
         remember();scheduleAutoHint();
       }
-      const DEAL_MS=51*34+430;
+      const DEAL_MS=54*34+430;
       function endDeal(){isDealing=false;root.querySelectorAll('.playing-card.dealing').forEach(card=>card.classList.remove('dealing'));if(options.highlight)render()}
       // Owner report (2026-11-05): a deal drawn while the page was hidden (an interstitial opened over
       // it right after New Game, or the app went to the background) played its animation unseen, so
@@ -3303,11 +3338,10 @@
       function cardAt(loc){
         if(!loc||!Number.isInteger(loc.pile))return null;
         if(loc.type==='tableau')return tableau[loc.pile]?.[loc.index]||null;
-        if(loc.type==='cell')return cells[loc.pile]||null;
-        if(loc.type==='foundation')return foundations[loc.pile]>0?{s:loc.pile,r:foundations[loc.pile]}:null;
+        if(loc.type==='foundation')return foundations[loc.pile]===13?{s:done[loc.pile],r:13,up:true,id:`f${loc.pile}`}:null;
         return null;
       }
-      const cardClass=(card,isLast)=>{const suit=suitOf(card);return 'playing-card cursor-interaction'+(suit.red?' red':'')+(card.r>=11?' face':'')+(card.r===10?' ten':'')+(isLast?' last-card':'')};
+      const cardClass=(card,isLast)=>{const suit=suitOf(card);return 'playing-card cursor-interaction'+(suit.red?' red':'')+(card.r>=11?' face':'')+(card.r===10?' ten':'')+(isLast?' last-card':'')+(card.up===false?' face-down':'')};
       const cardMarkup=card=>{const suit=suitOf(card);return `<span class="corner"><span>${rankOf(card.r)}</span><span class="mini-suit">${suit.mark}</span></span><span class="pip">${suit.mark}</span>${card.r>=11?courtSvgMarkup(rankOf(card.r),suit.mark):''}`};
       function makeCard(card,loc,isLast=false){
         if(!card)return document.createDocumentFragment();
@@ -3321,7 +3355,7 @@
       // card moves: rebuilding all 52 cards after every move made the board flicker and stutter.
       const boardCards=new Map();
       function boardCard(card,loc,isLast=false){
-        let button=boardCards.get(card.s*13+card.r);
+        const cardKey=card.id??card.s*13+card.r;let button=boardCards.get(cardKey);
         if(!button){
           button=document.createElement('button');button.type='button';
           button.addEventListener('pointerdown',event=>{settlePlayerFlight();startDrag(event,decode(button.dataset.loc),button)});
@@ -3330,12 +3364,12 @@
             settlePlayerFlight();const current=decode(button.dataset.loc);
             if(current.type==='foundation'&&selected)attemptMove(selected,current);else tapCard(current);
           });
-          boardCards.set(card.s*13+card.r,button);
+          boardCards.set(cardKey,button);
         }
         const markup=cardMarkup(card);if(button.cardMarkup!==markup){button.innerHTML=markup;button.cardMarkup=markup}
-        const className=cardClass(card,isLast)+(selected&&encode(selected)===encode(loc)?' lifted':'')+(unmovableNow.has(encode(loc))?' unmovable':'');
+        const className=cardClass(card,isLast)+(selected&&encode(selected)===encode(loc)?' lifted':'')+(unmovableNow.has(encode(loc))?' unmovable':'')+(justTurned===encode(loc)?' turning':'');
         if(button.className!==className)button.className=className;
-        button.dataset.loc=encode(loc);button.setAttribute('aria-label',`${rankOf(card.r)} ${suitOf(card).mark}`);
+        button.dataset.loc=encode(loc);button.setAttribute('aria-label',card.up===false?t('faceDownCard'):`${rankOf(card.r)} ${suitOf(card).mark}`);
         return button;
       }
       function placeChildren(parent,wanted){
@@ -3349,41 +3383,45 @@
       let unmovableNow=new Set();
       function unmovableCards(){
         if(!options.highlight||isDealing||autoMoving||!gameplayActive||foundations.every(value=>value===13))return new Set();
-        // Owner request (2026-11-05): cards in the free cells are never darkened.
-        const sources=FreeCellCore.listMoves({tableau,cells,foundations}).map(move=>move.from),stuck=new Set();
+        // A face-up card can move when the run of one suit it heads fits on another column (a whole
+        // column into an empty one does not count); every card under it in that run moves with it.
+        const state=boardState(),stuck=new Set();
         tableau.forEach((column,pile)=>{
-          // Every card from the lowest movable one down to the end of the column moves with it.
-          const first=Math.min(column.length,...sources.filter(from=>from.type==='tableau'&&from.pile===pile).map(from=>from.index));
-          for(let index=0;index<first;index++)stuck.add(encode({type:'tableau',pile,index}));
+          for(let index=0;index<column.length;index++){
+            const from={type:'tableau',pile,index};
+            if(column[index].up!==false&&tableau.some((target,to)=>!(index===0&&!target.length)&&FreeCellCore.canMove(state,{from,to:{type:'tableau',pile:to}})))break;
+            if(column[index].up!==false)stuck.add(encode(from));
+          }
         });
         return stuck;
       }
       function render(){
         unmovableNow=unmovableCards();
-        find('#fc-score').textContent=String(Math.max(0,foundations.reduce((sum,n)=>sum+n,0)*10-moves));
+        find('#fc-score').textContent=String(score);
         find('#fc-moves').textContent=String(moves);
         const top=find('#fc-top');
-        if(top.children.length!==8){
+        // Top row: the stock (tap to deal a new row), a gap, then the eight foundations, which take the
+        // complete runs in the order they are made. "Stock position" puts the stock on the right.
+        if(top.children.length!==10){
           top.replaceChildren();
-          [['cell','slot cell-slot'],['foundation','slot foundation-empty']].forEach(([type,className])=>{
-            for(let i=0;i<4;i++){
-              const destination={type,pile:i,index:0};
-              const slot=document.createElement('div');slot.className=className;slot.dataset.dest=encode(destination);
-              slot.addEventListener('click',event=>{if(event.target===slot&&selected)attemptMove(selected,destination)});
-              top.appendChild(slot);
-            }
-          });
+          const stockSlot=document.createElement('div');stockSlot.className='slot stock-slot cursor-interaction';stockSlot.setAttribute('role','button');
+          stockSlot.addEventListener('click',event=>{event.stopPropagation();settlePlayerFlight();dealStock()});
+          const gap=document.createElement('div');gap.className='slot top-gap';gap.setAttribute('aria-hidden','true');
+          top.append(stockSlot,gap);
+          for(let i=0;i<8;i++){const slot=document.createElement('div');slot.className='slot foundation-empty';slot.dataset.dest=encode({type:'foundation',pile:i,index:0});top.appendChild(slot)}
         }
-        for(let i=0;i<4;i++){
-          const cellSlot=top.children[i],foundationSlot=top.children[4+i];
-          cellSlot.setAttribute('aria-label',`${t('freeCell')} ${i+1}`);foundationSlot.setAttribute('aria-label',`${suits[i].mark} ${t('foundation')}`);
-          placeChildren(cellSlot,cells[i]?[boardCard(cells[i],{type:'cell',pile:i,index:0})]:[]);
-          placeChildren(foundationSlot,foundations[i]>0?[boardCard({s:i,r:foundations[i]},{type:'foundation',pile:i,index:0})]:[]);
+        const stockSlot=top.children[0],dealsLeft=Math.ceil(stock.length/10);
+        stockSlot.classList.toggle('has-cards',stock.length>0);stockSlot.dataset.count=dealsLeft?String(dealsLeft):'';
+        stockSlot.style.setProperty('--stock-depth',String(Math.max(0,dealsLeft-1)));
+        stockSlot.setAttribute('aria-label',dealsLeft?t('stockAria',{number:dealsLeft}):t('stockEmpty'));
+        for(let i=0;i<8;i++){
+          const foundationSlot=top.children[2+i];foundationSlot.setAttribute('aria-label',`${t('foundation')} ${i+1}`);
+          placeChildren(foundationSlot,foundations[i]===13?[boardCard({s:done[i],r:13,up:true,id:`f${i}`},{type:'foundation',pile:i,index:0})]:[]);
         }
         const columns=find('#fc-columns');
-        if(columns.children.length!==8){
+        if(columns.children.length!==10){
           columns.replaceChildren();
-          for(let pile=0;pile<8;pile++){
+          for(let pile=0;pile<10;pile++){
             const element=document.createElement('div');element.className='column';
             element.addEventListener('click',event=>{
               if(event.target!==element)return;
@@ -3397,16 +3435,17 @@
         tableau.forEach((column,pile)=>{
           const element=columns.children[pile];element.dataset.dest=encode({type:'tableau',pile,index:Math.max(0,column.length-1)});
           element.setAttribute('aria-label',`${t('column')} ${pile+1}`);
-          const offset=stackOffset(column.length);
+          const tops=columnTops(column);
           placeChildren(element,column.map((card,index)=>{
             const cardElement=boardCard(card,{type:'tableau',pile,index},index===column.length-1);
-            const cardTop=`${index*offset}px`,cardLayer=String(index+1);
+            const cardTop=`${tops[index]}px`,cardLayer=String(index+1);
             if(cardElement.style.getPropertyValue('--card-top')!==cardTop)cardElement.style.setProperty('--card-top',cardTop);
             if(cardElement.style.getPropertyValue('--card-layer')!==cardLayer)cardElement.style.setProperty('--card-layer',cardLayer);
-            if(isDealing){const dealIndex=index*8+pile;cardElement.classList.add('dealing');cardElement.style.setProperty('--deal-delay',`${dealIndex*34}ms`)}
+            if(isDealing){const dealIndex=index*10+pile;cardElement.classList.add('dealing');cardElement.style.setProperty('--deal-delay',`${dealIndex*34}ms`)}
             return cardElement;
           }));
         });
+        justTurned=null;
         updateAutocompleteButton();
       }
       const winsNeeded=level=>Math.max(1,Math.floor(level));
@@ -3424,7 +3463,7 @@
       // Restart or a replayed numbered game earns nothing. Runs once per game.
       function awardWin(){
         if(lastReward)return lastReward;
-        const day=todayKey(),score=Math.max(0,foundations.reduce((sum,n)=>sum+n,0)*10-moves);
+        const day=todayKey();
         let dailyStreak=0,comparison=null,rivalsPlace=null;
         if(currentMode==='daily'&&currentDailyDate){
           dailyHistory=FreeCellCore.pruneHistory(FreeCellCore.recordDailyWin(dailyHistory,currentDailyDate,{seconds,moves,score,playedOn:day}),day,gameConfig.daily.history_days);
@@ -3463,43 +3502,95 @@
       // Only the player's own moves count: cards the game sends to the foundations by itself
       // (auto-move and Autocomplete) pass counted=false.
       function legalMove(from,to,commit,{counted=true}={}){
-        if(!from||!to||from.type==='foundation')return false;
-        const card=cardAt(from);if(!card)return false;
-        const sourceColumn=from.type==='tableau'?tableau[from.pile]:null;
-        const run=sourceColumn?sourceColumn.slice(from.index):[card];
-        if(!FreeCellCore.canMove({tableau,cells,foundations},{from,to}))return false;
+        if(!from||!to)return false;
+        const before=boardState(),move={from,to},dealing=from.type==='stock';
+        if(!FreeCellCore.canMove(before,move))return false;
         if(!commit)return true;
+        const run=dealing?[]:tableau[from.pile].slice(from.index),row=dealing?stock.slice(-10).reverse():[];
         history.push(snapshot());if(history.length>150)history.shift();
-        if(sourceColumn)sourceColumn.splice(from.index);else cells[from.pile]=null;
+        const turned=FreeCellCore.turnsCard(before,move),next=FreeCellCore.applyMove(before,move);
+        // The columns as they were before complete runs left them, for the runs' flight.
+        const unsorted=tableau.map((column,pile)=>dealing?(row[pile]?[...column,{...row[pile],up:true}]:column):pile===to.pile?[...column,...run]:pile===from.pile?column.slice(0,from.index):column);
+        const completed=FreeCellCore.runsDone(next)-FreeCellCore.runsDone(before);
+        score=Math.max(0,score+FreeCellCore.moveScore(before,next));
+        tableau=next.tableau;stock=next.stock;foundations=next.foundations;done=next.done;
+        if(turned)justTurned=encode({type:'tableau',pile:from.pile,index:from.index-1});
+        const sourceColumn=dealing?null:tableau[from.pile];
         if(sourceColumn&&sourceColumn.length===0&&!gameEmptiedColumns.includes(from.pile)){gameEmptiedColumns.push(from.pile);if(currentMode!=='developer')missionEvent({type:'column_emptied'})}
-        if(to.type==='foundation')foundations[to.pile]++;
-        else if(to.type==='cell')cells[to.pile]={...card};
-        else tableau[to.pile].push(...run);
         if(counted){moves++;stats.totalMoves++}selected=null;seenPositions.add(currentPositionKey());hideStuckMessage();render();
-        if(to.type==='foundation'){
+        if(dealing){animateDealRow(row);playCardSlideSound();haptic('tick')}
+        if(completed>0){
           const gain=FreeCellCore.foundationGain(gameFoundationPeak,foundations);if(gain.gained){if(currentMode!=='developer')missionEvent({type:'foundation',count:gain.gained});gameFoundationPeak=gain.peak}
           const suitsDone=foundations.filter(value=>value===13).length;if(suitsDone>gameSuitPeak){if(currentMode!=='developer')missionEvent({type:'suit_complete',count:suitsDone-gameSuitPeak});gameSuitPeak=suitsDone}
-          const landed=root.querySelector(`[data-loc="${encode({type:'foundation',pile:to.pile,index:0})}"]`);
-          const feel=FreeCellCore.landingFeel(foundations,to.pile);
-          playFoundationSound(foundations.reduce((sum,value)=>sum+value,0));suitBurst(landed,card);
-          if(feel==='suit'){playSuitCompleteSound();haptic('double');suitCompleteRing(landed)}else if(feel==='foundation')haptic('click');
-        }else{playSound(true);haptic('tick')}
+          flyCompletedRuns(unsorted,before.done.length);
+        }else if(!dealing){playSound(true);haptic('tick')}
         rememberSoon();
-        if(!foundations.every(value=>value===13))maybePraise({emptiedColumn:Boolean(sourceColumn)&&sourceColumn.length===0,runLength:run.length,toTableau:to.type==='tableau',suitDone:to.type==='foundation'&&foundations[to.pile]===13});
+        if(!foundations.every(value=>value===13))maybePraise({emptiedColumn:Boolean(sourceColumn)&&sourceColumn.length===0,runLength:run.length,toTableau:!dealing,suitDone:completed>0});
         if(foundations.every(value=>value===13)){
           autoMoving=false;finishing=false;stats.wins++;if(currentMode!=='developer'&&FreeCellCore.TIERS.includes(currentTier))stats.winsByTier={...stats.winsByTier,[currentTier]:(stats.winsByTier?.[currentTier]||0)+1};const missionsWereOpen=missionsUnlocked();const levelResult=awardLevelProgress();awardWin();
           if(missionsWereOpen&&currentMode!=='developer')missionEvent({type:'win',mode:currentMode,tier:currentTier,usedUndo:gameUsedUndo,usedHint:gameUsedHint,seconds,moves},true);
           if(levelResult?.previousLevel<missionsUnlockLevel()&&levelResult.level>=missionsUnlockLevel()&&gameConfig.missions.enabled)missionsCelebrationPending=true;find('#fc-status').textContent=t('completed');
           if(currentMode!=='developer'&&!quickWinUsed){
-            const score=Math.max(0,foundations.reduce((sum,n)=>sum+n,0)*10-moves);
             track('game_win',{game_mode:currentMode,level:currentLevelNumber,moves,duration_seconds:seconds,score,difficulty_tier:currentTier,deal_pool:currentPool||undefined});
             if(currentMode==='daily')track('daily_challenge_complete',{level:currentLevelNumber,moves,duration_seconds:seconds,score,rank:lastReward?.rivalsPlace?.rank});
             if(levelResult?.leveledUp)track('level_up',{previous_level:levelResult.previousLevel,new_level:levelResult.level});
             checkGoals({afterWin:true});syncUserProperties();
           }
           showVictory();remember();
-        }else{if(options.autoComplete||finishing)scheduleAutoComplete();scheduleAutoHint();scheduleStuckCheck()}
+        }else{scheduleAutoHint();scheduleStuckCheck()}
         return true;
+      }
+      // The stock: a tap deals one new face-up card onto every column (a move: Undo takes it back).
+      // Every column must hold a card first.
+      function dealStock(){
+        if(autoMoving||autoFlight||isDealing||!gameplayActive||foundations.every(value=>value===13))return false;
+        scheduleAutoHint();if(!stock.length)return false;
+        if(!legalMove(FreeCellCore.DEAL.from,FreeCellCore.DEAL.to,false)){
+          showMessage(t('dealNeedsColumns'));playSound(false);haptic('reject');
+          const slot=find('.stock-slot');slot?.classList.remove('invalid-shake');requestAnimationFrame(()=>slot?.classList.add('invalid-shake'));setTimeout(()=>slot?.classList.remove('invalid-shake'),380);
+          return false;
+        }
+        cancelAutoFoundationAnimation();
+        return legalMove(FreeCellCore.DEAL.from,FreeCellCore.DEAL.to,true);
+      }
+      // Dealt cards slide from the stock to their columns, one after the other, and turn over.
+      function animateDealRow(cards){
+        if(!cards.length||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+        const from=find('.stock-slot')?.getBoundingClientRect();if(!from)return;
+        cards.forEach((card,index)=>{
+          const element=boardCards.get(card.id??card.s*13+card.r);if(!element||typeof element.animate!=='function'||!element.isConnected)return;
+          const to=element.getBoundingClientRect();
+          element.animate([{transform:`translate3d(${from.left-to.left}px,${from.top-to.top}px,0) scaleX(.2)`},{transform:'translate3d(0,0,0) scaleX(1)'}],{duration:lowEffects?140:260,delay:index*45,easing:'cubic-bezier(.25,.65,.4,1)',fill:'backwards'});
+        });
+        perfWatch('deal_row',260+cards.length*45);
+      }
+      // A complete run (King to Ace) leaves its column by itself: its 13 cards fly, Ace first, to its
+      // foundation, with the suit-complete sound, haptic and golden ring.
+      function flyCompletedRuns(columns,firstSlot){
+        const phoneRect=phone.getBoundingClientRect(),reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;let slot=firstSlot,delay=0;
+        columns.forEach((column,pile)=>{
+          const start=FreeCellCore.completedRunStart(column);if(start<0||slot>=8)return;
+          const target=find('#fc-top').children[2+slot];slot++;
+          const landed=target?.querySelector('.playing-card');
+          const finish=()=>{playSuitCompleteSound();haptic('double');suitCompleteRing(landed||target);suitBurst(landed||target,column[start])};
+          const columnElement=find('#fc-columns')?.children[pile];
+          if(reduced||!target||!columnElement||!landed||typeof landed.animate!=='function'){finish();return}
+          const rect=columnElement.getBoundingClientRect(),goal=target.getBoundingClientRect(),tops=columnTops(column);
+          landed.style.visibility='hidden';
+          const cards=column.slice(start).reverse();
+          cards.forEach((card,offset)=>{
+            const index=column.length-1-offset,ghost=makeCard({...card,up:true},{type:'tableau',pile,index},true);
+            ghost.classList.add('auto-flight-card');ghost.removeAttribute('data-loc');
+            ghost.style.left=`${rect.left-phoneRect.left}px`;ghost.style.top=`${rect.top-phoneRect.top+tops[index]}px`;ghost.style.width=`${rect.width}px`;ghost.style.height=`${landed.offsetHeight||70}px`;ghost.style.zIndex=String(90+card.r);
+            phone.appendChild(ghost);
+            const dx=goal.left-rect.left+(goal.width-rect.width)/2,dy=goal.top-(rect.top+tops[index]);
+            const animation=ghost.animate([{transform:'translate3d(0,0,0)'},{transform:`translate3d(${dx}px,${dy}px,0)`}],{duration:lowEffects?180:300,delay:delay+offset*(lowEffects?20:35),easing:FLIGHT_EASING,fill:'both'});
+            const last=offset===cards.length-1,end=()=>{ghost.remove();if(last){landed.style.visibility='';finish()}};
+            animation.finished.then(end,end);
+          });
+          delay+=lowEffects?300:480;
+        });
+        perfWatch('run_complete',delay+400);
       }
       function attemptMove(from,to,{originRects=null}={}){
         if(autoMoving)return false;
@@ -3508,7 +3599,7 @@
           selected=null;
           return animateFoundationMove(from,to,{automatic:false,originRects});
         }
-        if((to?.type==='cell'||to?.type==='tableau')&&legalMove(from,to,false)){
+        if(to?.type==='tableau'&&legalMove(from,to,false)){
           selected=null;
           return animateBoardMove(from,to,{originRects});
         }
@@ -3528,7 +3619,7 @@
         if(autoMoving)return;
         scheduleAutoHint();
         if(loc.type==='foundation')return;
-        const card=cardAt(loc);if(!card)return;
+        const card=cardAt(loc);if(!card||card.up===false)return;
         if(selected){
           if(encode(selected)===encode(loc)){
             if(options.tap&&autoMove(selected))return;
@@ -3545,23 +3636,16 @@
         selected=loc;render();
       }
       function autoMove(loc){
-        const card=cardAt(loc);if(!card)return false;
-        const foundation={type:'foundation',pile:card.s,index:0};
-        if(legalMove(loc,foundation,false))return attemptMove(loc,foundation);
-        for(let pile=0;pile<8;pile++){
-          if(tableau[pile].length===0)continue;
-          const destination={type:'tableau',pile,index:Math.max(0,tableau[pile].length-1)};
-          if(legalMove(loc,destination,false))return attemptMove(loc,destination);
-        }
-        for(let pile=0;pile<8;pile++){
-          if(tableau[pile].length!==0)continue;
-          const destination={type:'tableau',pile,index:0};
-          if(legalMove(loc,destination,false))return attemptMove(loc,destination);
-        }
-        if(loc.type==='tableau'&&loc.index===tableau[loc.pile].length-1){
-          const empty=cells.findIndex(value=>value===null);if(empty>=0)return attemptMove(loc,{type:'cell',pile:empty,index:0});
-        }
-        return false;
+        // A tap sends the run where it fits best: onto the next higher card of its own suit, else onto
+        // any next higher card (columns to the right first), else into an empty column.
+        const card=cardAt(loc);if(!card||loc.type!=='tableau'||card.up===false)return false;
+        const order=tableau.map((_,i)=>(loc.pile+1+i)%tableau.length).filter(pile=>pile!==loc.pile);
+        const fitting=order.filter(pile=>tableau[pile].length&&legalMove(loc,{type:'tableau',pile,index:tableau[pile].length-1},false));
+        const pile=fitting.find(pile=>tableau[pile][tableau[pile].length-1].s===card.s)??fitting[0];
+        if(pile!==undefined)return attemptMove(loc,{type:'tableau',pile,index:tableau[pile].length-1});
+        if(loc.index===0)return false;
+        const empty=order.find(pile=>!tableau[pile].length);
+        return empty===undefined?false:attemptMove(loc,{type:'tableau',pile:empty,index:0});
       }
       function startDrag(event,loc,element){
         if(autoMoving)return;
@@ -3743,16 +3827,9 @@
         if(sources.some(source=>!source))return legalMove(from,destination,true);
         const sourceRects=sources.map((source,index)=>originRects?.[index]||source.getBoundingClientRect()),phoneRect=phone.getBoundingClientRect();
         const destinationStart=destination.type==='tableau'?tableau[destination.pile].length:0;
-        let targetRects=[];
-        if(destination.type==='cell'){
-          const slot=root.querySelector(`[data-dest="${encode(destination)}"]`);if(!slot)return legalMove(from,destination,true);
-          const rect=slot.getBoundingClientRect();targetRects=[rect];
-        }else{
-          const column=find('#fc-columns')?.children[destination.pile];if(!column)return legalMove(from,destination,true);
-          const rect=column.getBoundingClientRect(),finalLength=destinationStart+run.length;
-          const offset=stackOffset(finalLength);
-          targetRects=run.map((_,index)=>({left:rect.left,top:rect.top+(destinationStart+index)*offset,width:rect.width,height:70}));
-        }
+        const column=find('#fc-columns')?.children[destination.pile];if(!column)return legalMove(from,destination,true);
+        const rect=column.getBoundingClientRect(),tops=columnTops([...tableau[destination.pile],...run.map(card=>({...card,up:true}))]);
+        const targetRects=run.map((_,index)=>({left:rect.left,top:rect.top+tops[destinationStart+index],width:rect.width,height:sourceRects[index].height}));
         const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,duration=reduced?0:FLIGHT_MS,id=++foundationFlightSequence;if(duration)perfWatch('foundation',duration+60);
         const ghosts=sources.map((source,index)=>{
           const rect=sourceRects[index],ghost=source.cloneNode(true);
@@ -3807,7 +3884,7 @@
       // missing from the foundations is then always free to move, so the rest can finish alone.
       function canAutocomplete(){
         if(!gameplayActive||autoMoving||isDealing||foundations.every(value=>value===13))return false;
-        return tableau.every(column=>column.every((card,index)=>index===0||column[index-1].r>card.r));
+        return false;
       }
       // Encouragement after a standout move: emptying a column, moving a run of 3+ cards or
       // completing a suit. At most one every 12 s, never during automatic moves, and only while
@@ -3967,13 +4044,8 @@
       function scheduleAutoComplete(){
         clearTimeout(autoTimer);autoTimer=setTimeout(()=>{
           if(drag){scheduleAutoComplete();return}
-          const candidates=[];
-          cells.forEach((card,pile)=>{if(card)candidates.push({card,loc:{type:'cell',pile,index:0}})});
-          tableau.forEach((column,pile)=>{const index=column.length-1,card=column[index];if(card)candidates.push({card,loc:{type:'tableau',pile,index}})});
-          const toFoundation=({card,loc})=>legalMove(loc,{type:'foundation',pile:card.s,index:0},false);
-          const next=finishing
-            ?candidates.filter(toFoundation).sort((a,b)=>a.card.r-b.card.r)[0]
-            :candidates.find(candidate=>(candidate.card.r<=2||candidate.card.r<=Math.min(...foundations)+2)&&toFoundation(candidate));
+          // Spider has no card-by-card foundation moves: complete runs leave by themselves.
+          const next=null;
           if(!next){autoMoving=false;finishing=false;if(options.highlight)render();else updateAutocompleteButton();scheduleStuckCheck();return}
           animateAutoFoundation(next);
         },autoMoving?FreeCellCore.chainTiming(autoChainStep+1).gapMs:70);
@@ -3985,7 +4057,7 @@
       // position is analysed in the background (background_budget_ms), so the hint is usually ready.
       // max_hints_per_game (null: no cap) counts the hints asked for in a game.
       let hintState=null,hintPending=false,analysisTimer=0,gameHints=0;
-      const boardState=()=>({tableau,cells,foundations});
+      const boardState=()=>({tableau,stock,foundations,done,suits:suitsMode});
       const smartHints=()=>gameConfig.hint.smart_hint;
       function resetAnalysis(type='restart'){clearTimeout(analysisTimer);hintState=FreeCellCore.hintSession(hintState,{type});hintPending=false;solver.cancel()}
       const analysisAllowed=()=>gameplayActive&&!autoMoving&&!autoFlight&&!isDealing&&!foundations.every(value=>value===13)&&document.visibilityState==='visible'
@@ -4044,7 +4116,7 @@
       function suggestionFor(budget){
         const key=currentPositionKey();
         if(suggestionCache?.key===key&&suggestionCache.result.status!=='guess')return suggestionCache.result;
-        const result=FreeCellCore.suggestMove({tableau,cells,foundations},{seen:seenPositions,...budget,now:()=>performance.now()});
+        const result=FreeCellCore.suggestMove(boardState(),{seen:seenPositions,...budget,now:()=>performance.now()});
         suggestionCache={key,result};return result;
       }
       // "No more moves possible" only when no legal move exists; "There is no way to win from here"
@@ -4075,12 +4147,12 @@
         if(top===null)top=Math.max(4,(relative(find('.scorebar').getBoundingClientRect()).bottom-stuckMessage.offsetHeight)/2);
         stuckMessage.style.top=`${Math.round(top)}px`;
       }
-      // tips_config: the first time the player is stuck with at least free_cells_tip_min_occupied
-      // free cells full, the message also says what free cells are for, with "Got it". Once per
-      // install (saved, in the backup); never during the tutorial or over a panel.
+      // tips_config: the first time the player is stuck, the message also gives a Spider tip (runs of
+      // one suit, empty columns, Undo), with "Got it". Once per install (saved, in the backup); never
+      // during the tutorial or over a panel.
       function stuckTipDue(){
         const rules=gameConfig.tips;
-        return rules.enabled&&!tipsState.freeCells&&cells.filter(Boolean).length>=rules.free_cells_tip_min_occupied&&!onboardingTutorial
+        return rules.enabled&&!tipsState.freeCells&&!onboardingTutorial
           &&!phone.querySelector('.tutorial-layer')&&!find('#fc-modal-shade').classList.contains('open');
       }
       // Owner request (2026-11-04): with "There is no way to win from here", how many Undo presses take
@@ -4129,6 +4201,14 @@
       // Owner decision (2026-10-25): the hint animates only the card(s) to move and never shows
       // where they go: "Move 9♠".
       function markHintMove(move){
+        if(move.from.type==='stock'){
+          const slot=find('.stock-slot');slot?.classList.add('hint');setTimeout(()=>slot?.classList.remove('hint'),1300);
+          showMessage(t('hintDeal'));return;
+        }
+        if(move.from.type==='stock'){
+          const slot=find('.stock-slot');slot?.classList.add('hint');setTimeout(()=>slot?.classList.remove('hint'),1300);
+          showMessage(t('hintDeal'));return;
+        }
         const from={type:move.from.type,pile:move.from.pile,index:move.from.index||0},card=cardAt(from);if(!card)return;
         const count=from.type==='tableau'?tableau[from.pile].length-from.index:1;
         Array.from({length:count},(_,offset)=>root.querySelector(`[data-loc="${encode({...from,index:from.index+offset})}"]`)).filter(Boolean)
@@ -4138,7 +4218,7 @@
       function undo(){
         if(autoMoving)return;
         settlePlayerFlight();cancelAutoFoundationAnimation();const old=history.pop();if(!old){showMessage(t('noMovesUndo'));return}
-        const chargedMove=moves+1;tableau=old.tableau.map(col=>col.map(card=>({...card})));cells=old.cells.map(card=>card?{...card}:null);foundations=[...old.foundations];moves=chargedMove;stats.totalMoves++;selected=null;gameUsedUndo=true;gameUndos++;seenPositions.add(currentPositionKey());hideStuckMessage();resetAnalysis('undo');render();if(smartHints())scheduleAnalysis()
+        const chargedMove=moves+1;tableau=old.tableau.map(col=>col.map(card=>({...card})));stock=old.stock.map(card=>({...card}));foundations=[...old.foundations];done=[...old.done];score=Math.max(0,(old.score??score)-FreeCellCore.SCORING.move);moves=chargedMove;stats.totalMoves++;selected=null;gameUsedUndo=true;gameUndos++;seenPositions.add(currentPositionKey());hideStuckMessage();resetAnalysis('undo');render();if(smartHints())scheduleAnalysis()
         if(currentMode!=='developer')track('undo_used',{game_mode:currentMode,level:currentLevelNumber,moves});
       }
       function showMessage(text){
@@ -4176,7 +4256,7 @@
       const accessibilitySettingsMarkup=()=>`<section class="settings-group"><div class="settings-group-title">${t('accessibility')}</div>${sizeControl('cardSize',t('cardSize'))}<div class="card-size-preview" aria-hidden="true"></div></section>`;
       function settings(){
         const language=FreeCellCore.LANGUAGES.find(item=>item.code===currentLanguage)?.name||'English';
-        showModal(t('settings'),`${removeAdsSettingsCard()}<div class="settings-list"><section class="settings-group"><div class="settings-group-title">${t('game')}</div>${check('tap',t('tapToMove'))}${check('autoComplete',t('autoComplete'))}${check('autoHint',t('automaticHints'))}${check('highlight',t('highlightMovable'))}</section>${accessibilitySettingsMarkup()}<section class="settings-group"><div class="settings-group-title">${t('soundAnimation')}</div>${check('sound',t('sound'))}${check('vibration',t('vibration'))}${check('celebration',t('victoryCelebration'))}${effectsControl()}</section>${reminderSettingsMarkup()}<section class="settings-group"><div class="settings-group-title">${t('language')}</div><button type="button" class="setting-action" data-language><span>${t('appLanguage')}</span><span class="setting-value">${language}</span></button></section><details class="settings-more"><summary>${t('displayControls')}</summary><div>${check('showScore',t('score'))}${check('showTime',t('time'))}${check('showMoves',t('moves'))}${check('leftHanded',t('leftHanded'))}${check('lockOrientation',t('lockOrientation'))}<button type="button" class="setting-action" data-direction><span>${t('freeCellPosition')}</span><span class="setting-value">${options.freecellRight?t('right'):t('left')}</span></button></div></details><details class="settings-more"><summary>${t('records')}</summary><div><button type="button" class="setting-action" data-info="levels">${t('levelProgress')}</button><button type="button" class="setting-action" data-info="history">${t('gameHistory')}</button>${gameConfig.achievements.enabled?`<button type="button" class="setting-action" data-info="achievements">${t('achievementsTitle')}</button>`:''}<button type="button" class="setting-action" data-info="stats">${t('statistics')}</button><button type="button" class="setting-action" data-info="numbered">${t('numberedCollection')}</button></div></details><details class="settings-more"><summary>${t('helpLegal')}</summary><div><button type="button" class="setting-action" data-info="tutorial">${t('tutorial')}</button><button type="button" class="setting-action" data-info="rules">${t('rules')}</button><button type="button" class="setting-action" data-info="privacy">${t('privacyPolicy')}</button><button type="button" class="setting-action" data-info="contact">${t('contactUs')}</button></div></details></div>`,'settings')
+        showModal(t('settings'),`${removeAdsSettingsCard()}<div class="settings-list"><section class="settings-group"><div class="settings-group-title">${t('game')}</div>${check('tap',t('tapToMove'))}${check('autoHint',t('automaticHints'))}${check('highlight',t('highlightMovable'))}</section>${accessibilitySettingsMarkup()}<section class="settings-group"><div class="settings-group-title">${t('soundAnimation')}</div>${check('sound',t('sound'))}${check('vibration',t('vibration'))}${check('celebration',t('victoryCelebration'))}${effectsControl()}</section>${reminderSettingsMarkup()}<section class="settings-group"><div class="settings-group-title">${t('language')}</div><button type="button" class="setting-action" data-language><span>${t('appLanguage')}</span><span class="setting-value">${language}</span></button></section><details class="settings-more"><summary>${t('displayControls')}</summary><div>${check('showScore',t('score'))}${check('showTime',t('time'))}${check('showMoves',t('moves'))}${check('leftHanded',t('leftHanded'))}${check('lockOrientation',t('lockOrientation'))}<button type="button" class="setting-action" data-direction><span>${t('stockPosition')}</span><span class="setting-value">${options.stockRight?t('right'):t('left')}</span></button></div></details><details class="settings-more"><summary>${t('records')}</summary><div><button type="button" class="setting-action" data-info="levels">${t('levelProgress')}</button><button type="button" class="setting-action" data-info="history">${t('gameHistory')}</button>${gameConfig.achievements.enabled?`<button type="button" class="setting-action" data-info="achievements">${t('achievementsTitle')}</button>`:''}<button type="button" class="setting-action" data-info="stats">${t('statistics')}</button><button type="button" class="setting-action" data-info="numbered">${t('numberedCollection')}</button></div></details><details class="settings-more"><summary>${t('helpLegal')}</summary><div><button type="button" class="setting-action" data-info="tutorial">${t('tutorial')}</button><button type="button" class="setting-action" data-info="rules">${t('rules')}</button><button type="button" class="setting-action" data-info="privacy">${t('privacyPolicy')}</button><button type="button" class="setting-action" data-info="contact">${t('contactUs')}</button></div></details></div>`,'settings')
         refreshCardPreview();
       }
       let languageReturn='settings';
@@ -4707,7 +4787,7 @@
         const font=(weight,px)=>`${weight} ${px}px Roboto,Arial,sans-serif`;
         const write=(value,x,y,style,color)=>{g.font=style;g.textAlign='center';g.textBaseline='middle';g.fillStyle='rgba(0,0,0,.35)';g.fillText(value,x,y+5);g.fillStyle=color;g.fillText(value,x,y)};
         [['♣',cream],['♦',red],['♥',red],['♠',cream]].forEach(([mark,color],index)=>write(mark,size/2+(index-1.5)*112,150,font(700,84),color));
-        write('FreeCell',size/2,285,font(700,124),cream);
+        write('Spider',size/2,285,font(700,124),cream);
         write(t('dailyChallenge'),size/2,395,font(700,64),gold);
         write(date,size/2,475,font(500,46),cream);
         const tiles=[[t('time'),time,''],[t('moves'),String(moves),''],[t('currentStreak'),String(streak),t(streak===1?'imgDay':'imgDays',{number:streak})]];
@@ -4769,7 +4849,7 @@
         const text=(find('#fc-feedback-text')?.value||'').trim();if(!text)return;
         track('rating_choice',{source:'feedback_sent'});
         if(window.AndroidBridge?.sendFeedback)window.AndroidBridge.sendFeedback(text);
-        else window.location.href=`mailto:nexusplaylabss@gmail.com?subject=${encodeURIComponent('FreeCell feedback')}&body=${encodeURIComponent(text)}`;
+        else window.location.href=`mailto:nexusplaylabss@gmail.com?subject=${encodeURIComponent('Spider Solitaire feedback')}&body=${encodeURIComponent(text)}`;
         showMessage(t('feedbackOpened'));closeFeedback();
       }
       function showDailyBonus(next=null,justClaimed=false){
@@ -5070,15 +5150,17 @@
       function quickWin(){
         if(!developerToolsEnabled||!gameplayActive||foundations.every(value=>value===13))return;
         cancelAutoFoundationAnimation();clearTimeout(autoTimer);clearTimeout(autoHintTimer);closeModal(true);quickWinUsed=true;
-        tableau=Array.from({length:8},()=>[]);cells=[null,null,null,{s:3,r:13}];foundations=[13,13,13,12];selected=null;render();
-        legalMove({type:'cell',pile:3,index:0},{type:'foundation',pile:3,index:0},true);
+        const run=Array.from({length:12},(_,i)=>({s:3,r:13-i,up:true,id:200+i}));
+        tableau=Array.from({length:10},()=>[]);tableau[3]=run;tableau[5]=[{s:3,r:1,up:true,id:212}];stock=[];foundations=[13,13,13,13,13,13,13,0];done=[3,3,3,3,3,3,3];selected=null;render();
+        legalMove({type:'tableau',pile:5,index:0},{type:'tableau',pile:3,index:11},true);
       }
       function startDeveloperWinTest(){
         if(!developerToolsEnabled)return;
         clearVictorySequence();clearTimeout(autoTimer);clearTimeout(autoHintTimer);clearTimeout(dealTimer);isDealing=false;currentMode='developer';currentLabel='Victory Test';currentSeed=9999999;currentTier=null;
         currentLevelNumber=playerLevel;levelAwarded=false;lastLevelResult=null;
-        tableau=Array.from({length:8},()=>[]);tableau[3].push({s:3,r:13});cells=[null,null,null,null];foundations=[13,13,13,12];history=[];moves=0;seconds=0;selected=null;
-        initialTableau=tableau.map(col=>col.map(card=>({...card})));stats.started++;find('#fc-status').textContent=t('winOneMove');closeModal();render();remember();showMessage(t('tapKing'));
+        tableau=Array.from({length:10},()=>[]);tableau[3]=Array.from({length:12},(_,i)=>({s:3,r:13-i,up:true,id:200+i}));tableau[6]=[{s:3,r:1,up:true,id:212}];
+        stock=[];foundations=[13,13,13,13,13,13,13,0];done=[3,3,3,3,3,3,3];suitsMode=1;score=FreeCellCore.SCORING.start;history=[];moves=0;seconds=0;selected=null;
+        stats.started++;find('#fc-status').textContent=t('winOneMove');closeModal();render();remember();showMessage(t('tapKing'));
       }
       function clearVictorySequence(){
         clearTimeout(victoryTimer);victoryTimer=0;phone.querySelector('.win-transition')?.remove();clearVictoryConfetti();
@@ -5145,7 +5227,7 @@
       }
       function showVictory(){
         const time=`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`;
-        const score=Math.max(0,foundations.reduce((sum,n)=>sum+n,0)*10-moves);playWinSound();haptic('win');clearVictorySequence();
+        playWinSound();haptic('win');clearVictorySequence();
         if(!options.celebration||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){showVictoryPanel(time,score);return}
         const flights=[[-142,118,82,284,-230,-190,290,-610,3.45],[-106,162,-162,318,216,220,-330,690,3.75],[-64,104,122,260,-185,-170,250,-560,3.55],[-18,188,-98,340,155,230,-300,640,3.92],[32,128,151,294,-130,-210,310,-720,3.68],[78,176,-122,360,194,250,-360,760,4.02],[126,116,90,312,-215,-230,320,-680,3.62],[-128,230,160,390,224,270,-380,820,4.18],[-88,205,-146,374,-202,-260,350,-780,4.08],[-48,246,108,410,182,280,-400,860,4.25],[8,212,-96,392,-152,-290,420,-900,4.15],[52,252,134,432,206,310,-450,920,4.36],[96,218,-118,405,-196,-320,470,-950,4.24],[136,262,84,446,232,330,-500,990,4.48],[-116,286,-154,462,-218,-340,520,-1020,4.55],[72,304,142,480,188,350,-540,1060,4.62]];
         const faces=['A♣','2♦','3♠','4♥','5♣','6♦','7♠','8♥','9♣','10♦','J♠','Q♥','K♣','A♦','Q♠','K♥'];
@@ -5166,45 +5248,44 @@
       find('#fc-modal-shade').addEventListener('click',event=>{if(performance.now()<victoryTapGuardUntil){event.preventDefault();event.stopPropagation()}},true);
       function numberedForm(){showModal(t('gameByNumber'),`<p>${t('enterNumber')}</p><div class="number-field"><input id="fc-game-number" type="number" min="0" max="9999999" inputmode="numeric" value="" aria-label="${t('gameByNumber')}"><button type="button" data-number-start>${t('start')}</button></div><div class="modal-list game-menu" style="margin-top:14px"><button type="button" data-collection-open><i data-lucide="list" aria-hidden="true"></i><span>${t('collectionShort')}</span></button></div>`,'new-game')}
       function tutorialCardMarkup(label,style=''){
+        if(label==='~')return `<span class="tutorial-demo-card back" ${style?`style="${style}"`:''}></span>`;
         const suit=label.slice(-1),rank=label.slice(0,-1),red=suit==='♦'||suit==='♥',court=['J','Q','K'].includes(rank);
         return `<span class="tutorial-demo-card${red?' red':''}" ${style?`style="${style}"`:''} aria-label="${rank} ${suit}"><span class="demo-card-corner"><b>${rank}</b><i>${suit}</i></span>${court?courtSvgMarkup(rank,suit,'demo'):`<span class="demo-card-center">${suit}</span>`}</span>`;
       }
+      // The tutorial's table (Spider): a staged position, ten columns ('~' = face down), and on top the
+      // stock, a gap and the eight foundations. Each step takes out the cards its demo moves.
+      const TUTORIAL_COLUMNS=[['~','~','~','K♠','Q♠','J♠'],['~','~','9♥'],['~','~','~','10♠'],['~','~','5♠'],['~','8♠','7♠','6♠'],['~','~','4♥'],['~','~','~','10♥','9♠'],['~','3♠'],['~','~','2♥'],['~','~','Q♥']];
       function tutorialBoardMarkup(step){
-        let columns=FreeCellCore.dealTableau(TUTORIAL_DEAL).map(column=>column.map(card=>`${rankOf(card.r)}${suitOf(card).mark}`));
-        const cells=[null,null,null,null],foundationCards=[null,null,null,null],foundationSuits=['♣','♦','♥','♠'];
-        const take=label=>{for(const column of columns){const index=column.indexOf(label);if(index>=0){column.splice(index,1);return label}}return label};
-        if(step===0){take('A♠')}
-        if(step===1){take('A♠');take('2♠');foundationCards[3]='A♠'}
-        if(step===2){['7♥','10♠','9♦','8♣'].forEach(take);columns[5]=columns[5].slice(0,3).concat(['10♠','9♦','8♣'])}
-        if(step===3){['K♠','Q♥','J♣','10♦'].forEach(take);columns[5]=columns[5].slice(0,4).concat(['K♠'])}
-        if(step===4){['Q♠','4♣','7♦','9♥'].forEach(take);cells[1]='4♣';cells[2]='7♦';cells[3]='9♥'}
-        if(step===5){columns=Array.from({length:8},()=>[]);foundationCards.splice(0,4,'Q♣','Q♦','Q♥','Q♠')}
-        const top=[...cells,...foundationCards].map((card,index)=>`<span class="tutorial-board-slot ${index>3?'foundation':'cell'}">${card?tutorialCardMarkup(card):index>3?`<i>${foundationSuits[index-4]}</i>`:''}</span>`).join('');
-        const deal=columns.map((column,columnIndex)=>`<div class="tutorial-board-column" data-tutorial-column="${columnIndex}">${column.map((card,index)=>tutorialCardMarkup(card,`--tutorial-board-top:${step===5?144:index*26}px;z-index:${index+1}`)).join('')}</div>`).join('');
+        let columns=TUTORIAL_COLUMNS.map(column=>column.slice());const foundationCards=Array(8).fill(null);
+        if(step===0)foundationCards[0]='K♠';
+        if(step===1)columns[1]=columns[1].slice(0,-1);
+        if(step===2)columns[4]=columns[4].slice(0,1);
+        if(step===3){columns[3]=columns[3].slice(0,-1);columns[7]=[]}
+        if(step===5){columns=Array.from({length:10},()=>[]);foundationCards.fill('K♠',0,7);foundationCards[1]='K♥';foundationCards[4]='K♥'}
+        const top=['stock','gap',...foundationCards].map((card,index)=>index===0?`<span class="tutorial-board-slot stock">${step===5?'':tutorialCardMarkup('~')}</span>`:index===1?'<span class="tutorial-board-slot gap"></span>':`<span class="tutorial-board-slot foundation">${card?tutorialCardMarkup(card):''}</span>`).join('');
+        const deal=columns.map((column,columnIndex)=>`<div class="tutorial-board-column" data-tutorial-column="${columnIndex}">${column.map((card,index)=>tutorialCardMarkup(card,`--tutorial-board-top:${index*26}px;z-index:${index+1}`)).join('')}</div>`).join('');
         return `<div class="tutorial-board" aria-hidden="true"><div class="tutorial-board-top">${top}</div><div class="tutorial-board-columns">${deal}</div></div>`;
       }
       function tutorialSceneMarkup(scene){
         if(scene==='finish'){
-          return `<div class="tutorial-foundation-finale">${['K♣','K♦','K♥','K♠'].map(card=>`<div class="tutorial-gesture finish-king">${tutorialCardMarkup(card)}</div>`).join('')}</div>`;
+          return `<div class="tutorial-foundation-finale"><div class="tutorial-gesture finish-king">${tutorialCardMarkup('K♠')}</div></div>`;
         }
         const scenes={
-          'foundation-ace':{moving:['A♠']},
-          'foundation-two':{moving:['2♠']},
-          move:{moving:['7♥']},
-          sequence:{moving:['Q♥','J♣','10♦']},
-          cell:{moving:['Q♠']}
+          move:{moving:['9♥']},
+          sequence:{moving:['8♠','7♠','6♠']},
+          empty:{moving:['5♠']}
         };
         const data=scenes[scene];if(!data)return '';
         const moving=data.moving.map((card,index)=>tutorialCardMarkup(card,scene==='sequence'?`--tutorial-card-top:${index*26}px;z-index:${index+1}`:'')).join('');
         return `<div class="tutorial-gesture ${scene}">${moving}</div>`;
       }
-      // The opening deal drawn small: free cells and foundations on top, eight columns below.
+      // The opening deal drawn small: the stock and the eight foundations on top, ten columns below
+      // (the last card of each face up).
       function miniBoardMarkup(){
-        const columns=FreeCellCore.dealTableau(TUTORIAL_DEAL).map(column=>column.map(card=>`${rankOf(card.r)}${suitOf(card).mark}`));
-        const overlaps=[14,16,15,17,14,16,15,17],nudges=[0,4,1,5,2,0,3,1];
-        const freecells='<span class="mini-slot cell"></span>'.repeat(4),foundations=['♣','♦','♥','♠'].map(suit=>`<span class="mini-slot foundation ${suit==='♦'||suit==='♥'?'red':''}"><b>${suit}</b></span>`).join('');
-        const deal=columns.map((column,columnIndex)=>`<div class="mini-column" style="--mini-column-nudge:${nudges[columnIndex]}px">${column.map((card,index)=>tutorialCardMarkup(card,`--mini-card-top:${index*overlaps[columnIndex]}px;z-index:${index+1}`)).join('')}</div>`).join('');
-        return `<div class="tutorial-intro-preview" aria-hidden="true"><div class="mini-top">${freecells}${foundations}</div><div class="mini-deal">${deal}</div></div>`;
+        const columns=FreeCellCore.dealGame(TUTORIAL_DEAL,2).tableau.map(column=>column.map(card=>card.up===false?'~':`${rankOf(card.r)}${suitOf(card).mark}`));
+        const top=`<span class="mini-slot stock">${tutorialCardMarkup('~')}</span><span class="mini-slot gap"></span>`+'<span class="mini-slot foundation"></span>'.repeat(8);
+        const deal=columns.map((column,columnIndex)=>`<div class="mini-column" style="--mini-column-nudge:${columnIndex%3}px">${column.map((card,index)=>tutorialCardMarkup(card,`--mini-card-top:${index*15}px;z-index:${index+1}`)).join('')}</div>`).join('');
+        return `<div class="tutorial-intro-preview" aria-hidden="true"><div class="mini-top">${top}</div><div class="mini-deal">${deal}</div></div>`;
       }
       function tutorialView(required=false){
         onboardingTutorial=Boolean(required);
@@ -5236,18 +5317,16 @@
       // Where each demo card travels: from the top of a board column to the top of another
       // column or into a free cell / foundation slot. Kings in the finale go column i -> slot 4+i.
       const TUTORIAL_PATHS={
-        'foundation-ace':[{from:6,to:{slot:7}}],
-        'foundation-two':[{from:5,to:{slot:7}}],
-        move:[{from:1,to:{column:5}}],
-        sequence:[{from:1,to:{column:5}}],
-        cell:[{from:1,to:{slot:0}}],
-        'finish-king':[0,1,2,3].map(index=>({from:index,to:{slot:4+index}}))
+        move:[{from:1,to:{column:2}}],
+        sequence:[{from:4,to:{column:6}}],
+        empty:[{from:3,to:{column:7}}],
+        'finish-king':[{from:0,to:{slot:9}}]
       };
       // Start and end points are measured on the rendered board, so the demo card always leaves
       // from on top of the source column and lands exactly on its target, on any screen size.
       function fitTutorialScene(layer){
         const columns=[...layer.querySelectorAll('.tutorial-board-column')],slots=[...layer.querySelectorAll('.tutorial-board-slot')];
-        if(columns.length<8||slots.length<8)return;
+        if(columns.length<10||slots.length<10)return;
         const box=layer.getBoundingClientRect(),cardWidth=columns[0].getBoundingClientRect().width;
         const slotPoint=slot=>{const r=slot.getBoundingClientRect();return {left:r.left-box.left,top:r.top-box.top}};
         const pileTop=column=>{const r=column.getBoundingClientRect();return {left:r.left-box.left,top:r.top-box.top+column.querySelectorAll('.tutorial-demo-card').length*26}};
@@ -5265,7 +5344,7 @@
       // The demo move runs as a script animation with the measured distances in plain pixels, so it
       // does not depend on CSS variables inside keyframes (which some WebViews ignore) and it still
       // plays when the phone asks for reduced motion: there it travels straight, without tilt.
-      const TUTORIAL_TIMING={'foundation-ace':3800,'foundation-two':3800,move:3800,sequence:4100,cell:3700};
+      const TUTORIAL_TIMING={move:3800,sequence:4100,empty:3800};
       function playTutorialPath(gesture,kind,index,dx,dy){
         if(typeof gesture.animate!=='function')return;
         const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -5291,13 +5370,13 @@
       function rulesView(){
         const card=(label,style='')=>tutorialCardMarkup(label,style);
         const stack=(labels,mark='')=>`<span class="rules-stack" style="--rules-cards:${labels.length}">${labels.map((label,index)=>card(label,`--rules-top:${index*18}px`)).join('')}${mark?`<b class="rules-mark ${mark}" aria-hidden="true">${mark==='ok'?'✓':'✕'}</b>`:''}</span>`;
-        const fan=['A♥','2♥','3♥','4♥'].map((label,index)=>card(label,`--rules-left:${index*16}px`)).join('');
+        const fan=['4♥','3♥','2♥','A♥'].map((label,index)=>card(label,`--rules-left:${index*16}px`)).join('');
         const figures={
-          goal:`<span class="rules-fan">${fan}</span><span class="rules-ellipsis" aria-hidden="true">…</span>${card('K♥')}`,
+          goal:`${card('K♥')}<span class="rules-ellipsis" aria-hidden="true">…</span><span class="rules-fan">${fan}</span>`,
           board:miniBoardMarkup(),
-          columns:`${stack(['9♥','8♠'],'ok')}${stack(['9♦','8♥'],'no')}${stack(['9♣','7♥'],'no')}`,
-          cells:`<span class="rules-captioned"><span class="rules-slot">${card('7♣')}</span><small>${t('freeCell')}</small></span><span class="rules-captioned"><span class="rules-slot empty"></span><small>${t('emptyColumn')}</small></span>`,
-          runs:stack(['J♦','10♠','9♥','8♣']),
+          columns:`${stack(['9♥','8♠'],'ok')}${stack(['9♦','8♦'],'ok')}${stack(['9♣','7♥'],'no')}`,
+          cells:`${stack(['~','6♠'])}<span class="rules-captioned"><span class="rules-slot empty"></span><small>${t('emptyColumn')}</small></span>`,
+          runs:`${stack(['10♠','9♠','8♠'],'ok')}${stack(['10♠','9♥','8♠'],'no')}`,
         };
         const sections=[['rulesGoalTitle','rulesGoalText','goal'],['rulesBoardTitle','rulesBoardText','board'],['rulesColumnsTitle','rulesColumnsText','columns'],['rulesCellsTitle','rulesCellsText','cells'],['rulesRunsTitle','rulesRunsText','runs'],['rulesTipsTitle','rulesTipsText','']];
         showModal(t('rules'),`<div class="rules-view">${sections.map(([title,text,figure])=>`<section class="rules-section"><h3>${t(title)}</h3><p>${t(text)}</p>${figure?figure==='board'?figures.board:`<div class="rules-figure" aria-hidden="true">${figures[figure]}</div>`:''}</section>`).join('')}</div>`,'standard',{back:settings});
@@ -5340,7 +5419,7 @@
         const startMark=['/* freecell-','core:start'].join(''),endMark=['/* freecell-','core:end */'].join('');
         let worker=null,workerFailed=false,running=null,waiting=null,nextId=1,sliceTimer=0;
         const coreSource=()=>{for(const script of document.scripts){const text=script.textContent,start=text.indexOf(startMark),end=text.indexOf(endMark);if(start>=0&&end>start)return text.slice(start,end)}return ''};
-        const plain=state=>({tableau:state.tableau.map(column=>column.map(card=>({s:card.s,r:card.r}))),cells:state.cells.map(card=>card?{s:card.s,r:card.r}:null),foundations:[...state.foundations]});
+        const plain=state=>({tableau:state.tableau.map(column=>column.map(card=>({s:card.s,r:card.r,up:card.up!==false}))),stock:state.stock.map(card=>({s:card.s,r:card.r})),foundations:[...state.foundations],done:[...state.done],suits:state.suits});
         function ensureWorker(){
           if(worker||workerFailed)return worker;
           try{
@@ -5469,7 +5548,7 @@ self.onmessage=event=>{const {id,state,budget}=event.data,started=performance.no
         if(action==='solver-clear')solverTimings.length=0;
         // Check board (2026-11-04): an exhaustive search of the board as it is (no time limit, up to two
         // million positions) and the board as text, to send when a verdict looks wrong.
-        if(action==='solver-check'){const state={tableau,cells,foundations},started=performance.now(),result=FreeCellCore.runToEnd(FreeCellCore.analyse(state,{maxNodes:2000000}));const board=JSON.stringify({seed:currentSeed,mode:currentMode,moves,tableau:tableau.map(column=>column.map(card=>card.s*13+card.r)),cells:cells.map(card=>card?card.s*13+card.r:0),foundations});showModal('Check board',`<div class="debug-tools"><p>${result.status} · ${result.expanded} positions · ${Math.round(performance.now()-started)} ms</p><textarea readonly rows="6" style="width:100%;font:11px monospace">${board}</textarea><div class="modal-list"><button type="button" data-copy-board>Copy</button></div></div>`);const copy=find('[data-copy-board]');copy?.addEventListener('click',()=>{try{navigator.clipboard.writeText(board).then(()=>showMessage('Copied'),()=>showMessage('Select the text and copy it'))}catch(error){showMessage('Select the text and copy it')}});return}
+        if(action==='solver-check'){const state=boardState(),started=performance.now(),result=FreeCellCore.runToEnd(FreeCellCore.analyse(state,{maxNodes:2000000}));const board=JSON.stringify({seed:currentSeed,mode:currentMode,moves,tableau:tableau.map(column=>column.map(card=>card.s*13+card.r)),cells:cells.map(card=>card?card.s*13+card.r:0),foundations});showModal('Check board',`<div class="debug-tools"><p>${result.status} · ${result.expanded} positions · ${Math.round(performance.now()-started)} ms</p><textarea readonly rows="6" style="width:100%;font:11px monospace">${board}</textarea><div class="modal-list"><button type="button" data-copy-board>Copy</button></div></div>`);const copy=find('[data-copy-board]');copy?.addEventListener('click',()=>{try{navigator.clipboard.writeText(board).then(()=>showMessage('Copied'),()=>showMessage('Select the text and copy it'))}catch(error){showMessage('Select the text and copy it')}});return}
         if(action.startsWith('feel-')){({place:()=>playSound(true),foundation:()=>playFoundationSound(1+Math.floor(Math.random()*52)),suit:playSuitCompleteSound,coins:playCoinsSound,reject:()=>playSound(false),win:playWinSound})[action.slice(5)]?.();return}
         if(action.startsWith('haptic-')){lastHaptic=0;haptic(action.slice(7));return}
         if(action.startsWith('card-size-')){options.cardSize=action.slice(10);options.cardSizeChosen=true;applySizes()}
@@ -5525,7 +5604,7 @@ self.onmessage=event=>{const {id,state,budget}=event.data,started=performance.no
           root.querySelectorAll(`[data-size-option="${key}"]`).forEach(button=>{const on=button.dataset.sizeValue===value;button.classList.toggle('selected',on);button.setAttribute('aria-checked',String(on))});
           refreshCardPreview();return;
         }
-        if(event.target.closest('[data-direction]')){options.freecellRight=!options.freecellRight;track('setting_changed',{setting:'freecell_position',value:options.freecellRight?'right':'left'});phone.classList.toggle('freecell-right',options.freecellRight);render();settings();remember();return}
+        if(event.target.closest('[data-direction]')){options.stockRight=!options.stockRight;track('setting_changed',{setting:'stock_position',value:options.stockRight?'right':'left'});phone.classList.toggle('stock-right',options.stockRight);render();settings();remember();return}
         if(event.target.closest('[data-language]')){languageView(event.target.closest('[data-language]').dataset.language||'settings');return}
         const languageChoice=event.target.closest('[data-language-choice]');
         if(languageChoice){const language=availableLanguages().find(item=>item.code===languageChoice.dataset.languageChoice);if(!language)return;currentLanguage=language.code;syncUserProperties();track('language_changed',{language:currentLanguage});loadLanguagePack(currentLanguage);applyLanguage();render();try{window.AndroidBridge?.setAppLanguage?.(language.locale)}catch(error){}leaveLanguageView();remember();syncReminders();showMessage(t('languageSelected',{name:language.name}));return}
@@ -5650,32 +5729,29 @@ self.onmessage=event=>{const {id,state,budget}=event.data,started=performance.no
         closeModal();
       });
       find('#fc-modal-shade').addEventListener('click',event=>{if(event.target!==find('#fc-modal-shade'))return;const kind=find('.modal')?.dataset.kind;if(kind==='earn-coins')leaveEarnCoins();else if(kind==='rivals')leaveRivals();else if(kind==='language')leaveLanguageView();else if(kind==='daily-unlock')leaveDailyUnlocked();else if(kind==='missions-unlock')leaveMissionsUnlocked();else closeModal()});
-      function validBoard(board,free,base){
-        if(!Array.isArray(board)||board.length!==8||!Array.isArray(free)||free.length!==4||!Array.isArray(base)||base.length!==4)return false;
-        const seen=new Set();
-        for(let suit=0;suit<4;suit++){
-          const top=Number(base[suit]);if(!Number.isInteger(top)||top<0||top>13)return false;
-          for(let rank=1;rank<=top;rank++)seen.add(`${suit}:${rank}`);
-        }
-        const add=card=>{if(!card)return true;const suit=Number(card.s),rank=Number(card.r),key=`${suit}:${rank}`;if(!Number.isInteger(suit)||!Number.isInteger(rank)||suit<0||suit>3||rank<1||rank>13||seen.has(key))return false;seen.add(key);return true};
-        for(const card of free)if(!add(card))return false;
+      function validBoard(board,rest,base,doneSuits){
+        if(!Array.isArray(board)||board.length!==10||!Array.isArray(rest)||!Array.isArray(base)||base.length!==8||!Array.isArray(doneSuits))return false;
+        if(!base.every(value=>value===0||value===13)||base.filter(value=>value===13).length!==doneSuits.length)return false;
+        const ids=new Set();
+        const add=card=>{const id=Number(card?.id),suit=Number(card?.s),rank=Number(card?.r);if(!Number.isInteger(id)||id<0||id>103||ids.has(id)||!Number.isInteger(suit)||suit<0||suit>3||!Number.isInteger(rank)||rank<1||rank>13)return false;ids.add(id);return true};
+        for(const card of rest)if(!add(card))return false;
         for(const column of board){if(!Array.isArray(column))return false;for(const card of column)if(!add(card))return false}
-        return seen.size===52;
+        return ids.size+doneSuits.length*13===104;
       }
-      function copyBoard(board){return board.map(column=>column.map(card=>({s:Number(card.s),r:Number(card.r)})))}
-      function copyCells(value){return value.map(card=>card?{s:Number(card.s),r:Number(card.r)}:null)}
+      function copyBoard(board){return board.map(column=>column.map(card=>({s:Number(card.s),r:Number(card.r),id:Number(card.id),up:card.up!==false})))}
+      function copyStock(value){return value.map(card=>({s:Number(card.s),r:Number(card.r),id:Number(card.id)}))}
       // Crash custom keys for the current game (the difficulty tier arrives with v1.3 Part 2).
       function syncCrashContext(){try{window.AndroidBridge?.setCrashContext?.(String(currentMode),String(currentTier||''),2)}catch(error){}}
       function restoreSavedGame(){
-        const game=savedState.game;if(!game||!validBoard(game.tableau,game.cells,game.foundations))return false;
-        tableau=copyBoard(game.tableau);cells=copyCells(game.cells);foundations=game.foundations.map(Number);
-        history=Array.isArray(game.history)?game.history.slice(-40).filter(item=>item&&validBoard(item.tableau,item.cells,item.foundations)).map(item=>({tableau:copyBoard(item.tableau),cells:copyCells(item.cells),foundations:item.foundations.map(Number),moves:Math.max(0,Number(item.moves)||0)})):[];
+        const game=savedState.game;if(!game||!validBoard(game.tableau,game.stock,game.foundations,game.done))return false;
+        tableau=copyBoard(game.tableau);stock=copyStock(game.stock);foundations=game.foundations.map(Number);done=game.done.map(Number);
+        suitsMode=[1,2,4].includes(game.suits)?game.suits:1;score=Math.max(0,Math.min(100000,Number(game.score)||0));
+        history=Array.isArray(game.history)?game.history.slice(-40).filter(item=>item&&validBoard(item.tableau,item.stock,item.foundations,item.done)).map(item=>({tableau:copyBoard(item.tableau),stock:copyStock(item.stock),foundations:item.foundations.map(Number),done:item.done.map(Number),moves:Math.max(0,Number(item.moves)||0),score:Math.max(0,Number(item.score)||0)})):[];
         moves=Math.max(0,Number(game.moves)||0);seconds=Math.max(0,Number(game.seconds)||0);currentSeed=Number(game.currentSeed)||20261020;currentMode=String(game.currentMode||'random');currentLabel=String(game.currentLabel||'');
-        currentTier=['easy','medium','hard','impossible','unrated'].includes(game.tier)?game.tier:currentMode==='winnable'?'easy':currentMode==='developer'?null:FreeCellCore.tierOf(dealCatalog,currentSeed);
-        currentPool=[...FreeCellCore.POOLS,'first_games'].includes(game.pool)?game.pool:null;
-        initialTableau=Array.isArray(game.initialTableau)&&game.initialTableau.length===8?copyBoard(game.initialTableau):copyBoard(tableau);
-        dealId=Math.max(0,Number(game.dealId)||0);gameUsedUndo=Boolean(game.usedUndo);gameUndos=Math.max(gameUsedUndo?1:0,Math.min(1e6,Number(game.undos)||0));gameFoundationPeak=Math.max(foundations.reduce((sum,value)=>sum+value,0),Math.min(52,Number(game.foundationPeak)||0));
-        gameUsedHint=Boolean(game.usedHint);gameHints=Math.max(0,Math.min(1000,Number(game.hints)||0));gameSuitPeak=Math.max(foundations.filter(value=>value===13).length,Math.min(4,Number(game.suitPeak)||0));gameEmptiedColumns=Array.isArray(game.emptiedColumns)?game.emptiedColumns.filter(pile=>Number.isInteger(pile)&&pile>=0&&pile<8).slice(0,8):[];currentDailyDate=FreeCellCore.isDateKey(game.dailyDate)?game.dailyDate:null;
+        currentTier=FreeCellCore.TIERS.includes(game.tier)?game.tier:currentMode==='developer'?null:'easy';
+        currentPool=[...FreeCellCore.TIERS,'any','first_games'].includes(game.pool)?game.pool:null;
+        dealId=Math.max(0,Number(game.dealId)||0);gameUsedUndo=Boolean(game.usedUndo);gameUndos=Math.max(gameUsedUndo?1:0,Math.min(1e6,Number(game.undos)||0));gameFoundationPeak=Math.max(foundations.reduce((sum,value)=>sum+value,0),Math.min(104,Number(game.foundationPeak)||0));
+        gameUsedHint=Boolean(game.usedHint);gameHints=Math.max(0,Math.min(1000,Number(game.hints)||0));gameSuitPeak=Math.max(foundations.filter(value=>value===13).length,Math.min(8,Number(game.suitPeak)||0));gameEmptiedColumns=Array.isArray(game.emptiedColumns)?game.emptiedColumns.filter(pile=>Number.isInteger(pile)&&pile>=0&&pile<10).slice(0,10):[];currentDailyDate=FreeCellCore.isDateKey(game.dailyDate)?game.dailyDate:null;
         seenPositions=new Set([...history.map(item=>FreeCellCore.positionKey(item)),currentPositionKey()]);
         gameLog=Array.isArray(savedState.gameLog)?savedState.gameLog.slice(0,8):[];selected=null;drag=null;isDealing=false;lastLevelResult=null;
         find('#fc-time').textContent=`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`;
@@ -5690,7 +5766,7 @@ self.onmessage=event=>{const {id,state,budget}=event.data,started=performance.no
       function applySavedAppearance(){
         chooseLanguage();
         applyThemeAccess();
-        phone.classList.toggle('freecell-right',Boolean(options.freecellRight));phone.classList.toggle('left-handed',Boolean(options.leftHanded));
+        phone.classList.toggle('stock-right',Boolean(options.stockRight));phone.classList.toggle('left-handed',Boolean(options.leftHanded));
         applyCounterVisibility();applyEffects();
         if(window.AndroidBridge?.setOrientation)window.AndroidBridge.setOrientation(Boolean(options.lockOrientation));
       }
@@ -5755,10 +5831,10 @@ self.onmessage=event=>{const {id,state,budget}=event.data,started=performance.no
         clearTimeout(saveTimer);saveTimer=0;
         const persistent={version:2,currentLanguage,tableThemeName,cardThemeName,playerLevel,levelWins,currentLevelNumber,levelAwarded,options:{...options},stats:{...stats},gameLog:gameLog.slice(0,8),
           coins,owned,cardBackName,victoryEffectName,events:eventState,rewarded:rewardedState,reminders,starBest,achievements:achievementsState,paidKeys,dealCounter,dailyHistory,latestDate,debugDayOffset,dailyBonus,missions:missionsState,missionSets,latestTime,missionsCelebrationPending,introIndex,tips:tipsState,promos,previewSessions,difficultyTier,tierHistory,rivals:rivalsResults,goals:goals||savedState.goals||null,
-          game:{tableau:copyBoard(tableau),cells:copyCells(cells),foundations:[...foundations],history:history.slice(-40),moves,seconds,currentSeed,currentMode,currentLabel,initialTableau:copyBoard(initialTableau),dealId,usedUndo:gameUsedUndo,undos:gameUndos,dailyDate:currentDailyDate,foundationPeak:gameFoundationPeak,usedHint:gameUsedHint,suitPeak:gameSuitPeak,emptiedColumns:gameEmptiedColumns,tier:currentTier,pool:currentPool,hints:gameHints}};
+          game:{tableau:copyBoard(tableau),stock:copyStock(stock),foundations:[...foundations],done:[...done],suits:suitsMode,score,history:history.slice(-40),moves,seconds,currentSeed,currentMode,currentLabel,dealId,usedUndo:gameUsedUndo,undos:gameUndos,dailyDate:currentDailyDate,foundationPeak:gameFoundationPeak,usedHint:gameUsedHint,suitPeak:gameSuitPeak,emptiedColumns:gameEmptiedColumns,tier:currentTier,pool:currentPool,hints:gameHints}};
         updateMissionsButton();updateEventButton();saveCollection();
         try{if(window.AndroidBridge?.saveState)window.AndroidBridge.saveState(JSON.stringify(persistent));else localStorage.setItem('freecellState',JSON.stringify(persistent))}catch(error){}
-        const api=window.openai?.setWidgetState;if(typeof api==='function')api({modelContent:{moves,score:Math.max(0,foundations.reduce((sum,n)=>sum+n,0)*10-moves),mode:currentMode,language:currentLanguage,level:playerLevel,levelWins,winsNeeded:winsNeeded(playerLevel),settings:{tap:options.tap,autoHint:options.autoHint,autoComplete:options.autoComplete,showCounters:options.showCounters,highlight:options.highlight},theme:{table:tableThemeName,cards:cardThemeName}},privateContent:null}).catch(()=>{});
+        const api=window.openai?.setWidgetState;if(typeof api==='function')api({modelContent:{moves,score,mode:currentMode,language:currentLanguage,level:playerLevel,levelWins,winsNeeded:winsNeeded(playerLevel),settings:{tap:options.tap,autoHint:options.autoHint,autoComplete:options.autoComplete,showCounters:options.showCounters,highlight:options.highlight},theme:{table:tableThemeName,cards:cardThemeName}},privateContent:null}).catch(()=>{});
       }
       window.freecellSave=remember;
       window.freecellBack=()=>{if(find('#fc-loading'))return true;const tutorial=find('.tutorial-layer');if(tutorial){if(!onboardingTutorial)closeTutorial();return true}const shade=find('#fc-modal-shade');if(shade.classList.contains('open')){if(find('.modal')?.dataset.kind==='language')leaveLanguageView();else if(!onboardingTutorial)closeModal();return true}return false};
