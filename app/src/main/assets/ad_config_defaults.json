@@ -23,10 +23,10 @@
     }
   },
   "ad_unit_ids": {
-    "banner": "ca-app-pub-1626295360729995/6507689900",
-    "interstitial": "ca-app-pub-1626295360729995/5548540454",
-    "app_open": "ca-app-pub-1626295360729995/1504212022",
-    "rewarded": "ca-app-pub-1626295360729995/3060836279"
+    "banner": "ca-app-pub-3940256099942544/6300978111",
+    "interstitial": "ca-app-pub-3940256099942544/1033173712",
+    "app_open": "ca-app-pub-3940256099942544/9257395921",
+    "rewarded": "ca-app-pub-3940256099942544/5224354917"
   },
   "enable_amazon_sdk": false,
   "enable_pubmatic_sdk": false

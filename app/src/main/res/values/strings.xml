@@ -1,15 +1,6 @@
 <resources>
-    <string name="app_name">FreeCell</string>
-    <!-- Production AdMob App ID for FreeCell. -->
-    <string name="admob_app_id" translatable="false">ca-app-pub-1626295360729995~6971818248</string>
-    <string name="new_game">New</string>
-    <string name="undo">Undo</string>
-    <string name="hint">Hint</string>
-    <string name="moves">Moves</string>
-    <string name="you_won">You won!</string>
-    <string name="new_game_question">Start a new game?</string>
-    <string name="cancel">Cancel</string>
-    <string name="start">Start</string>
-    <string name="no_hint">No obvious move found</string>
+    <string name="app_name">Spider Solitaire</string>
+    <!-- AdMob App ID: Google's sample App ID until the owner creates Spider Solitaire in AdMob (publisher
+         ca-app-pub-1626295360729995) and puts its own App ID here. FreeCell's App ID belongs to FreeCell. -->
+    <string name="admob_app_id" translatable="false">ca-app-pub-3940256099942544~3347511713</string>
 </resources>
-

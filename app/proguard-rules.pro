@@ -5,4 +5,4 @@
 -keep class * extends androidx.room.RoomDatabase { <init>(); }
 
 # Daily reminders: WorkManager creates the worker by reflection from its class name.
--keep class com.nexusplaylabss.freecell.reminders.ReminderWorker { public <init>(android.content.Context, androidx.work.WorkerParameters); }
+-keep class com.nexusplaylabss.spider.reminders.ReminderWorker { public <init>(android.content.Context, androidx.work.WorkerParameters); }

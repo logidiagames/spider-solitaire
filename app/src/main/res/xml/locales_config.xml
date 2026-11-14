@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The game's languages for Android 13+ per-app language (Settings → Apps → FreeCell → Language).
+<!-- The game's languages for Android 13+ per-app language (Settings → Apps → Spider Solitaire → Language).
      Same list as Languages.CODES and FreeCellCore.LANGUAGES. -->
 <locale-config xmlns:android="http://schemas.android.com/apk/res/android">
     <locale android:name="en" />

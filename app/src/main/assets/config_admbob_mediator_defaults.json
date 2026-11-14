@@ -8,9 +8,9 @@
     "AutoRefreshIntervalSec": 15,
     "FloorReloadDelaySec": 15
   },
-  "_BannerData": { "AndroidCode": "ca-app-pub-1626295360729995/6507689900" },
-  "_InterstitialData": { "AndroidCode": "ca-app-pub-1626295360729995/5548540454" },
+  "_BannerData": { "AndroidCode": "ca-app-pub-3940256099942544/6300978111" },
+  "_InterstitialData": { "AndroidCode": "ca-app-pub-3940256099942544/1033173712" },
   "_RewardedData": { "AndroidCode": "" },
-  "_AppOpenData": { "AndroidCode": "ca-app-pub-1626295360729995/1504212022" },
+  "_AppOpenData": { "AndroidCode": "ca-app-pub-3940256099942544/9257395921" },
   "_ReConsentIntervalMinutes": 10000
 }

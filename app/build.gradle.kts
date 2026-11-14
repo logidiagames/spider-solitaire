@@ -9,11 +9,11 @@ if (file("google-services.json").exists()) {
 }
 
 android {
-    namespace = "com.nexusplaylabss.freecell"
+    namespace = "com.nexusplaylabss.spider"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.nexusplaylabss.freecell"
+        applicationId = "com.nexusplaylabss.spider"
         minSdk = 24
         targetSdk = 36
         versionCode = 10
