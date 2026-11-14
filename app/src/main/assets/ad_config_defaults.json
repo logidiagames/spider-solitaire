@@ -1,0 +1,33 @@
+{
+  "enabled": true,
+  "availability": {
+    "interstitials": {
+      "interval": 1,
+      "skip_after_loss": true,
+      "availability_conditions": {
+        "session": 1,
+        "games_played": 3
+      }
+    },
+    "banners": {
+      "availability_conditions": {
+        "session": 1,
+        "games_played": 0
+      }
+    },
+    "app_open": {
+      "cold_start_session": 1,
+      "background_min_session": 1,
+      "splash_timeout": 6,
+      "background_time_to_show_min": 1
+    }
+  },
+  "ad_unit_ids": {
+    "banner": "ca-app-pub-1626295360729995/6507689900",
+    "interstitial": "ca-app-pub-1626295360729995/5548540454",
+    "app_open": "ca-app-pub-1626295360729995/1504212022",
+    "rewarded": "ca-app-pub-1626295360729995/3060836279"
+  },
+  "enable_amazon_sdk": false,
+  "enable_pubmatic_sdk": false
+}

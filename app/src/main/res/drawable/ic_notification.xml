@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Status bar icon for Daily reminders: a spade (Android draws it in one colour). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M12,2C9,6.2 4,9.2 4,13.3C4,15.9 6,17.6 8.2,17.6C9.6,17.6 10.6,17 11.2,16.2C10.9,18.3 10.1,20.2 8.7,22L15.3,22C13.9,20.2 13.1,18.3 12.8,16.2C13.4,17 14.4,17.6 15.8,17.6C18,17.6 20,15.9 20,13.3C20,9.2 15,6.2 12,2Z" />
+</vector>

@@ -1,0 +1,17 @@
+.gradle/
+.idea/
+local.properties
+**/build/
+*.iml
+*.jks
+*.keystore
+*.pem
+keystore.properties
+google-services.json
+
+*.apk
+*.aab
+.DS_Store
+
+# Local tooling
+.claude/

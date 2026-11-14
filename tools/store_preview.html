@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FreeCell Store Preview</title>
+<!-- v1.2 Part A2: proposed store items for the owner's approval. Every item here is approved and in the game.
+     Open in a desktop browser; no build needed. Every item is drawn with CSS only. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@500;700&family=Roboto:wght@400;700&display=swap">
+<style>
+  :root{color-scheme:dark;--page:#0d1712;--panel:#16251d;--line:#2c4436;--text:#eef4ef;--muted:#a9bcb0;--gold:#f1c66d;--ok:#7ed27a;--bad:#ff8a80}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--page);color:var(--text);font:15px/1.45 Roboto,Arial,sans-serif;padding:24px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px))}
+  header{max-width:1180px;margin:0 auto 24px}
+  h1{margin:0 0 6px;font:700 30px 'Roboto Condensed',Arial,sans-serif;letter-spacing:.01em;text-wrap:balance}
+  h2{margin:34px 0 4px;font:700 22px 'Roboto Condensed',Arial,sans-serif}
+  .lead,.note{max-width:820px;color:var(--muted);margin:0 0 6px}
+  section{max-width:1180px;margin:0 auto}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;margin-top:14px}
+  .item{display:grid;gap:8px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--panel);min-width:0}
+  .item h3{margin:0;display:flex;justify-content:space-between;gap:8px;font:700 16px 'Roboto Condensed',Arial,sans-serif}
+  .price{color:var(--gold);white-space:nowrap}
+  .meta{font-size:12.5px;color:var(--muted)}
+  .meta b{color:var(--text)}
+  .pass{color:var(--ok)} .fail{color:var(--bad)}
+  .tag{display:inline-block;padding:1px 7px;border-radius:9px;background:#2f8a4a;color:#fff;font-size:11px;font-weight:700}
+
+  /* A small board: two free cells, two foundations and three columns. */
+  .board{position:relative;height:200px;border-radius:9px;overflow:hidden;padding:9px;background:var(--table);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+  .row{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+  .slot{height:52px;border:1px solid rgba(255,255,255,.18);border-radius:4px;background:rgba(0,0,0,.14)}
+  .cols{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:9px}
+  .col{position:relative;height:118px}
+  .card{position:absolute;left:0;right:0;height:52px;border:1px solid var(--edge);border-radius:var(--radius,4px);background:var(--face);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.35);font:700 15px/1 'Roboto Condensed',Arial,sans-serif;padding:3px 4px;display:flex;justify-content:space-between}
+  .card.red{color:var(--red)}
+  .card .pip{position:absolute;left:50%;top:60%;translate:-50% -50%;font-size:22px;opacity:.9}
+  .card.back{background:var(--back);border:2px solid #f4efe3;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25),0 1px 2px rgba(0,0,0,.35)}
+  .card.back *{display:none}
+  .no-moves{position:absolute;left:50%;bottom:8px;translate:-50% 0;padding:4px 10px;border:1px solid rgba(255,255,255,.22);border-radius:14px;background:rgba(6,38,22,.72);color:#fff;font:700 11px Roboto,Arial,sans-serif;white-space:nowrap}
+
+  .confetti{position:relative;height:120px;border-radius:9px;overflow:hidden;background:#0b6430}
+  .confetti span{position:absolute;top:-14px;width:8px;height:13px;border-radius:2px;animation:fall 2.6s linear infinite}
+  .confetti span.suit{width:auto;height:auto;background:none!important;font-size:16px;line-height:1}
+  @keyframes fall{to{transform:translateY(150px) rotate(540deg)}}
+  @media (prefers-reduced-motion:reduce){.confetti span{animation:none;top:40%}}
+</style>
+</head>
+<body>
+<header>
+  <h1>FreeCell v1.2 — store items for approval</h1>
+  <p class="lead"><b>Status:</b> backgrounds, card faces, card backs and victory effects were approved on 23 October 2026 and are in the game. The <b>Winter Festival</b> rewards at the end of this page were approved the same day and are in the game as event items.</p>
+  <p class="lead">Proposed items for the Style store, drawn exactly as the game would draw them (CSS only, no images). Each one sits on a small board with both suit colours, empty slots and the "no more moves" message, so you can judge readability. Prices are suggestions inside the brief's ranges; the final prices go in <code>store_config</code>.</p>
+  <p class="note">Card faces show their measured contrast: rank and suit against the card must be at least 4.5:1 (WCAG). Red and black suits differ by shape (♥♦ against ♠♣) and by lightness, not only by hue: each face's red is the lightest red that still keeps 4.5:1, and the lightness gap is shown (0.10 or more passes). No glows or blurred shadows on any text.</p>
+</header>
+
+<section>
+  <h2>Backgrounds (8 new)</h2>
+  <p class="note">Quiet textures and gradients. Shown with the Classic card face.</p>
+  <div class="grid" id="backgrounds"></div>
+
+  <h2>Card faces (4 new)</h2>
+  <p class="note">Shown on the Classic table.</p>
+  <div class="grid" id="faces"></div>
+
+  <h2>Card backs (6)</h2>
+  <p class="note">Seen in the deal (cards arrive face down and flip), the victory card flight and the New Game menu. Classic is the free default and is already in the game.</p>
+  <div class="grid" id="backs"></div>
+
+  <h2>Victory effects (optional)</h2>
+  <p class="note">Only if you want this catalog: colour sets for the existing victory confetti.</p>
+  <div class="grid" id="effects"></div>
+
+  <h2>Winter Festival event (approved)</h2>
+  <p class="note">Exclusive event rewards: never sold, shown in the Style store with an Event tag, and unlocked by winning on 10 different days between 1 December and 6 January (values in <code>events_config</code>; the event ships switched off). The snowflakes are inline SVG, so they stay crisp at any size.</p>
+  <div class="grid" id="winter"></div>
+</section>
+
+<script>
+  // Classic face and table, used when the item being shown is not a face or a table.
+  const CLASSIC_FACE={face:'#f4efe3',ink:'#101512',red:'#ce3529',edge:'#b8b7b0',radius:'4px'};
+  const CLASSIC_TABLE='radial-gradient(ellipse 90% 72% at 50% 44%,#2c8550 0%,#0b6430 52%,#073d1d 100%)';
+  const CLASSIC_BACK='repeating-linear-gradient(45deg,rgba(255,255,255,.16) 0 2px,transparent 2px 8px),repeating-linear-gradient(-45deg,rgba(255,255,255,.16) 0 2px,transparent 2px 8px),linear-gradient(160deg,#a32835,#6e1622)';
+
+  const backgrounds=[
+    {id:'linen',name:'Linen',price:300,css:'repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px),repeating-linear-gradient(90deg,rgba(0,0,0,.05) 0 1px,transparent 1px 3px),radial-gradient(ellipse 90% 72% at 50% 44%,#7d6d55,#5c4e3b)'},
+    {id:'fine_stripes',name:'Fine Stripes',price:400,css:'repeating-linear-gradient(90deg,rgba(255,255,255,.045) 0 1px,transparent 1px 7px),radial-gradient(ellipse 90% 72% at 50% 44%,#1d6159,#103c37)'},
+    {id:'slate',name:'Slate',price:500,css:'radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.4px) 0 0/6px 6px,radial-gradient(ellipse 90% 72% at 50% 44%,#4c565c,#2c3337)'},
+    {id:'forest_dusk',name:'Forest Dusk',price:600,css:'linear-gradient(165deg,#0f4636 0%,#123f4c 60%,#0d2b3a 100%)'},
+    {id:'midnight',name:'Midnight',price:700,css:'radial-gradient(ellipse 90% 72% at 50% 40%,#22405a 0%,#13263a 55%,#0a1522 100%)'},
+    {id:'royal_velvet',name:'Royal Velvet',price:800,css:'linear-gradient(115deg,rgba(255,255,255,.05),transparent 45%),radial-gradient(ellipse 90% 72% at 50% 44%,#2b3f8a,#172357)'},
+    {id:'burgundy_velvet',name:'Burgundy Velvet',price:900,css:'linear-gradient(115deg,rgba(255,255,255,.05),transparent 45%),radial-gradient(ellipse 90% 72% at 50% 44%,#7a2238,#45101f)'},
+    {id:'oak',name:'Oak',price:1200,css:'repeating-linear-gradient(92deg,rgba(0,0,0,.06) 0 2px,transparent 2px 9px,rgba(255,255,255,.035) 9px 10px,transparent 10px 17px),linear-gradient(180deg,#7a5232,#5a3a22)'}
+  ];
+  const faces=[
+    {id:'bold',name:'Bold',price:400,face:'#ffffff',ink:'#000000',red:'#e12a26',edge:'#1d1d1d',radius:'4px',note:'High contrast, thick border'},
+    {id:'ivory_gold',name:'Ivory & Gold',price:600,face:'#fbf6e9',ink:'#14110c',red:'#d8231b',edge:'#c9a24a',radius:'5px',note:'Warm ivory with a thin gold edge'},
+    {id:'parchment',name:'Parchment',price:800,face:'#f2e3c2',ink:'#24170c',red:'#c32420',edge:'#8b6a3e',radius:'3px',note:'Old-paper tone, brown-black ink'},
+    {id:'slate_night',name:'Slate Night',price:1200,face:'#1f2a33',ink:'#f4f6f8',red:'#ff9a8f',edge:'#9fb3c2',radius:'6px',note:'Dark face, crisp light outline, no glow'}
+  ];
+  const backs=[
+    {id:'classic_back',name:'Classic',price:0,css:CLASSIC_BACK},
+    {id:'navy_lattice',name:'Navy Lattice',price:250,css:'repeating-linear-gradient(45deg,rgba(255,255,255,.15) 0 2px,transparent 2px 8px),repeating-linear-gradient(-45deg,rgba(255,255,255,.15) 0 2px,transparent 2px 8px),linear-gradient(160deg,#284a8f,#162a55)'},
+    {id:'emerald_weave',name:'Emerald Weave',price:350,css:'repeating-linear-gradient(0deg,rgba(255,255,255,.12) 0 3px,transparent 3px 6px),repeating-linear-gradient(90deg,rgba(0,0,0,.18) 0 3px,transparent 3px 6px),linear-gradient(160deg,#1f7a4c,#0f4a2c)'},
+    {id:'checker',name:'Checker',price:450,css:'conic-gradient(#2b2f38 25%,#3e4552 0 50%,#2b2f38 0 75%,#3e4552 0) 0 0/10px 10px'},
+    {id:'sunburst',name:'Gold Sunburst',price:600,css:'repeating-conic-gradient(from 0deg at 50% 50%,#e9b545 0 8deg,#c98f22 8deg 16deg)'},
+    {id:'night_sky',name:'Night Sky',price:800,css:'radial-gradient(#f6e7a8 .8px,transparent 1.2px) 0 0/9px 11px,radial-gradient(#ffffff .6px,transparent 1px) 4px 5px/13px 9px,linear-gradient(170deg,#1b2340,#0b1020)'}
+  ];
+  const SNOWFLAKE="url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Cg stroke='%23ffffff' stroke-opacity='.6' stroke-width='1.1' stroke-linecap='round'%3E%3Cpath d='M9 3v12M3.8 6l10.4 6M3.8 12l10.4-6'/%3E%3C/g%3E%3C/svg%3E\") 0 0/18px 18px";
+  const winter=[
+    {kind:'back',id:'winter_back',name:'Winter Back',css:SNOWFLAKE+',linear-gradient(160deg,#3466a6,#1b3560)'},
+    {kind:'table',id:'winter_table',name:'Snowfall Table',css:'radial-gradient(rgba(255,255,255,.2) 1px,transparent 1.6px) 0 0/23px 29px,radial-gradient(rgba(255,255,255,.13) .8px,transparent 1.3px) 11px 14px/17px 21px,radial-gradient(ellipse 90% 72% at 50% 44%,#2f6f7a,#173f4a)'},
+    {kind:'effect',id:'winter_confetti',name:'Snowflakes (victory)',glyph:'❄',colors:['#ffffff','#cfeaff','#9fd6ff','#e8eef5']}
+  ];
+  const effects=[
+    {id:'classic_confetti',name:'Classic (current)',price:0,colors:['#d79b4e','#f0ddaa','#a94a3e','#7fc290']},
+    {id:'gold_rain',name:'Gold Rain',price:300,colors:['#f7d35a','#e2a52a','#fff1b8','#c98a1a']},
+    {id:'suit_shower',name:'Suit Shower',price:500,suits:true,colors:['#101512','#ce3529']},
+    {id:'aurora_ribbons',name:'Aurora Ribbons',price:400,colors:['#7be0c3','#8f70c9','#5fb2ff','#f39ac7']}
+  ];
+
+  // WCAG contrast ratio and relative luminance.
+  const lum=hex=>{const v=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255).map(c=>c<=.03928?c/12.92:((c+.055)/1.055)**2.4);return .2126*v[0]+.7152*v[1]+.0722*v[2]};
+  const ratio=(a,b)=>{const x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+
+  function board({table=CLASSIC_TABLE,face=CLASSIC_FACE,back=null}){
+    const style=`--table:${table};--face:${face.face};--ink:${face.ink};--red:${face.red};--edge:${face.edge};--radius:${face.radius};--back:${back||CLASSIC_BACK}`;
+    const card=(rank,suit,top,extra='')=>`<span class="card ${'♥♦'.includes(suit)?'red':''} ${extra}" style="top:${top}px"><b>${rank}</b><b>${suit}</b><span class="pip">${suit}</span></span>`;
+    const col=cards=>`<div class="col">${cards}</div>`;
+    const third=back?card('','',0,'back')+card('','',16,'back')+card('','',32,'back'):card('9','♣',0)+card('8','♦',22)+card('7','♠',44);
+    return `<div class="board" style="${style}"><div class="row"><div class="slot"></div><div class="slot"></div>${'<div class="slot"></div>'}<div class="slot" style="position:relative">${card('A','♥',0)}</div></div>
+      <div class="cols">${col(card('K','♠',0)+card('Q','♥',22)+card('J','♣',44))}${col(card('10','♦',0)+card('9','♠',22))}${col(third)}${col(card('5','♥',0)+card('4','♣',22)+card('3','♦',44))}</div>
+      <span class="no-moves">No more moves possible</span></div>`;
+  }
+  const item=(name,price,body,meta='')=>`<article class="item"><h3><span>${name}</span><span class="price">${price?`${price} coins`:'<span class="tag">FREE</span>'}</span></h3>${body}${meta?`<div class="meta">${meta}</div>`:''}</article>`;
+
+  document.getElementById('backgrounds').innerHTML=backgrounds.map(b=>item(b.name,b.price,board({table:b.css}),`id <code>${b.id}</code>`)).join('');
+  document.getElementById('faces').innerHTML=faces.map(f=>{
+    const ink=ratio(f.ink,f.face),red=ratio(f.red,f.face),split=Math.abs(lum(f.ink)-lum(f.red));
+    const mark=(v,ok)=>`<b class="${ok?'pass':'fail'}">${v}</b>`;
+    return item(f.name,f.price,board({face:f}),`${f.note}. Black on card ${mark(ink.toFixed(1)+':1',ink>=4.5)} · red on card ${mark(red.toFixed(1)+':1',red>=4.5)} · red vs black lightness gap ${mark(split.toFixed(2),split>=.1)} · id <code>${f.id}</code>`);
+  }).join('');
+  document.getElementById('backs').innerHTML=backs.map(b=>item(b.name,b.price,board({back:b.css}),`id <code>${b.id}</code>${b.id==='classic_back'?' · already in the game':''}`)).join('');
+  document.getElementById('effects').innerHTML=effects.map(e=>{
+    const pieces=Array.from({length:22},(_,i)=>{const c=e.colors[i%e.colors.length],left=(i*37)%100,delay=(i*0.17)%2.6;return e.suits?`<span class="suit" style="left:${left}%;animation-delay:-${delay}s;color:${c}">${'♠♥♦♣'[i%4]}</span>`:`<span style="left:${left}%;animation-delay:-${delay}s;background:${c}"></span>`}).join('');
+    return item(e.name,e.price,`<div class="confetti">${pieces}</div>`,`id <code>${e.id}</code>`);
+  }).join('');
+  const eventItem=(name,body,meta)=>`<article class="item"><h3><span>${name}</span><span class="tag" style="background:#3d6fb6">EVENT</span></h3>${body}<div class="meta">${meta}</div></article>`;
+  document.getElementById('winter').innerHTML=winter.map(w=>{
+    if(w.kind==='back')return eventItem(w.name,board({back:w.css}),`card back · id <code>${w.id}</code>`);
+    if(w.kind==='table')return eventItem(w.name,board({table:w.css}),`background · id <code>${w.id}</code>`);
+    const pieces=Array.from({length:22},(_,i)=>`<span class="suit" style="left:${(i*37)%100}%;animation-delay:-${((i*0.17)%2.6).toFixed(2)}s;color:${w.colors[i%w.colors.length]}">${w.glyph}</span>`).join('');
+    return eventItem(w.name,`<div class="confetti" style="background:#173f4a">${pieces}</div>`,`optional victory effect · id <code>${w.id}</code>`);
+  }).join('');
+</script>
+</body>
+</html>

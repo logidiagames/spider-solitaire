@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+: cloud backup and device-to-device transfer keep only the game's own state
+     (freecell_web_state.xml); see backup_rules.xml and docs/BACKUP.md for what stays out. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="sharedpref" path="freecell_web_state.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="sharedpref" path="freecell_web_state.xml" />
+    </device-transfer>
+</data-extraction-rules>

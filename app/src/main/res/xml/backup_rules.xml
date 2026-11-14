@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 and older (Android 12+ reads data_extraction_rules.xml). Only the game's own
+     state is backed up, all of it in freecell_web_state.xml: progress, coins, items, Daily
+     history, achievements, settings, language, the numbered collection and the tutorial flag.
+     Everything else stays out (docs/BACKUP.md): the ads consent (IABTCF keys), the cached
+     Remove Ads purchase (always re-checked with Google Play), ad cadence, reminder scheduling,
+     Firebase and WebView data, caches. -->
+<full-backup-content>
+    <include domain="sharedpref" path="freecell_web_state.xml" />
+</full-backup-content>

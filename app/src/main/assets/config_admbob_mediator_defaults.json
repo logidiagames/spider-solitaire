@@ -1,0 +1,16 @@
+{
+  "_Version": 0,
+  "_IsDisabled": false,
+  "_Priority": 2,
+  "_BannerConfig": {
+    "Type": 0,
+    "Position": 1,
+    "AutoRefreshIntervalSec": 15,
+    "FloorReloadDelaySec": 15
+  },
+  "_BannerData": { "AndroidCode": "ca-app-pub-1626295360729995/6507689900" },
+  "_InterstitialData": { "AndroidCode": "ca-app-pub-1626295360729995/5548540454" },
+  "_RewardedData": { "AndroidCode": "" },
+  "_AppOpenData": { "AndroidCode": "ca-app-pub-1626295360729995/1504212022" },
+  "_ReConsentIntervalMinutes": 10000
+}

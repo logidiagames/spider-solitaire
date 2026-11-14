@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">FreeCell</string>
+    <string name="new_game">Novo</string>
+    <string name="undo">Desfazer</string>
+    <string name="hint">Dica</string>
+    <string name="moves">Jogadas</string>
+    <string name="you_won">Ganhou!</string>
+    <string name="new_game_question">Começar um novo jogo?</string>
+    <string name="cancel">Cancelar</string>
+    <string name="start">Começar</string>
+    <string name="no_hint">Não foi encontrada uma jogada óbvia</string>
+</resources>
+
