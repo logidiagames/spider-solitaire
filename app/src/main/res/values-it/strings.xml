@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Launcher name in the device language (owner decision 2026-11-15); the game texts are in assets/i18n. -->
+<resources>
+    <string name="app_name">Solitario Spider</string>
+</resources>

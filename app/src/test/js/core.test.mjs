@@ -846,15 +846,14 @@ test('languages: 18, in the fixed order, each named in its own language', () => 
   assert.deepEqual(c, { enabled: ['en', 'pt-BR', 'ja'], beta: ['ja'] });
 });
 
-test('languages: device tags map to ours; Android per-app language, then the saved choice, then English (never the device)', () => {
+test('languages: device tags map to ours; Android per-app language, then the saved choice, then the device', () => {
   const cases = { 'pt-BR': 'pt-BR', 'pt-PT': 'pt', 'pt': 'pt', 'pt_BR': 'pt-BR', 'zh-CN': 'zh-Hans', 'zh-Hans-CN': 'zh-Hans', 'zh-SG': 'zh-Hans', 'zh-TW': null, 'zh-Hant-HK': null, 'in-ID': 'id', 'id-ID': 'id', 'en-GB': 'en', 'de-AT': 'de', 'uk-UA': 'uk', 'ro-RO': null, '': null };
   for (const [tag, want] of Object.entries(cases)) assert.equal(core.languageForTag(tag), want, tag);
-  assert.equal(core.pickLanguage({ device: ['pt-PT', 'de-DE'] }), 'en');
-  assert.equal(core.pickLanguage({}), 'en');
-  assert.equal(core.pickLanguage({ saved: 'fr' }), 'fr');
-  assert.equal(core.pickLanguage({ app: 'ja-JP', saved: 'fr' }), 'ja');
-  assert.equal(core.pickLanguage({ app: 'zh-TW', saved: 'fr' }), 'fr');
-  assert.equal(core.pickLanguage({ saved: 'fr', enabled: ['en', 'de'] }), 'en');
+  assert.equal(core.pickLanguage({ device: ['ro-RO', 'pt-BR'] }), 'pt-BR');
+  assert.equal(core.pickLanguage({ device: ['zh-TW'] }), 'en');
+  assert.equal(core.pickLanguage({ saved: 'fr', device: ['de-DE'] }), 'fr');
+  assert.equal(core.pickLanguage({ app: 'ja-JP', saved: 'fr', device: ['de-DE'] }), 'ja');
+  assert.equal(core.pickLanguage({ saved: 'fr', device: ['de-DE'], enabled: ['en', 'de'] }), 'de');
   assert.equal(core.pickLanguage({ saved: 'bogus' }), 'en');
 });
 
