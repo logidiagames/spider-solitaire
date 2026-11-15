@@ -12,9 +12,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public final class AdmobMediatorConfigTest {
-    private static final String BANNER = "ca-app-pub-3940256099942544/6300978111";
-    private static final String INTERSTITIAL = "ca-app-pub-3940256099942544/1033173712";
-    private static final String APP_OPEN = "ca-app-pub-3940256099942544/9257395921";
+    private static final String BANNER = "ca-app-pub-1626295360729995/1548280067";
+    private static final String INTERSTITIAL = "ca-app-pub-1626295360729995/2338617551";
+    private static final String APP_OPEN = "ca-app-pub-1626295360729995/4245615656";
 
     private static String bundled() throws Exception {
         return new String(Files.readAllBytes(

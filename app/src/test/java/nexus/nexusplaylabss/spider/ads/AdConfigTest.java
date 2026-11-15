@@ -41,8 +41,8 @@ public final class AdConfigTest {
         assertTrue(AdEligibility.interstitial(config, 1, 4, 3));
     }
 
-    // Spider Solitaire has no ad units of its own yet: the bundled defaults are Google's test units
-    // until the owner creates them in AdMob (publisher ca-app-pub-1626295360729995). Never another app's.
+    // The bundled defaults are Spider Solitaire's own ad units (publisher ca-app-pub-1626295360729995),
+    // never Google's test units (debug builds use those from AdsController) and never another app's.
     private static final String GOOGLE_TEST_PUBLISHER = "ca-app-pub-3940256099942544/";
 
     @Test public void bundledDefaultsCarryOurPublisherOrGoogleTestUnits() throws Exception {
@@ -51,7 +51,7 @@ public final class AdConfigTest {
         AdConfig config = AdConfig.parse(json);
         for (String unit : new String[] {
                 config.bannerAdUnitId, config.interstitialAdUnitId, config.appOpenAdUnitId, config.rewardedAdUnitId}) {
-            assertTrue(unit, unit.startsWith(PRODUCTION_PUBLISHER) || unit.startsWith(GOOGLE_TEST_PUBLISHER));
+            assertTrue(unit, unit.startsWith(PRODUCTION_PUBLISHER) && !unit.startsWith(GOOGLE_TEST_PUBLISHER));
             assertFalse("FreeCell's ad units belong to FreeCell", unit.endsWith("/6507689900") || unit.endsWith("/5548540454")
                     || unit.endsWith("/1504212022") || unit.endsWith("/3060836279"));
         }
