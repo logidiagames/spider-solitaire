@@ -325,12 +325,13 @@ test('missions: progress from the new events, capped, and claimed once', () => {
   const list = ['win_no_hint', 'win_under_moves', 'empty_columns', 'complete_suits', 'win_random', 'foundation_cards']
     .map(type => config.missions.definitions.find(d => d.type === type)).map(d => ({ ...d, progress: 0, claimed: false }));
   let state = { list };
-  state = core.applyMissionEvent(state, { type: 'win', mode: 'numbered', usedUndo: true, usedHint: false, seconds: 900, moves: 110 });
+  state = core.applyMissionEvent(state, { type: 'win', mode: 'numbered', usedUndo: true, usedHint: false, seconds: 900, moves: 170 });
   state = core.applyMissionEvent(state, { type: 'win', mode: 'random', usedUndo: false, usedHint: true, seconds: 900, moves: 300 });
   state = core.applyMissionEvent(state, { type: 'column_emptied' });
   state = core.applyMissionEvent(state, { type: 'suit_complete', count: 2 });
   state = core.applyMissionEvent(state, { type: 'foundation', count: 52 });
-  assert.deepEqual(state.list.map(m => m.progress), [1, 1, 1, 2, 1, 30]);
+  state = core.applyMissionEvent(state, { type: 'foundation', count: 52 });
+  assert.deepEqual(state.list.map(m => m.progress), [1, 1, 1, 2, 1, 52]);
   const claim = core.claimMission(state, 'no_hint_1', 5);
   assert.deepEqual([claim.ok, claim.amount, claim.state.completedAt], [true, 25, null]);
   assert.equal(core.claimMission(claim.state, 'no_hint_1', 6).ok, false);
@@ -533,9 +534,9 @@ test('reminders: payload for Android uses the last Daily won on its own date and
 
 // ---- v1.2 C1: stars ----
 test('stars: 1 for any win, 2 with few Undos, 3 with none inside the time and move limits', () => {
-  assert.equal(core.starsFor(config, { undos: 0, seconds: 480, moves: 140 }), 3);
-  assert.equal(core.starsFor(config, { undos: 0, seconds: 481, moves: 100 }), 2);
-  assert.equal(core.starsFor(config, { undos: 0, seconds: 300, moves: 141 }), 2);
+  assert.equal(core.starsFor(config, { undos: 0, seconds: 720, moves: 180 }), 3);
+  assert.equal(core.starsFor(config, { undos: 0, seconds: 721, moves: 100 }), 2);
+  assert.equal(core.starsFor(config, { undos: 0, seconds: 300, moves: 181 }), 2);
   assert.equal(core.starsFor(config, { undos: 2, seconds: 100, moves: 90 }), 2);
   assert.equal(core.starsFor(config, { undos: 3, seconds: 100, moves: 90 }), 1);
   const c = core.normalizeConfig({ stars_config: { two_star_max_undos: 1, three_star_max_undos: 9, three_star_seconds: 1 } });
@@ -711,10 +712,10 @@ test('rivals: the same date gives the same table, another date another table', (
 test('rivals: times spread around the median, slower on Hard days', () => {
   const times = tier => { const all = []; for (let d = 0; d < 120; d++) all.push(...core.rivalsTable(roster, config, core.addDays('2027-01-01', d), tier).map(r => r.seconds)); return all.sort((a, b) => a - b); };
   const medium = times('medium'), hard = times('hard'), at = (list, p) => list[Math.floor(list.length * p)];
-  assert.ok(at(medium, 0.5) > 330 && at(medium, 0.5) < 520, `median ${at(medium, 0.5)}`);
+  assert.ok(at(medium, 0.5) > 480 && at(medium, 0.5) < 740, `median ${at(medium, 0.5)}`);
   assert.ok(at(medium, 0.9) / at(medium, 0.1) > 1.8 && at(medium, 0.9) / at(medium, 0.1) < 4, 'spread');
   const ratio = at(hard, 0.5) / at(medium, 0.5);
-  assert.ok(ratio > 1.3 && ratio < 1.5, `hard/medium ${ratio}`);
+  assert.ok(ratio > 1.5 && ratio < 1.7, `hard/medium ${ratio}`);
 });
 
 test('rivals: rank counts only strictly faster rivals, so ties share the place', () => {
@@ -758,7 +759,7 @@ test('rivals config: bounded, rewards stay a switch only', () => {
   assert.equal(c.sigma, 0.35);
   assert.equal(c.tier_multipliers.hard, 3);
   assert.equal(c.rewards.enabled, true);
-  assert.deepEqual(core.normalizeConfig({}).rivals.tier_multipliers, { easy: 0.7, medium: 1, hard: 1.4 });
+  assert.deepEqual(core.normalizeConfig({}).rivals.tier_multipliers, { easy: 0.8, medium: 1, hard: 1.6 });
 });
 
 test('rivals: streaks look like real habits, not long shared runs', () => {

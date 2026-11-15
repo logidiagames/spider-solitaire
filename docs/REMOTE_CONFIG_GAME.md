@@ -79,7 +79,7 @@ Theme ids are fixed: `classic`, `aurora`, `sunlight` (shown as Bordeaux), `neon`
 ## `missions_config`
 
 ```json
-{"enabled":true,"all_complete_bonus":40,"refresh_hours":12,"definitions":[{"id":"win_1","type":"win_games","target":1,"reward":20},{"id":"win_3","type":"win_games","target":3,"reward":45},{"id":"no_undo_1","type":"win_no_undo","target":1,"reward":30},{"id":"no_undo_2","type":"win_no_undo","target":2,"reward":55},{"id":"no_hint_1","type":"win_no_hint","target":1,"reward":25},{"id":"fast_10","type":"win_fast","target":1,"seconds":600,"reward":30},{"id":"fast_6","type":"win_fast","target":1,"seconds":360,"reward":45},{"id":"moves_120","type":"win_under_moves","target":1,"moves":120,"reward":35},{"id":"daily_1","type":"win_daily","target":1,"reward":30},{"id":"random_2","type":"win_random","target":2,"reward":35},{"id":"winnable_2","type":"win_winnable","target":2,"reward":20},{"id":"numbered_1","type":"win_numbered","target":1,"reward":30},{"id":"cards_30","type":"foundation_cards","target":30,"reward":20},{"id":"cards_80","type":"foundation_cards","target":80,"reward":40},{"id":"suits_4","type":"complete_suits","target":4,"reward":25},{"id":"suits_8","type":"complete_suits","target":8,"reward":40},{"id":"columns_3","type":"empty_columns","target":3,"reward":25},{"id":"play_3","type":"play_games","target":3,"reward":15},{"id":"play_5","type":"play_games","target":5,"reward":25}]}
+{"enabled":true,"all_complete_bonus":40,"refresh_hours":12,"definitions":[{"id":"win_1","type":"win_games","target":1,"reward":20},{"id":"win_3","type":"win_games","target":3,"reward":45},{"id":"no_undo_1","type":"win_no_undo","target":1,"reward":30},{"id":"no_undo_2","type":"win_no_undo","target":2,"reward":55},{"id":"no_hint_1","type":"win_no_hint","target":1,"reward":25},{"id":"fast_15","type":"win_fast","target":1,"seconds":900,"reward":30},{"id":"fast_10","type":"win_fast","target":1,"seconds":600,"reward":45},{"id":"moves_180","type":"win_under_moves","target":1,"moves":180,"reward":35},{"id":"daily_1","type":"win_daily","target":1,"reward":30},{"id":"random_2","type":"win_random","target":2,"reward":35},{"id":"cards_52","type":"foundation_cards","target":52,"reward":20},{"id":"cards_104","type":"foundation_cards","target":104,"reward":40},{"id":"suits_4","type":"complete_suits","target":4,"reward":25},{"id":"suits_8","type":"complete_suits","target":8,"reward":40},{"id":"columns_3","type":"empty_columns","target":3,"reward":25},{"id":"play_3","type":"play_games","target":3,"reward":15},{"id":"play_5","type":"play_games","target":5,"reward":25}]}
 ```
 
 | Field | Range | Default | Effect |
@@ -107,15 +107,15 @@ Default missions:
 | `no_undo_1` | `win_no_undo` | 1 | 30 | |
 | `no_undo_2` | `win_no_undo` | 2 | 55 | |
 | `no_hint_1` | `win_no_hint` | 1 | 25 | |
-| `fast_10` | `win_fast` | 1 | 30 | 600 s |
-| `fast_6` | `win_fast` | 1 | 45 | 360 s |
-| `moves_120` | `win_under_moves` | 1 | 35 | 120 moves |
+| `fast_15` | `win_fast` | 1 | 30 | 900 s |
+| `fast_10` | `win_fast` | 1 | 45 | 600 s |
+| `moves_180` | `win_under_moves` | 1 | 35 | 180 moves (a 1 Suit win takes the solver about 110, deals included) |
 | `daily_1` | `win_daily` | 1 | 30 | |
 | `random_2` | `win_random` | 2 | 35 | |
-| `winnable_2` | `win_winnable` | 2 | 20 | |
+| `winnable_2` | `win_winnable` | 2 | 20 | Removed in Spider (no Winnable mode); the type stays for old saves |
 | `numbered_1` | `win_numbered` | 1 | 30 | |
-| `cards_30` | `foundation_cards` | 30 | 20 | |
-| `cards_80` | `foundation_cards` | 80 | 40 | |
+| `cards_52` | `foundation_cards` | 52 | 20 | Four runs (runs leave 13 cards at a time) |
+| `cards_104` | `foundation_cards` | 104 | 40 | Eight runs |
 | `suits_4` | `complete_suits` | 4 | 25 | |
 | `suits_8` | `complete_suits` | 8 | 40 | |
 | `columns_3` | `empty_columns` | 3 | 25 | |
@@ -241,15 +241,15 @@ The game asks only after a Daily win, with its own card first ("Remind me about 
 Stars per win (1 to 3). Bundled default:
 
 ```json
-{"two_star_max_undos":2,"three_star_max_undos":0,"three_star_seconds":480,"three_star_moves":140,"star_bonus_coins":{"two":5,"three":10}}
+{"two_star_max_undos":2,"three_star_max_undos":0,"three_star_seconds":720,"three_star_moves":180,"star_bonus_coins":{"two":5,"three":10}}
 ```
 
 | Field | Range | Default | Meaning |
 | --- | --- | --- | --- |
 | `two_star_max_undos` | 0–1000 | 2 | Most Undos for 2 stars |
 | `three_star_max_undos` | 0–`two_star_max_undos` | 0 | Most Undos for 3 stars |
-| `three_star_seconds` | 30–7200 | 480 | Longest time for 3 stars |
-| `three_star_moves` | 52–10000 | 140 | Most moves for 3 stars |
+| `three_star_seconds` | 30–7200 | 720 | Longest time for 3 stars |
+| `three_star_moves` | 52–10000 | 180 | Most moves for 3 stars (deals included) |
 | `star_bonus_coins.two` | 0–10000 | 5 | Coins the first time a deal reaches 2 stars |
 | `star_bonus_coins.three` | 0–10000 | 10 | Coins the first time a deal reaches 3 stars (from 2 stars, only the difference) |
 
@@ -298,17 +298,17 @@ Classic games draw a deal of their tier from `assets/deal_catalog.json` (deals t
 Daily Rivals, invented rivals computed on the phone (`docs/DAILY_RIVALS.md`). Bundled default:
 
 ```json
-{"enabled":true,"rivals_shown":30,"median_seconds":420,"sigma":0.35,"min_seconds":90,"tier_multipliers":{"easy":0.7,"medium":1,"hard":1.4},"rewards":{"enabled":false}}
+{"enabled":true,"rivals_shown":30,"median_seconds":600,"sigma":0.35,"min_seconds":90,"tier_multipliers":{"easy":0.8,"medium":1,"hard":1.6},"rewards":{"enabled":false}}
 ```
 
 | Field | Range | Default | Effect |
 | --- | --- | --- | --- |
 | `enabled` | true / false | true | Off: no Daily Rivals button, chip or screen |
 | `rivals_shown` | 5–60 | 30 | Rivals in today's table |
-| `median_seconds` | 60–3600 | 420 | Typical rival time on a Medium Daily |
+| `median_seconds` | 60–3600 | 600 | Typical rival time on a 2 Suits Daily |
 | `sigma` | 0.05–1.5 | 0.35 | Spread of rival times (log-normal) |
 | `min_seconds` | 10–600 | 90 | No rival is faster than this |
-| `tier_multipliers.<tier>` | 0.3–3 | 0.7 / 1 / 1.4 | Rival times on Easy, Medium and Hard Dailies |
+| `tier_multipliers.<tier>` | 0.3–3 | 0.8 / 1 / 1.6 | Rival times on Easy, Medium and Hard Dailies |
 | `rewards.enabled` | true / false | false | Kept for a later version; nothing uses it yet |
 
 Changing a value changes today's table for everyone at the next launch.

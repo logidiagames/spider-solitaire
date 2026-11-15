@@ -191,7 +191,7 @@ public final class GameConfig {
     private static JSONObject rivals(JSONObject value) throws JSONException {
         JSONObject multipliers = value == null ? null : value.optJSONObject("tier_multipliers");
         JSONObject rewards = value == null ? null : value.optJSONObject("rewards");
-        double[] fallback = {0.7, 1, 1.4};
+        double[] fallback = {0.8, 1, 1.6};
         JSONObject cleanMultipliers = new JSONObject();
         for (int i = 0; i < TIERS.size(); i++) {
             cleanMultipliers.put(TIERS.get(i), number(numberIn(multipliers, TIERS.get(i), 0.3, 3, fallback[i])));
@@ -199,7 +199,7 @@ public final class GameConfig {
         return new JSONObject()
                 .put("enabled", bool(value, "enabled", true))
                 .put("rivals_shown", intIn(value, "rivals_shown", 5, 60, 30))
-                .put("median_seconds", intIn(value, "median_seconds", 60, 3600, 420))
+                .put("median_seconds", intIn(value, "median_seconds", 60, 3600, 600))
                 .put("sigma", number(numberIn(value, "sigma", 0.05, 1.5, 0.35)))
                 .put("min_seconds", intIn(value, "min_seconds", 10, 600, 90))
                 .put("tier_multipliers", cleanMultipliers)
@@ -373,8 +373,8 @@ public final class GameConfig {
         return new JSONObject()
                 .put("two_star_max_undos", twoMax)
                 .put("three_star_max_undos", intIn(value, "three_star_max_undos", 0, twoMax, 0))
-                .put("three_star_seconds", intIn(value, "three_star_seconds", 30, 7200, 480))
-                .put("three_star_moves", intIn(value, "three_star_moves", 52, 10000, 140))
+                .put("three_star_seconds", intIn(value, "three_star_seconds", 30, 7200, 720))
+                .put("three_star_moves", intIn(value, "three_star_moves", 52, 10000, 180))
                 .put("star_bonus_coins", new JSONObject()
                         .put("two", intIn(bonus, "two", 0, 10000, 5))
                         .put("three", intIn(bonus, "three", 0, 10000, 10)));
@@ -473,7 +473,7 @@ public final class GameConfig {
                     .put("target", intIn(value, "target", 1, 1000, 1))
                     .put("reward", intIn(value, "reward", 0, 10000, 0))
                     .put("seconds", intIn(value, "seconds", 30, 7200, 600))
-                    .put("moves", intIn(value, "moves", 20, 1000, 120)));
+                    .put("moves", intIn(value, "moves", 20, 1000, 180)));
         }
         return new JSONObject()
                 .put("enabled", bool(missions, "enabled", true))

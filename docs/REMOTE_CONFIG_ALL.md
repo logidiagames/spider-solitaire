@@ -67,7 +67,7 @@ Details: `docs/REMOTE_CONFIG_GAME.md`. Bundled default (`assets/daily_bonus_conf
 Details: `docs/REMOTE_CONFIG_GAME.md`. Bundled default (`assets/missions_config_defaults.json`):
 
 ```json
-{"enabled":true,"all_complete_bonus":40,"refresh_hours":12,"definitions":[{"id":"win_1","type":"win_games","target":1,"reward":20},{"id":"win_3","type":"win_games","target":3,"reward":45},{"id":"no_undo_1","type":"win_no_undo","target":1,"reward":30},{"id":"no_undo_2","type":"win_no_undo","target":2,"reward":55},{"id":"no_hint_1","type":"win_no_hint","target":1,"reward":25},{"id":"fast_10","type":"win_fast","target":1,"seconds":600,"reward":30},{"id":"fast_6","type":"win_fast","target":1,"seconds":360,"reward":45},{"id":"moves_120","type":"win_under_moves","target":1,"moves":120,"reward":35},{"id":"daily_1","type":"win_daily","target":1,"reward":30},{"id":"random_2","type":"win_random","target":2,"reward":35},{"id":"winnable_2","type":"win_winnable","target":2,"reward":20},{"id":"cards_30","type":"foundation_cards","target":30,"reward":20},{"id":"cards_80","type":"foundation_cards","target":80,"reward":40},{"id":"suits_4","type":"complete_suits","target":4,"reward":25},{"id":"suits_8","type":"complete_suits","target":8,"reward":40},{"id":"columns_3","type":"empty_columns","target":3,"reward":25},{"id":"play_3","type":"play_games","target":3,"reward":15},{"id":"play_5","type":"play_games","target":5,"reward":25}]}
+{"enabled":true,"all_complete_bonus":40,"refresh_hours":12,"definitions":[{"id":"win_1","type":"win_games","target":1,"reward":20},{"id":"win_3","type":"win_games","target":3,"reward":45},{"id":"no_undo_1","type":"win_no_undo","target":1,"reward":30},{"id":"no_undo_2","type":"win_no_undo","target":2,"reward":55},{"id":"no_hint_1","type":"win_no_hint","target":1,"reward":25},{"id":"fast_15","type":"win_fast","target":1,"seconds":900,"reward":30},{"id":"fast_10","type":"win_fast","target":1,"seconds":600,"reward":45},{"id":"moves_180","type":"win_under_moves","target":1,"moves":180,"reward":35},{"id":"daily_1","type":"win_daily","target":1,"reward":30},{"id":"random_2","type":"win_random","target":2,"reward":35},{"id":"cards_52","type":"foundation_cards","target":52,"reward":20},{"id":"cards_104","type":"foundation_cards","target":104,"reward":40},{"id":"suits_4","type":"complete_suits","target":4,"reward":25},{"id":"suits_8","type":"complete_suits","target":8,"reward":40},{"id":"columns_3","type":"empty_columns","target":3,"reward":25},{"id":"play_3","type":"play_games","target":3,"reward":15},{"id":"play_5","type":"play_games","target":5,"reward":25}]}
 ```
 
 ## `remove_ads_config`
@@ -123,7 +123,7 @@ Details: `docs/REMOTE_CONFIG_GAME.md`. Bundled default (`assets/notifications_co
 Details: `docs/REMOTE_CONFIG_GAME.md`. Bundled default (`assets/stars_config_defaults.json`):
 
 ```json
-{"two_star_max_undos":2,"three_star_max_undos":0,"three_star_seconds":480,"three_star_moves":140,"star_bonus_coins":{"two":5,"three":10}}
+{"two_star_max_undos":2,"three_star_max_undos":0,"three_star_seconds":720,"three_star_moves":180,"star_bonus_coins":{"two":5,"three":10}}
 ```
 
 ## `achievements_config`
@@ -147,7 +147,7 @@ Details: `docs/REMOTE_CONFIG_GAME.md`. Bundled default (`assets/difficulty_confi
 Details: `docs/REMOTE_CONFIG_GAME.md`. Bundled default (`assets/rivals_config_defaults.json`):
 
 ```json
-{"enabled":true,"rivals_shown":30,"median_seconds":420,"sigma":0.35,"min_seconds":90,"tier_multipliers":{"easy":0.7,"medium":1,"hard":1.4},"rewards":{"enabled":false}}
+{"enabled":true,"rivals_shown":30,"median_seconds":600,"sigma":0.35,"min_seconds":90,"tier_multipliers":{"easy":0.8,"medium":1,"hard":1.6},"rewards":{"enabled":false}}
 ```
 
 ## `hint_config`

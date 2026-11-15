@@ -1328,7 +1328,7 @@
           rating_config:{enabled:true,interval_games:10,min_wins:3,min_session:2,cooldown_days:45,max_prompts:3},
           rewarded_config:{enabled:true,placements:{victory_double:true,daily_bonus_double:true},max_per_day:6,min_games_played:2},
           notifications_config:{enabled:true,ask_after_daily_wins:1,default_hour:19,streak_risk_hour:20,min_streak_for_risk:3},
-          rivals_config:{enabled:true,rivals_shown:30,median_seconds:420,sigma:0.35,min_seconds:90,tier_multipliers:{easy:0.7,medium:1,hard:1.4},rewards:{enabled:false}},
+          rivals_config:{enabled:true,rivals_shown:30,median_seconds:600,sigma:0.35,min_seconds:90,tier_multipliers:{easy:0.8,medium:1,hard:1.6},rewards:{enabled:false}},
           performance_config:{auto_reduce_effects:true,low_end_memory_class_mb:128,old_android_max_sdk:27,fps_sample_seconds:4,low_fps_threshold:40,low_end_total_ram_mb:3072},
           languages_config:{enabled:['en','pt','pt-BR','es','fr','it','de','nl','pl','tr','ru','uk','ja','ko','zh-Hans','id','sv','cs'],beta:[]},
           feel_config:{sounds:true,haptics:true,sound_volume:0.6,suit_complete_effect:true},
@@ -1344,16 +1344,16 @@
             {id:'stars_10',counter:'three_star_wins',target:10,reward:50},{id:'stars_50',counter:'three_star_wins',target:50,reward:150},
             {id:'fast_5',counter:'fast_win',target:300,reward:40},{id:'first_item',counter:'items_bought',target:1,reward:20},
             {id:'rivals_top3_1',counter:'rivals_top3',target:1,reward:0},{id:'rivals_top3_10',counter:'rivals_top3',target:10,reward:0}]},
-          stars_config:{two_star_max_undos:2,three_star_max_undos:0,three_star_seconds:480,three_star_moves:140,star_bonus_coins:{two:5,three:10}},
+          stars_config:{two_star_max_undos:2,three_star_max_undos:0,three_star_seconds:720,three_star_moves:180,star_bonus_coins:{two:5,three:10}},
           missions_config:{enabled:true,all_complete_bonus:40,refresh_hours:12,definitions:[
             {id:'win_1',type:'win_games',target:1,reward:20},{id:'win_3',type:'win_games',target:3,reward:45},
             {id:'no_undo_1',type:'win_no_undo',target:1,reward:30},{id:'no_undo_2',type:'win_no_undo',target:2,reward:55},
             {id:'no_hint_1',type:'win_no_hint',target:1,reward:25},
-            {id:'fast_10',type:'win_fast',target:1,seconds:600,reward:30},{id:'fast_6',type:'win_fast',target:1,seconds:360,reward:45},
-            {id:'moves_120',type:'win_under_moves',target:1,moves:120,reward:35},
+            {id:'fast_15',type:'win_fast',target:1,seconds:900,reward:30},{id:'fast_10',type:'win_fast',target:1,seconds:600,reward:45},
+            {id:'moves_180',type:'win_under_moves',target:1,moves:180,reward:35},
             {id:'daily_1',type:'win_daily',target:1,reward:30},
-            {id:'random_2',type:'win_random',target:2,reward:35},{id:'winnable_2',type:'win_winnable',target:2,reward:20},
-            {id:'cards_30',type:'foundation_cards',target:30,reward:20},{id:'cards_80',type:'foundation_cards',target:80,reward:40},
+            {id:'random_2',type:'win_random',target:2,reward:35},
+            {id:'cards_52',type:'foundation_cards',target:52,reward:20},{id:'cards_104',type:'foundation_cards',target:104,reward:40},
             {id:'suits_4',type:'complete_suits',target:4,reward:25},{id:'suits_8',type:'complete_suits',target:8,reward:40},
             {id:'columns_3',type:'empty_columns',target:3,reward:25},
             {id:'play_3',type:'play_games',target:3,reward:15},{id:'play_5',type:'play_games',target:5,reward:25}]}
@@ -1418,7 +1418,7 @@
             dailyBonus:normalizeBonus(object(source.daily_bonus_config)),
             missions:normalizeMissions(object(source.missions_config)),
             achievements:normalizeAchievements(object(source.achievements_config)),
-            stars:(()=>{const value=object(source.stars_config),bonus=object(value.star_bonus_coins),two=int(value.two_star_max_undos,0,1000,2);return{two_star_max_undos:two,three_star_max_undos:int(value.three_star_max_undos,0,two,0),three_star_seconds:int(value.three_star_seconds,30,7200,480),three_star_moves:int(value.three_star_moves,52,10000,140),star_bonus_coins:{two:int(bonus.two,0,10000,5),three:int(bonus.three,0,10000,10)}}})(),
+            stars:(()=>{const value=object(source.stars_config),bonus=object(value.star_bonus_coins),two=int(value.two_star_max_undos,0,1000,2);return{two_star_max_undos:two,three_star_max_undos:int(value.three_star_max_undos,0,two,0),three_star_seconds:int(value.three_star_seconds,30,7200,720),three_star_moves:int(value.three_star_moves,52,10000,180),star_bonus_coins:{two:int(bonus.two,0,10000,5),three:int(bonus.three,0,10000,10)}}})(),
             notifications:(()=>{const value=object(source.notifications_config);return{enabled:typeof value.enabled==='boolean'?value.enabled:true,ask_after_daily_wins:int(value.ask_after_daily_wins,1,100,1),default_hour:int(value.default_hour,0,23,19),streak_risk_hour:int(value.streak_risk_hour,0,23,20),min_streak_for_risk:int(value.min_streak_for_risk,1,365,3)}})(),
             rewarded:(()=>{const value=object(source.rewarded_config),places=object(value.placements),flag=(v,d)=>typeof v==='boolean'?v:d;return{enabled:flag(value.enabled,true),placements:{victory_double:flag(places.victory_double,true),daily_bonus_double:flag(places.daily_bonus_double,true)},max_per_day:int(value.max_per_day,0,100,6),min_games_played:int(value.min_games_played,0,10000,2)}})(),
             removeAds:(()=>{const value=object(source.remove_ads_config);return{enabled:typeof value.enabled==='boolean'?value.enabled:true,interval_games:int(value.interval_games,1,1000,6),min_games_played:int(value.min_games_played,0,10000,4),min_session:int(value.min_session,2,10000,2),cooldown_hours:int(value.cooldown_hours,0,8760,12)}})(),
@@ -1430,7 +1430,7 @@
         function normalizeRivals(value){
           const multipliers=object(value.tier_multipliers),fallback=DEFAULTS.rivals_config.tier_multipliers;
           return{enabled:typeof value.enabled==='boolean'?value.enabled:true,rivals_shown:int(value.rivals_shown,5,60,30),
-            median_seconds:int(value.median_seconds,60,3600,420),sigma:num(value.sigma,0.05,1.5,0.35),min_seconds:int(value.min_seconds,10,600,90),
+            median_seconds:int(value.median_seconds,60,3600,600),sigma:num(value.sigma,0.05,1.5,0.35),min_seconds:int(value.min_seconds,10,600,90),
             tier_multipliers:Object.fromEntries(TIERS.map(tier=>[tier,num(multipliers[tier],0.3,3,fallback[tier])])),
             rewards:{enabled:typeof object(value.rewards).enabled==='boolean'?object(value.rewards).enabled:false}};
         }
@@ -1490,7 +1490,7 @@
         function cleanDefinition(value){
           const item=object(value);
           if(!MISSION_TYPES.includes(item.type)||!/^[a-z0-9_]{1,40}$/.test(String(item.id||'')))return null;
-          return{id:item.id,type:item.type,target:int(item.target,1,1000,1),reward:int(item.reward,0,10000,0),seconds:int(item.seconds,30,7200,600),moves:int(item.moves,20,1000,120)};
+          return{id:item.id,type:item.type,target:int(item.target,1,1000,1),reward:int(item.reward,0,10000,0),seconds:int(item.seconds,30,7200,600),moves:int(item.moves,20,1000,180)};
         }
         function normalizeMissions(missions){
           const seen=new Set(),list=(Array.isArray(missions.definitions)?missions.definitions:[]).map(cleanDefinition).filter(item=>item&&!seen.has(item.id)&&seen.add(item.id));

@@ -13,7 +13,7 @@ Claiming real competitors would mislead players and could breach Google Play's d
 ## How it works (`FreeCellCore`, pure and deterministic, seeded random numbers only)
 
 - **Roster** (`cleanRoster`): id, nickname, avatar colour, a fixed `skill` (multiplies a time: under 1 is fast) and `reliability` (the chance of playing on a given day).
-- **Today's table** (`rivalsTable`): `rivals_shown` rivals (30) drawn from the roster by the local date; each one's time is log-normal around `median_seconds` (420) with spread `sigma` (0.35), times its skill and the Daily's tier multiplier (Easy 0.7, Medium 1.0, Hard 1.4), never under `min_seconds` (90). Every player sees the same rivals and times on the same date.
+- **Today's table** (`rivalsTable`): `rivals_shown` rivals (30) drawn from the roster by the local date; each one's time is log-normal around `median_seconds` (600) with spread `sigma` (0.35), times its skill and the Daily's tier multiplier (1 Suit 0.8, 2 Suits 1.0, 4 Suits 1.6), never under `min_seconds` (90). Every player sees the same rivals and times on the same date.
 - **Place** (`rivalsRank`): 1 + the rivals strictly faster, so a tie shares the place; the total counts the player. The player's time is the best win of today's Daily on its own date.
 - **Streaks** (`rivalStreak`, `rivalsStreakBoard`): a rival plays a date when a hash of (rival, date) falls under its reliability; its streak is the run of such days ending today. The player's own Daily streak is placed among them.
 - **Results** (`recordRivalsResult`): the best place ever, the last place, and the number of days in the top 3 (each day once). They feed Statistics and the achievements "Top 3 in Daily Rivals" (1 and 10 times), which pay **no coins** in this version.
