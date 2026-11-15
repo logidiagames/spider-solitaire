@@ -16,8 +16,8 @@ android {
         applicationId = "com.nexusplaylabss.spider"
         minSdk = 24
         targetSdk = 36
-        versionCode = 10
-        versionName = "0.4.4"
+        versionCode = 1
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "UMP_TEST_DEVICE_IDS", "\"\"")
