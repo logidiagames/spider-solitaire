@@ -2190,12 +2190,12 @@
           return LANGUAGE_CODES.includes(base)?base:null;
         }
         // The language to use: Android's per-app language (set in the system settings), else the one
-        // chosen in the game, else the first device language we have, else English; only enabled ones.
-        function pickLanguage({saved=null,app=null,device=[],enabled=LANGUAGE_CODES}={}){
+        // chosen in the game, else English (owner decision 2026-11-15: the device language is not used;
+        // a new player starts in English and can pick another in Settings); only enabled ones.
+        function pickLanguage({saved=null,app=null,enabled=LANGUAGE_CODES}={}){
           const ok=code=>code&&enabled.includes(code)?code:null;
-          const fromTag=tag=>ok(languageForTag(tag));
           const savedCode=LANGUAGE_CODES.includes(saved)?ok(saved):null;
-          return fromTag(app)||savedCode||(Array.isArray(device)?device:[device]).map(fromTag).find(Boolean)||'en';
+          return ok(languageForTag(app))||savedCode||'en';
         }
         // A language file, checked against English: only known keys; text without HTML, at most 600
         // characters, with the same {placeholders} as English (a plural object's forms may leave some
@@ -5789,8 +5789,7 @@ self.onmessage=event=>{const {id,state,budget}=event.data,started=performance.no
       }
       function chooseLanguage(){
         let info=null;try{info=JSON.parse(window.AndroidBridge?.getLanguageInfo?.()||'null')}catch(error){info=null}
-        const device=info?.device||(navigator.languages?.length?[...navigator.languages]:[navigator.language]);
-        currentLanguage=FreeCellCore.pickLanguage({saved:savedState.currentLanguage,app:info?.app||null,device,enabled:gameConfig.languages.enabled});
+        currentLanguage=FreeCellCore.pickLanguage({saved:savedState.currentLanguage,app:info?.app||null,enabled:gameConfig.languages.enabled});
         loadLanguagePack(currentLanguage);
       }
       function applySavedAppearance(){
