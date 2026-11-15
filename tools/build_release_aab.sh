@@ -52,6 +52,8 @@ echo "Building Spider Solitaire $version_name (versionCode $version_code). Play 
 
 read -r -s -p "Keystore password for $KEY_ALIAS: " password
 echo
+# A Windows console (bash.exe started from PowerShell) ends the line with a carriage return: drop it.
+password="${password%$'\r'}"
 [ -n "$password" ] || fail "no password given"
 
 # The keystore's own certificate: the AAB must be signed by it.

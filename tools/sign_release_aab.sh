@@ -30,6 +30,8 @@ echo "Signing Spider Solitaire $version_name (versionCode $version_code), built 
 
 read -r -s -p "Keystore password for $KEY_ALIAS: " password
 echo
+# A Windows console (bash.exe started from PowerShell) ends the line with a carriage return: drop it.
+password="${password%$'\r'}"
 [ -n "$password" ] || fail "no password given"
 expected=$(SPIDER_STOREPASS="$password" "$keytool" -list -v -keystore "$(native_path "$KEYSTORE")" -alias "$KEY_ALIAS" \
     -storepass:env SPIDER_STOREPASS 2>/dev/null | awk '/SHA256:/ {print $2; exit}') || true
