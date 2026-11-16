@@ -7,7 +7,7 @@
 - Upload key: the old `freecell-upload` key is already registered by the first upload. Replacing it now needs an upload-key reset request in Play Console (App integrity → App signing); keep keystore and passwords outside Git.
 - Enable Play App Signing in the target Play Console app.
 - Supply final original launcher icon, feature graphic, phone/tablet screenshots and store copy.
-- Privacy policy: https://sites.google.com/view/freecellsolitaireprivacypolicy (opened from Settings → Privacy Policy; support e-mail nexusplaylabss@gmail.com). Use the same URL in the Play Console listing, and complete Data safety / content-rating declarations. There is no Terms of Service page, so the app has no Terms item.
+- Privacy policy: https://sites.google.com/view/spidersolitairenexus (opened from Settings → Privacy Policy; support e-mail nexusplaylabss@gmail.com). Use the same URL in the Play Console listing, and complete Data safety / content-rating declarations. There is no Terms of Service page, so the app has no Terms item.
 - Test on representative API 24–36 phones and tablets, including low-memory devices.
 - Run unit tests, lint and a closed-track test; inspect the Play pre-launch report.
 - 16 KB page size: native libraries must be 16 KB-aligned. Pre-checked on the release APK on 2026-10-22 (all `libdatastore_shared_counter.so` OK); verify again on the AAB (`zipalign -c -P 16 -v 4` on the APKs built from it, and the ELF LOAD alignment).

@@ -28,7 +28,7 @@ Notas para as perguntas gerais:
 - **O utilizador pode pedir a eliminação:** a app não tem contas; os dados são pseudónimos (IDs). O contacto de privacidade é `nexusplaylabss@gmail.com`, indicado na política.
 - **Recolha opcional:** a publicidade personalizada depende do consentimento no formulário da Google (UMP) nas regiões onde é obrigatório; o jogador pode mudar a escolha em Definições → Política de Privacidade → Opções de privacidade.
 - **Público-alvo:** a política de privacidade diz que a app não se destina a menores de 13 anos; mantém a mesma resposta na secção Público-alvo e conteúdo.
-- **Política de privacidade:** https://sites.google.com/view/freecellsolitaireprivacypolicy
+- **Política de privacidade:** https://sites.google.com/view/spidersolitairenexus
 
 ## Permissões no manifesto final (release)
 

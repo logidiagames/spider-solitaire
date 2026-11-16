@@ -1,7 +1,7 @@
 # FreeCell — Terms of Service (draft)
 
 Draft written on 2026-11-04 for the owner to review (ideally with legal advice) and publish on a public
-page, like the privacy policy (`https://sites.google.com/view/freecellsolitaireprivacypolicy`). Once the
+page, like the privacy policy (`https://sites.google.com/view/spidersolitairenexus`). Once the
 page exists, the app links to it from Settings → Help, legal & contact (its URL must also be added to
 `MainActivity.openExternal`'s allow-list). Items in [brackets] must be filled in by the owner.
 

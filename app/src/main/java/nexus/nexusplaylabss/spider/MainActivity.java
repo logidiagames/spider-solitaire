@@ -84,7 +84,7 @@ public final class MainActivity extends Activity {
             new HashSet<>(Arrays.asList("victory_double", "daily_bonus_double"));
     // The page may only open these two targets; they must match freecell.html.
     private static final String PRIVACY_POLICY_URL =
-            "https://sites.google.com/view/freecellsolitaireprivacypolicy";
+            "https://sites.google.com/view/spidersolitairenexus";
     private static final String SUPPORT_EMAIL = "nexusplaylabss@gmail.com";
     private static final String SUPPORT_MAILTO =
             "mailto:" + SUPPORT_EMAIL + "?subject=Spider%20Solitaire%20Support";
