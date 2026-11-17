@@ -47,6 +47,9 @@ English is built in. Start language (owner decision 2026-11-15): the device lang
 
 Windows PC (Git Bash): `export JAVA_HOME='C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot' PATH="/c/Program Files/nodejs:$PATH"` then `./gradlew test lintDebug assembleDebug`. `local.properties`: `sdk.dir=C\:/Users/acoel/AppData/Local/Android/Sdk`. JS tests alone: `node --test app/src/test/js/core.test.mjs`.
 
+Test builds go to testers through Firebase App Distribution (project `spider-99dd0`, app `1:1096245236933:android:56db7d44496564cd8c4cac`; first release 2026-11-17). Build the debug APK (test ads, DEV tools), copy it to `~/Downloads/Spider-test-builds/`, then `NODE_OPTIONS=--use-system-ca firebase appdistribution:distribute <apk> --app <app id> --project spider-99dd0 --release-notes-file <notes> --testers "<emails>"` to the existing testers (`firebase appdistribution:testers:list --project spider-99dd0`; the CLI in `%APPDATA%
+pm` is logged in as the studio account). Release notes in Portuguese, one line per change. Do not commit tester e-mails.
+
 Browser preview: `.claude/launch.json` (ignored) has `spider-preview`, which runs `.claude/preview-server.mjs` on http://localhost:5182 (FreeCell uses 5180); it reads `freecell.html` on every request.
 
 ## Owner tasks (not for Claude)
