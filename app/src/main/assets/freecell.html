@@ -1219,30 +1219,35 @@
     #freecell-live-preview .top-row>.slot[data-dest]>.playing-card{position:absolute;inset:0;height:100%}
     #freecell-live-preview .playing-card,#freecell-live-preview .drag-ghost .playing-card{height:var(--card-h,58px)}
     #freecell-live-preview .column:empty::before{height:var(--card-h,58px)}
-    #freecell-live-preview .playing-card .court{top:36%;width:min(28px,86%);height:54%}
+    /* Face cards: the picture sits at the bottom, scaled (--court-scale, set by render) to the room
+       left under the rank, so it never touches the Q or K. */
+    #freecell-live-preview .playing-card .court{top:auto;bottom:2px;width:30px;height:38px;transform:scale(var(--court-scale,.6));transform-origin:50% 100%}
     /* The stock: a fan of card backs, the next row on top; tap anywhere on it to deal. */
     #freecell-live-preview .top-row>.stock-slot{cursor:pointer;-webkit-tap-highlight-color:transparent;overflow:visible;right:0;left:auto;border:0;background:none;width:calc(var(--card-w,38px) * (1 + (var(--backs,1) - 1) * .3))}
     #freecell-live-preview .game-phone:not(.stock-right) .top-row>.stock-slot{left:0;right:auto}
     #freecell-live-preview .top-row>.stock-slot:not(.has-cards){width:var(--card-w,38px);border:2px dashed rgba(253,242,216,.28);border-radius:var(--card-radius,4px);box-sizing:border-box}
     #freecell-live-preview .stock-back{position:absolute;top:0;left:calc(var(--i,0) * var(--card-w,38px) * .3);width:var(--card-w,38px);height:100%;box-sizing:border-box;border:2px solid #f4efe3;border-radius:var(--card-radius,4px);background:var(--card-back,#8e1f2b);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25),-1px 2px 3px rgba(0,0,0,.34);pointer-events:none}
-    #freecell-live-preview .stock-slot.hint .stock-back:last-child{animation:stock-hint .55s ease-in-out 3}
-    #freecell-live-preview .game-phone .playing-card.hint,#freecell-live-preview .game-phone .playing-card.hint-target{animation:spider-hint .55s ease-in-out 3}
-    #freecell-live-preview .game-phone .column.hint-target::before{animation:spider-hint .55s ease-in-out 3}
-    @keyframes spider-hint{0%,100%{box-shadow:0 2px 3px rgba(0,0,0,.3)}50%{box-shadow:0 0 0 3px #ffd75e,0 0 14px 4px rgba(255,215,94,.85)}}
+    /* Hint (owner request 2026-11-17): one blink, no border; the label is large, in the middle of the table. */
+    #freecell-live-preview .stock-slot.hint .stock-back:last-child,#freecell-live-preview .game-phone .playing-card.hint,#freecell-live-preview .game-phone .playing-card.hint-target,#freecell-live-preview .game-phone .column.hint-target::before{animation:spider-blink .8s ease-in-out 1}
+    @keyframes spider-blink{0%,100%{opacity:1}50%{opacity:.15}}
+    #freecell-live-preview .message.hint-label,#freecell-live-preview .message.hint-label.visible{top:50%;bottom:auto;translate:-50% -50%;max-width:86%;padding:12px 22px;border-radius:22px;font-size:20px;line-height:26px;font-weight:700}
     @keyframes stock-hint{50%{box-shadow:0 0 0 3px #f2d07c,0 0 16px rgba(255,223,118,.8)}}
     /* Card look (owner request 2026-11-17, like the classic game): ivory faces on the default
        Classic style, a bigger centre suit, and ranks in a bold serif (rounder than the condensed
        sans; Noto Serif on Android, lining figures). */
-    #freecell-live-preview .game-phone[data-card-style="classic"]{--card-face:linear-gradient(165deg,#f5ebd3 0%,#eadbb9 100%);--card-edge:#ab9a77}
-    #freecell-live-preview .game-phone .playing-card .corner,#freecell-live-preview .game-phone .playing-card .corner>span:first-child{font-family:var(--card-rank-font,'Noto Serif','Droid Serif','Times New Roman',serif);font-weight:700;font-variant-numeric:lining-nums;letter-spacing:-.5px}
-    #freecell-live-preview .game-phone .playing-card.ten .corner>span:first-child{letter-spacing:-2.5px}
-    #freecell-live-preview .playing-card .pip{font-size:min(48px,104cqw);top:64%}
+    #freecell-live-preview .game-phone[data-card-style="classic"]{--card-face:linear-gradient(165deg,#f8f3e7 0%,#efe6d2 100%);--card-edge:#b2a68b}
+    #freecell-live-preview .game-phone .playing-card .corner,#freecell-live-preview .game-phone .playing-card .corner>span:first-child{font-family:var(--card-rank-font,Roboto,Arial,sans-serif);font-weight:900;font-variant-numeric:lining-nums;letter-spacing:0}
+    /* Rounded, puffy ranks (owner request 2026-11-17): Roboto Black widened by a thin outline of its
+       own colour in eight directions, which rounds every corner. */
+    #freecell-live-preview .game-phone .playing-card .corner>span:first-child{text-shadow:.045em 0 currentColor,-.045em 0 currentColor,0 .045em currentColor,0 -.045em currentColor,.032em .032em currentColor,-.032em .032em currentColor,.032em -.032em currentColor,-.032em -.032em currentColor}
+    #freecell-live-preview .game-phone .playing-card.ten .corner>span:first-child{letter-spacing:-1px}
+    #freecell-live-preview .playing-card .pip{font-size:min(48px,94cqw);top:67%}
     /* Every card size uses the measured --card-h (FreeCell's Large and Extra large heights do not apply). */
     #freecell-live-preview .game-phone[data-card-size] .top-row{height:calc(var(--card-h,58px) + 2px)}
     #freecell-live-preview .game-phone[data-card-size] .top-row>.slot{height:var(--card-h,58px);line-height:normal}
     #freecell-live-preview .game-phone[data-card-size] .playing-card,#freecell-live-preview .game-phone[data-card-size] .drag-ghost .playing-card,#freecell-live-preview .game-phone[data-card-size] .column:empty::before{height:var(--card-h,58px)}
-    #freecell-live-preview .game-phone[data-card-size] .playing-card .pip{font-size:min(56px,104cqw);top:64%}
-    #freecell-live-preview .game-phone[data-card-size] .playing-card .court{top:36%;height:54%}
+    #freecell-live-preview .game-phone[data-card-size] .playing-card .pip{font-size:min(56px,94cqw);top:67%}
+    #freecell-live-preview .game-phone[data-card-size] .playing-card .court{top:auto;bottom:2px;width:30px;height:38px;transform:scale(var(--court-scale,.6));transform-origin:50% 100%}
     /* Face-down cards show the equipped card back, also while the deal flies (no flip for them). */
     #freecell-live-preview .playing-card.face-down::after,#freecell-live-preview .game-phone[data-effects] .playing-card.face-down.dealing::after{content:"";position:absolute;z-index:6;inset:-1px;box-sizing:border-box;border:2px solid #f4efe3;border-radius:inherit;background:var(--card-back,#8e1f2b);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25);animation:none;transform:none;visibility:visible;display:block}
     @media(prefers-reduced-motion:reduce){#freecell-live-preview .game-phone .playing-card.face-down.dealing::after{display:block}}
@@ -2986,7 +2991,7 @@
       // (a fixed 399 px of room), Large and Extra large measure the room the columns have.
       // Spider (owner request 2026-11-17): the height also follows the column width (ratio), so cards
       // keep a card's shape on narrow phones; the strips shrink with it (cardMetrics, set by render).
-      const CARD_SIZES={normal:{height:58,strip:20,ratio:1.42},large:{height:66,strip:23,ratio:1.5},xl:{height:74,strip:26,ratio:1.58}};
+      const CARD_SIZES={normal:{height:58,strip:20,ratio:1.3},large:{height:66,strip:23,ratio:1.38},xl:{height:74,strip:26,ratio:1.46}};
       let columnRoom=399,cardMetrics={width:38,height:58,strip:20,down:7};
       // Each card's top in a column: face-down cards show a thin strip, face-up ones the size's strip,
       // squeezed (face-up gaps first) when the column would run past its room.
@@ -3252,6 +3257,8 @@
           const height=Math.min(size.height,Math.round(width*size.ratio)),scale=height/size.height;
           cardMetrics={width,height,strip:Math.round(size.strip*scale),down:Math.max(5,Math.round((DOWN_STRIPS[options.cardSize]||7)*scale))};
           phone.style.setProperty('--card-w',`${width}px`);phone.style.setProperty('--card-h',`${height}px`);
+          // The face-card picture (30 x 38 px) fits under the rank, which takes about 0.6 of the width.
+          phone.style.setProperty('--court-scale',Math.max(.4,Math.min(1,(height-width*.6-3)/38,width*.8/30)).toFixed(3));
         }
         // Spider bug fix: measured while the board was not laid out yet (loading screen, hidden page)
         // the room came out tiny and every column was squeezed after a deal. Such a reading is
@@ -3437,7 +3444,8 @@
           for(let index=0;index<column.length;index++){
             const from={type:'tableau',pile,index};
             if(column[index].up!==false&&tableau.some((target,to)=>!(index===0&&!target.length)&&FreeCellCore.canMove(state,{from,to:{type:'tableau',pile:to}})))break;
-            if(column[index].up!==false)stuck.add(encode(from));
+            // Owner request 2026-11-17: the front card of a column is never darkened.
+            if(column[index].up!==false&&index<column.length-1)stuck.add(encode(from));
           }
         });
         return stuck;
@@ -4251,13 +4259,13 @@
       }
       // Owner decision (2026-10-25): the hint animates only the card(s) to move and never shows
       // where they go: "Move 9♠".
-      // Spider (owner request 2026-11-17: the automatic hint was too easy to miss): the run to move and
-      // the card or empty column it goes to glow gold three times.
-      const HINT_GLOW_MS=1700;
+      // Spider (owner request 2026-11-17): the run to move and the card or empty column it goes to
+      // blink once; the label is large, in the middle of the table.
+      const HINT_GLOW_MS=900;
       function markHintMove(move){
         if(move.from.type==='stock'){
           const slot=find('.stock-slot');slot?.classList.add('hint');setTimeout(()=>slot?.classList.remove('hint'),HINT_GLOW_MS);
-          showMessage(t('hintDeal'));return;
+          showMessage(t('hintDeal'),{hint:true});return;
         }
         const from={type:move.from.type,pile:move.from.pile,index:move.from.index||0},card=cardAt(from);if(!card)return;
         const count=from.type==='tableau'?tableau[from.pile].length-from.index:1;
@@ -4268,7 +4276,7 @@
           const element=target.length?root.querySelector(`[data-loc="${encode({type:'tableau',pile:move.to.pile,index:target.length-1})}"]`):find('#fc-columns')?.children[move.to.pile];
           if(element){element.classList.add('hint-target');setTimeout(()=>element.classList.remove('hint-target'),HINT_GLOW_MS)}
         }
-        showMessage(t('hintMove',{card:`${rankOf(card.r)}${suitOf(card).mark}`}));
+        showMessage(t('hintMove',{card:`${rankOf(card.r)}${suitOf(card).mark}`}),{hint:true});
       }
       function undo(){
         if(autoMoving)return;
@@ -4276,8 +4284,8 @@
         const chargedMove=moves+1;tableau=old.tableau.map(col=>col.map(card=>({...card})));stock=old.stock.map(card=>({...card}));foundations=[...old.foundations];done=[...old.done];score=Math.max(0,(old.score??score)-FreeCellCore.SCORING.move);moves=chargedMove;stats.totalMoves++;selected=null;gameUsedUndo=true;gameUndos++;seenPositions.add(currentPositionKey());hideStuckMessage();resetAnalysis('undo');render();if(smartHints())scheduleAnalysis()
         if(currentMode!=='developer')track('undo_used',{game_mode:currentMode,level:currentLevelNumber,moves});
       }
-      function showMessage(text){
-        const message=find('#fc-message');message.textContent=text;message.classList.add('visible');clearTimeout(message._timer);message._timer=setTimeout(()=>message.classList.remove('visible'),1700);
+      function showMessage(text,{hint=false}={}){
+        const message=find('#fc-message');message.textContent=text;message.classList.toggle('hint-label',hint);message.classList.add('visible');clearTimeout(message._timer);message._timer=setTimeout(()=>message.classList.remove('visible'),hint?2400:1700);
       }
       // back (owner request 2026-11-04): screens opened from Settings → Help, legal & contact get a back
       // arrow in the title bar instead of a "Back to Settings" button; the X still closes.
