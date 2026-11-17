@@ -1216,12 +1216,18 @@
     #freecell-live-preview .game-phone:not(.stock-right) .top-row>.slot[data-dest]{left:calc(100% - var(--card-w,38px) * 3.1 + var(--i,0) * var(--card-w,38px) * .3)}
     #freecell-live-preview .top-row>.slot[data-dest]:not(.filled){visibility:hidden}
     #freecell-live-preview .top-row>.slot[data-dest]::before{display:none}
+    #freecell-live-preview .top-row>.slot[data-dest]{border:0;padding:0;box-sizing:border-box;background:none}
     #freecell-live-preview .top-row>.slot[data-dest]>.playing-card{position:absolute;inset:0;height:100%}
     #freecell-live-preview .playing-card,#freecell-live-preview .drag-ghost .playing-card{height:var(--card-h,58px)}
     #freecell-live-preview .column:empty::before{height:var(--card-h,58px)}
     /* Face cards: the picture sits at the bottom, scaled (--court-scale, set by render) to the room
        left under the rank, so it never touches the Q or K. */
-    #freecell-live-preview .playing-card .court{top:auto;bottom:2px;width:30px;height:38px;transform:scale(var(--court-scale,.6));transform-origin:50% 100%}
+    #freecell-live-preview .playing-card .court{top:auto;left:auto;right:2px;bottom:2px;translate:none;width:30px;height:38px;transform:scale(var(--court-scale,.6));transform-origin:100% 100%}
+    /* Owner request 2026-11-17: on face cards the small suit sits right in the top corner and the
+       picture is on the right, as large as the room beside or under the rank allows. */
+    #freecell-live-preview .game-phone .playing-card.face .mini-suit{margin-top:-1px;line-height:1}
+    #freecell-live-preview .game-phone .playing-card.face .corner>span:first-child{font-size:90%}
+    #freecell-live-preview .game-phone .playing-card.queen .court,#freecell-live-preview .game-phone[data-card-size] .playing-card.queen .court{transform:scale(var(--court-scale-q,.5))}
     /* The stock: a fan of card backs, the next row on top; tap anywhere on it to deal. */
     #freecell-live-preview .top-row>.stock-slot{cursor:pointer;-webkit-tap-highlight-color:transparent;overflow:visible;right:0;left:auto;border:0;background:none;width:calc(var(--card-w,38px) * (1 + (var(--backs,1) - 1) * .3))}
     #freecell-live-preview .game-phone:not(.stock-right) .top-row>.stock-slot{left:0;right:auto}
@@ -1249,7 +1255,7 @@
     #freecell-live-preview .game-phone[data-card-size] .top-row>.slot{height:var(--card-h,58px);line-height:normal}
     #freecell-live-preview .game-phone[data-card-size] .playing-card,#freecell-live-preview .game-phone[data-card-size] .drag-ghost .playing-card,#freecell-live-preview .game-phone[data-card-size] .column:empty::before{height:var(--card-h,58px)}
     #freecell-live-preview .game-phone[data-card-size] .playing-card .pip{font-size:min(56px,94cqw);top:67%}
-    #freecell-live-preview .game-phone[data-card-size] .playing-card .court{top:auto;bottom:2px;width:30px;height:38px;transform:scale(var(--court-scale,.6));transform-origin:50% 100%}
+    #freecell-live-preview .game-phone[data-card-size] .playing-card .court{top:auto;left:auto;right:2px;bottom:2px;translate:none;width:30px;height:38px;transform:scale(var(--court-scale,.6));transform-origin:100% 100%}
     /* Face-down cards show the equipped card back, also while the deal flies (no flip for them). */
     #freecell-live-preview .playing-card.face-down::after,#freecell-live-preview .game-phone[data-effects] .playing-card.face-down.dealing::after{content:"";position:absolute;z-index:6;inset:-1px;box-sizing:border-box;border:2px solid #f4efe3;border-radius:inherit;background:var(--card-back,#8e1f2b);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25);animation:none;transform:none;visibility:visible;display:block}
     @media(prefers-reduced-motion:reduce){#freecell-live-preview .game-phone .playing-card.face-down.dealing::after{display:block}}
@@ -3259,12 +3265,23 @@
           const height=Math.min(size.height,Math.round(width*size.ratio)),scale=height/size.height;
           cardMetrics={width,height,strip:Math.round(size.strip*scale),down:Math.max(5,Math.round((DOWN_STRIPS[options.cardSize]||7)*scale))};
           phone.style.setProperty('--card-w',`${width}px`);phone.style.setProperty('--card-h',`${height}px`);
-          // The face-card picture (30 x 38 px) fits in the room under the rank, 1 px clear of it (owner
-          // request 2026-11-17: the Q, K and J sat on the picture). The rank's box is measured on a
-          // card already drawn; before the first draw it is estimated from the font size.
-          const rank=find('#fc-columns .playing-card:not(.face-down) .corner>span');
-          const rankBottom=rank&&rank.offsetHeight?rank.parentElement.offsetTop+rank.offsetTop+rank.offsetHeight:1+1.25*Math.min(25,width*.54);
-          phone.style.setProperty('--court-scale',Math.max(.3,Math.min(1,(height-rankBottom-4)/38,width*.8/30)).toFixed(3));
+          // The face-card picture (30 x 38 px, bottom right) never touches the rank or the small suit
+          // (owner requests 2026-11-17): it is as large as either the room beside the rank (under the
+          // suit) or the room under the rank allows, whichever is larger. The rank and suit are
+          // measured on a card already drawn (the widest rank, Q or K, about 0.78 of the font size);
+          // before the first draw they are estimated from the font size.
+          // On face cards the rank is 90 % of the size; the picture may start right under the ink of
+          // the letter: about 0.92 of the font size below the top of the rank for J and K, 1.08 for
+          // the Q's tail (measured on Nunito ExtraBold), so the Q gets its own scale.
+          const rank=find('#fc-columns .playing-card.face:not(.face-down) .corner>span')||find('#fc-columns .playing-card:not(.face-down) .corner>span'),corner=rank?.parentElement;
+          const rankSize=(rank?parseFloat(getComputedStyle(rank).fontSize):0)||Math.min(25,width*.54)*.9;
+          const suitSize=parseFloat(getComputedStyle(corner?.querySelector('.mini-suit')||phone).fontSize)||rankSize*.75;
+          const cornerTop=corner?corner.offsetTop:1,cornerLeft=corner?corner.offsetLeft:3;
+          const rankTop=cornerTop+(rank?rank.offsetTop:1);
+          const rankRight=cornerLeft+(rank?rank.offsetLeft:0)+rankSize*.78,suitBottom=cornerTop+suitSize;
+          const fit=inkBottom=>{const under=Math.min((height-inkBottom-3)/38,(width-4)/30),beside=Math.min((height-suitBottom-4)/38,(width-rankRight-4)/30);return Math.max(.3,Math.min(1.3,Math.max(under,beside))).toFixed(3)};
+          phone.style.setProperty('--court-scale',fit(rankTop+rankSize*.92+1));
+          phone.style.setProperty('--court-scale-q',fit(rankTop+rankSize*1.08+1));
         }
         // Spider bug fix: measured while the board was not laid out yet (loading screen, hidden page)
         // the room came out tiny and every column was squeezed after a deal. Such a reading is
@@ -3401,7 +3418,7 @@
         if(loc.type==='foundation')return foundations[loc.pile]===13?{s:done[loc.pile],r:13,up:true,id:`f${loc.pile}`}:null;
         return null;
       }
-      const cardClass=(card,isLast)=>{const suit=suitOf(card);return 'playing-card cursor-interaction'+(suit.red?' red':'')+(card.r>=11?' face':'')+(card.r===10?' ten':'')+(isLast?' last-card':'')+(card.up===false?' face-down':'')};
+      const cardClass=(card,isLast)=>{const suit=suitOf(card);return 'playing-card cursor-interaction'+(suit.red?' red':'')+(card.r>=11?' face':'')+(card.r===12?' queen':'')+(card.r===10?' ten':'')+(isLast?' last-card':'')+(card.up===false?' face-down':'')};
       const cardMarkup=card=>{const suit=suitOf(card);return `<span class="corner"><span>${rankOf(card.r)}</span><span class="mini-suit">${suit.mark}</span></span><span class="pip">${suit.mark}</span>${card.r>=11?courtSvgMarkup(rankOf(card.r),suit.mark):''}`};
       function makeCard(card,loc,isLast=false){
         if(!card)return document.createDocumentFragment();
