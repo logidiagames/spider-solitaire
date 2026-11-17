@@ -54,7 +54,7 @@ public final class GameConfig {
     private static final int[] DEFAULT_REWARDS = {10, 20, 30, 50};
     static final List<String> TIERS = Arrays.asList("easy", "medium", "hard");
     private static final String[] DEFAULT_DAILY_TIERS = {"medium", "easy", "easy", "easy", "easy", "easy", "medium"};
-    private static final int[] DEFAULT_FIRST_GAMES = {5965327, 8898097, 728965, 6260071, 1056576};
+    private static final int[] DEFAULT_FIRST_GAMES = {4191935, 4931420, 3437399, 8831351, 6156738};
     private static final int[] DEFAULT_PRICES = {0, 0, 0, 300, 500, 800};
     private static final List<String> DEFAULT_FREE = Arrays.asList("classic", "aurora", "sunlight");
     private static final int[] DEFAULT_BONUS_CYCLE = {20, 20, 30, 30, 40, 40, 100};

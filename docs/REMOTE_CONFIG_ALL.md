@@ -139,7 +139,7 @@ Details: `docs/REMOTE_CONFIG_GAME.md`. Bundled default (`assets/achievements_con
 Details: `docs/REMOTE_CONFIG_GAME.md`. Bundled default (`assets/difficulty_config_defaults.json`):
 
 ```json
-{"enabled_tiers":["easy","medium","hard"],"default_tier":"easy","daily_tiers_by_weekday":["medium","easy","easy","easy","easy","easy","medium"],"unlock_levels":{"easy":1,"medium":1,"hard":1},"first_games":{"enabled":true,"ignore_selected_mode":true,"advance_on":"win","seeds":[5965327,8898097,728965,6260071,1056576]}}
+{"enabled_tiers":["easy","medium","hard"],"default_tier":"easy","daily_tiers_by_weekday":["medium","easy","easy","easy","easy","easy","medium"],"unlock_levels":{"easy":1,"medium":1,"hard":1},"first_games":{"enabled":true,"ignore_selected_mode":true,"advance_on":"win","seeds":[4191935,4931420,3437399,8831351,6156738]}}
 ```
 
 ## `rivals_config`

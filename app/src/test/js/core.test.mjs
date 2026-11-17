@@ -666,11 +666,11 @@ test('warm-up: switches, advance on start, and the chosen tier when it is not ig
   const off = core.normalizeConfig({ difficulty_config: { first_games: { enabled: false } } }).difficulty;
   assert.equal(core.firstGameSeed(off, 0), null);
   const start = core.normalizeConfig({ difficulty_config: { first_games: { advance_on: 'start' } } }).difficulty;
-  assert.equal(core.advanceIntro(start, 0, { event: 'start', seed: 5965327 }), 1);
+  assert.equal(core.advanceIntro(start, 0, { event: 'start', seed: 4191935 }), 1);
   assert.equal(core.advanceIntro(start, 1, { event: 'win', seed: 5152 }), 1);
   const choice = core.normalizeConfig({ difficulty_config: { first_games: { ignore_selected_mode: false } } }).difficulty;
   assert.equal(core.firstGameSeed(choice, 0, { selectedTier: 'hard' }), null);
-  assert.equal(core.firstGameSeed(choice, 0, { selectedTier: 'easy' }), 5965327);
+  assert.equal(core.firstGameSeed(choice, 0, { selectedTier: 'easy' }), 4191935);
 });
 
 test('difficulty config: bad warm-up settings fall back to the defaults', () => {

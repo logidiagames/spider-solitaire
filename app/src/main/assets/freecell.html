@@ -1202,35 +1202,47 @@
     #freecell-live-preview .effects-note{color:rgba(253,242,216,.7);font-size:11px}
     #freecell-live-preview .perf-overlay{position:absolute;z-index:300;left:6px;top:46px;padding:2px 7px;border-radius:6px;background:rgba(0,0,0,.66);color:#fdf2d8;font:600 11px/16px Roboto,Arial,sans-serif;pointer-events:none}
     /* ---- Spider table ----
-       Ten columns and a top row of ten: the stock, a gap and the eight foundations. Ten columns make
-       the cards narrower, so every size is shorter too: Normal 58 px, Large 66 px, Extra large 74 px. */
-    #freecell-live-preview .top-row,#freecell-live-preview .columns{grid-template-columns:repeat(10,minmax(0,1fr));gap:2px}
-    #freecell-live-preview .top-row{height:57px}
-    #freecell-live-preview .slot{height:55px;line-height:55px}
-    #freecell-live-preview .slot.top-gap{visibility:hidden}
-    #freecell-live-preview .slot.foundation-empty::before{width:min(26px,calc(100% - 4px));border-width:2px}
-    #freecell-live-preview .playing-card,#freecell-live-preview .drag-ghost .playing-card{height:58px}
-    #freecell-live-preview .column:empty::before{height:58px}
-    #freecell-live-preview .playing-card .pip{font-size:min(30px,86cqw);top:64%}
-    #freecell-live-preview .playing-card .court{top:22px;width:min(28px,86%);height:32px}
-    #freecell-live-preview .game-phone[data-card-size="large"] .top-row{height:65px}
-    #freecell-live-preview .game-phone[data-card-size="large"] .slot{height:63px;line-height:63px}
-    #freecell-live-preview .game-phone[data-card-size="large"] .playing-card,#freecell-live-preview .game-phone[data-card-size="large"] .drag-ghost .playing-card,#freecell-live-preview .game-phone[data-card-size="large"] .column:empty::before{height:66px}
-    #freecell-live-preview .game-phone[data-card-size="large"] .playing-card .pip{font-size:min(34px,90cqw)}
-    #freecell-live-preview .game-phone[data-card-size="large"] .playing-card .court{top:25px;height:36px}
-    #freecell-live-preview .game-phone[data-card-size="xl"] .top-row{height:73px}
-    #freecell-live-preview .game-phone[data-card-size="xl"] .slot{height:71px;line-height:71px}
-    #freecell-live-preview .game-phone[data-card-size="xl"] .playing-card,#freecell-live-preview .game-phone[data-card-size="xl"] .drag-ghost .playing-card,#freecell-live-preview .game-phone[data-card-size="xl"] .column:empty::before{height:74px}
-    #freecell-live-preview .game-phone[data-card-size="xl"] .playing-card .pip{font-size:min(38px,94cqw)}
-    #freecell-live-preview .game-phone[data-card-size="xl"] .playing-card .court{top:28px;height:40px}
-    /* The stock: a card back with the number of deals left; a stack edge for each further deal. */
-    #freecell-live-preview .stock-slot{cursor:pointer;-webkit-tap-highlight-color:transparent;overflow:visible}
-    #freecell-live-preview .stock-slot.has-cards::before{content:"";position:absolute;inset:-1px;box-sizing:border-box;border:2px solid #f4efe3;border-radius:inherit;background:var(--card-back,#8e1f2b);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25),calc(var(--stock-depth,0) * 1.5px) calc(var(--stock-depth,0) * -1.5px) 0 -1px #e9e2d2,0 2px 3px rgba(0,0,0,.34)}
-    #freecell-live-preview .stock-slot.has-cards::after{content:attr(data-count);position:absolute;right:2px;bottom:2px;min-width:15px;padding:0 3px;box-sizing:border-box;border-radius:8px;background:rgba(0,0,0,.55);color:#fdf2d8;font:700 10px/15px Roboto,Arial,sans-serif;text-align:center}
-    #freecell-live-preview .stock-slot.hint{animation:stock-hint .65s ease-in-out 2}
+       Ten columns. A card is as tall as its width allows (owner request 2026-11-17: cards were too
+       long on narrow phones): render() sets --card-w and --card-h on the phone from the column width
+       (Normal 1.42 x the width, Large 1.5, Extra large 1.58, at most 58 / 66 / 74 px).
+       Top row (owner request 2026-11-17, like the classic game): the stock is a fan of card backs,
+       one per deal left, on the right; the complete runs pile up on the left as a staircase of
+       Kings. "Stock position" off mirrors the two. */
+    #freecell-live-preview .columns{grid-template-columns:repeat(10,minmax(0,1fr));gap:2px}
+    #freecell-live-preview .top-row{display:block;position:relative;height:calc(var(--card-h,58px) + 2px)}
+    #freecell-live-preview .top-row>.slot{position:absolute;top:0;width:var(--card-w,38px);height:var(--card-h,58px);line-height:normal;margin:0}
+    #freecell-live-preview .slot.top-gap{display:none}
+    #freecell-live-preview .top-row>.slot[data-dest]{right:auto;left:calc(var(--i,0) * var(--card-w,38px) * .3)}
+    #freecell-live-preview .game-phone:not(.stock-right) .top-row>.slot[data-dest]{left:calc(100% - var(--card-w,38px) * 3.1 + var(--i,0) * var(--card-w,38px) * .3)}
+    #freecell-live-preview .top-row>.slot[data-dest]:not(.filled){visibility:hidden}
+    #freecell-live-preview .top-row>.slot[data-dest]::before{display:none}
+    #freecell-live-preview .top-row>.slot[data-dest]>.playing-card{position:absolute;inset:0;height:100%}
+    #freecell-live-preview .playing-card,#freecell-live-preview .drag-ghost .playing-card{height:var(--card-h,58px)}
+    #freecell-live-preview .column:empty::before{height:var(--card-h,58px)}
+    #freecell-live-preview .playing-card .court{top:36%;width:min(28px,86%);height:54%}
+    /* The stock: a fan of card backs, the next row on top; tap anywhere on it to deal. */
+    #freecell-live-preview .top-row>.stock-slot{cursor:pointer;-webkit-tap-highlight-color:transparent;overflow:visible;right:0;left:auto;border:0;background:none;width:calc(var(--card-w,38px) * (1 + (var(--backs,1) - 1) * .3))}
+    #freecell-live-preview .game-phone:not(.stock-right) .top-row>.stock-slot{left:0;right:auto}
+    #freecell-live-preview .top-row>.stock-slot:not(.has-cards){width:var(--card-w,38px);border:2px dashed rgba(253,242,216,.28);border-radius:var(--card-radius,4px);box-sizing:border-box}
+    #freecell-live-preview .stock-back{position:absolute;top:0;left:calc(var(--i,0) * var(--card-w,38px) * .3);width:var(--card-w,38px);height:100%;box-sizing:border-box;border:2px solid #f4efe3;border-radius:var(--card-radius,4px);background:var(--card-back,#8e1f2b);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25),-1px 2px 3px rgba(0,0,0,.34);pointer-events:none}
+    #freecell-live-preview .stock-slot.hint .stock-back:last-child{animation:stock-hint .55s ease-in-out 3}
+    #freecell-live-preview .game-phone .playing-card.hint,#freecell-live-preview .game-phone .playing-card.hint-target{animation:spider-hint .55s ease-in-out 3}
+    #freecell-live-preview .game-phone .column.hint-target::before{animation:spider-hint .55s ease-in-out 3}
+    @keyframes spider-hint{0%,100%{box-shadow:0 2px 3px rgba(0,0,0,.3)}50%{box-shadow:0 0 0 3px #ffd75e,0 0 14px 4px rgba(255,215,94,.85)}}
     @keyframes stock-hint{50%{box-shadow:0 0 0 3px #f2d07c,0 0 16px rgba(255,223,118,.8)}}
-    #freecell-live-preview .game-phone.stock-right .top-row .stock-slot{order:3}
-    #freecell-live-preview .game-phone.stock-right .top-row .top-gap{order:2}
+    /* Card look (owner request 2026-11-17, like the classic game): ivory faces on the default
+       Classic style, a bigger centre suit, and ranks in a bold serif (rounder than the condensed
+       sans; Noto Serif on Android, lining figures). */
+    #freecell-live-preview .game-phone[data-card-style="classic"]{--card-face:linear-gradient(165deg,#f5ebd3 0%,#eadbb9 100%);--card-edge:#ab9a77}
+    #freecell-live-preview .game-phone .playing-card .corner,#freecell-live-preview .game-phone .playing-card .corner>span:first-child{font-family:var(--card-rank-font,'Noto Serif','Droid Serif','Times New Roman',serif);font-weight:700;font-variant-numeric:lining-nums;letter-spacing:-.5px}
+    #freecell-live-preview .game-phone .playing-card.ten .corner>span:first-child{letter-spacing:-2.5px}
+    #freecell-live-preview .playing-card .pip{font-size:min(48px,104cqw);top:64%}
+    /* Every card size uses the measured --card-h (FreeCell's Large and Extra large heights do not apply). */
+    #freecell-live-preview .game-phone[data-card-size] .top-row{height:calc(var(--card-h,58px) + 2px)}
+    #freecell-live-preview .game-phone[data-card-size] .top-row>.slot{height:var(--card-h,58px);line-height:normal}
+    #freecell-live-preview .game-phone[data-card-size] .playing-card,#freecell-live-preview .game-phone[data-card-size] .drag-ghost .playing-card,#freecell-live-preview .game-phone[data-card-size] .column:empty::before{height:var(--card-h,58px)}
+    #freecell-live-preview .game-phone[data-card-size] .playing-card .pip{font-size:min(56px,104cqw);top:64%}
+    #freecell-live-preview .game-phone[data-card-size] .playing-card .court{top:36%;height:54%}
     /* Face-down cards show the equipped card back, also while the deal flies (no flip for them). */
     #freecell-live-preview .playing-card.face-down::after,#freecell-live-preview .game-phone[data-effects] .playing-card.face-down.dealing::after{content:"";position:absolute;z-index:6;inset:-1px;box-sizing:border-box;border:2px solid #f4efe3;border-radius:inherit;background:var(--card-back,#8e1f2b);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25);animation:none;transform:none;visibility:visible;display:block}
     @media(prefers-reduced-motion:reduce){#freecell-live-preview .game-phone .playing-card.face-down.dealing::after{display:block}}
@@ -1335,7 +1347,7 @@
           hint_config:{smart_hint:true,time_budget_ms:300,node_limit:400000,background_analysis:true,background_budget_ms:150,max_hints_per_game:null},
           tips_config:{enabled:true,free_cells_tip_min_occupied:3},
           difficulty_config:{enabled_tiers:['easy','medium','hard'],default_tier:'easy',daily_tiers_by_weekday:['medium','easy','easy','easy','easy','easy','medium'],unlock_levels:{easy:1,medium:1,hard:1},
-            first_games:{enabled:true,ignore_selected_mode:true,advance_on:'win',seeds:[5965327,8898097,728965,6260071,1056576]}},
+            first_games:{enabled:true,ignore_selected_mode:true,advance_on:'win',seeds:[4191935,4931420,3437399,8831351,6156738]}},
           achievements_config:{enabled:true,items:[
             {id:'first_win',counter:'wins',target:1,reward:10},{id:'wins_10',counter:'wins',target:10,reward:30},{id:'wins_50',counter:'wins',target:50,reward:80},{id:'wins_100',counter:'wins',target:100,reward:150},
             {id:'no_undo_1',counter:'no_undo_wins',target:1,reward:15},{id:'no_undo_10',counter:'no_undo_wins',target:10,reward:50},{id:'no_undo_25',counter:'no_undo_wins',target:25,reward:100},
@@ -2972,25 +2984,26 @@
       let tableau=[],stock=[],foundations=[0,0,0,0,0,0,0,0],done=[],suitsMode=1,score=0,justTurned=null,history=[],gameLog=[],moves=0,seconds=0,currentSeed=20261020,currentMode='random',currentLabel='Random Game',selected=null,suppressClick=false,drag=null,tableThemeName=String(savedState.tableThemeName||'classic'),cardThemeName=String(savedState.cardThemeName||'classic'),currentLanguage=String(savedState.currentLanguage||'en'),isDealing=false,dealTimer=0,victoryTimer=0,confettiTimer=0,playerLevel=Math.max(1,Number(savedState.playerLevel)||1),levelWins=Math.max(0,Number(savedState.levelWins)||0),currentLevelNumber=Math.max(1,Number(savedState.currentLevelNumber)||1),levelAwarded=Boolean(savedState.levelAwarded),lastLevelResult=null,tutorialStep=0,tutorialTrackedSteps=new Set(),dailyMonthOffset=0,onboardingTutorial=false,gameplayActive=false,startupFlowComplete=false;
       // Card size: card height and the most a covered card shows; Normal keeps the original numbers
       // (a fixed 399 px of room), Large and Extra large measure the room the columns have.
-      const CARD_SIZES={normal:{height:58,strip:20},large:{height:66,strip:23},xl:{height:74,strip:26}};
-      let columnRoom=399;
+      // Spider (owner request 2026-11-17): the height also follows the column width (ratio), so cards
+      // keep a card's shape on narrow phones; the strips shrink with it (cardMetrics, set by render).
+      const CARD_SIZES={normal:{height:58,strip:20,ratio:1.42},large:{height:66,strip:23,ratio:1.5},xl:{height:74,strip:26,ratio:1.58}};
+      let columnRoom=399,cardMetrics={width:38,height:58,strip:20,down:7};
       // Each card's top in a column: face-down cards show a thin strip, face-up ones the size's strip,
       // squeezed (face-up gaps first) when the column would run past its room.
       const DOWN_STRIPS={normal:7,large:8,xl:9};
       function columnTops(column){
         const tops=[0];if(column.length<2)return tops;
-        const down=DOWN_STRIPS[options.cardSize]||9,gaps=column.slice(0,-1).map(card=>card.up===false);
+        const down=cardMetrics.down,gaps=column.slice(0,-1).map(card=>card.up===false);
         const downCount=gaps.filter(Boolean).length,upCount=gaps.length-downCount;
-        let up=CARD_SIZES[options.cardSize]?.strip||20,downStrip=down;
+        let up=cardMetrics.strip,downStrip=down;
         if(upCount&&downCount*down+upCount*up>columnRoom)up=Math.max(Math.min(down,up),(columnRoom-downCount*down)/upCount);
         if(downCount*downStrip+upCount*up>columnRoom)downStrip=Math.max(3,(columnRoom-upCount*up)/Math.max(1,downCount));
         gaps.forEach((faceDown,index)=>tops.push(tops[index]+(faceDown?downStrip:up)));
         return tops;
       }
-      const options=Object.assign({sound:true,vibration:true,tap:true,autoComplete:true,autoHint:true,highlight:false,celebration:true,showScore:true,showTime:true,showMoves:true,lockOrientation:false,stockRight:false,leftHanded:false},savedState.options||{});
-      // Owner request (2026-11-05): Highlight movable cards is off by default. Saves stored the old default
-      // (on), so only a choice made in Settings is kept (highlightChosen).
-      if(options.highlightChosen!==true)options.highlight=false;
+      const options=Object.assign({sound:true,vibration:true,tap:true,autoComplete:true,autoHint:true,highlight:true,celebration:true,showScore:true,showTime:true,showMoves:true,lockOrientation:false,stockRight:true,leftHanded:false},savedState.options||{});
+      // Spider (owner request 2026-11-17): on by default; only a choice made in Settings is kept.
+      if(options.highlightChosen!==true)options.highlight=true;
       // Older saves had a single switch for time and moves together; keep a player's choice.
       if(savedState.options?.showCounters===false){if(savedState.options.showTime===undefined)options.showTime=false;if(savedState.options.showMoves===undefined)options.showMoves=false}
       delete options.showCounters;
@@ -3233,14 +3246,19 @@
       }
       // Card size (v1.4 Part 2): a data attribute on the phone picks the card CSS.
       function measureColumnRoom(){
-        const size=CARD_SIZES[options.cardSize];
-        if(!size){columnRoom=399;return}
+        const size=CARD_SIZES[options.cardSize]||CARD_SIZES.normal;
+        const width=find('#fc-columns')?.children[0]?.getBoundingClientRect().width||0;
+        if(width>8){
+          const height=Math.min(size.height,Math.round(width*size.ratio)),scale=height/size.height;
+          cardMetrics={width,height,strip:Math.round(size.strip*scale),down:Math.max(5,Math.round((DOWN_STRIPS[options.cardSize]||7)*scale))};
+          phone.style.setProperty('--card-w',`${width}px`);phone.style.setProperty('--card-h',`${height}px`);
+        }
         // Spider bug fix: measured while the board was not laid out yet (loading screen, hidden page)
         // the room came out tiny and every column was squeezed after a deal. Such a reading is
         // ignored; render() measures again each time, so the room follows the real screen.
         const columns=find('#fc-columns').getBoundingClientRect(),status=find('#fc-status').getBoundingClientRect();
-        const room=status.top-columns.top-size.height-6;
-        if(!columns.height||!status.height||room<size.strip*6){if(!(columnRoom>=size.strip*6))columnRoom=399;return}
+        const room=status.top-columns.top-cardMetrics.height-6;
+        if(!columns.height||!status.height||room<cardMetrics.strip*6){if(!(columnRoom>=cardMetrics.strip*6))columnRoom=399;return}
         columnRoom=room;
       }
       function applySizes(){
@@ -3294,8 +3312,9 @@
         // ads_config.availability.interstitials.skip_after_loss is on (the default). Only a new game after
         // a win (or the first game of a launch) can show one.
         const afterLoss=gameplayActive&&currentMode!=='developer'&&!foundations.every(value=>value===13);
-        // Adaptive difficulty: a Classic game left unwon after at least one move counts as lost.
-        if(!replay&&afterLoss&&currentMode==='random'&&moves>0&&FreeCellCore.TIERS.includes(currentTier))adaptLevel=FreeCellCore.adaptAfter(adaptLevel,currentTier,false);
+        // Adaptive difficulty: a Classic game left unwon after at least one move counts as lost. The
+        // five warm-up deals do not count (owner request 2026-11-17: adapt only after them).
+        if(!replay&&afterLoss&&currentMode==='random'&&currentPool!=='first_games'&&moves>0&&FreeCellCore.TIERS.includes(currentTier))adaptLevel=FreeCellCore.adaptAfter(adaptLevel,currentTier,false);
         if(gameplayActive&&currentMode!=='developer'&&!foundations.every(value=>value===13)){
           track('game_abandon',{game_mode:currentMode,level:currentLevelNumber,moves,duration_seconds:seconds,difficulty_tier:currentTier,deal_pool:currentPool||undefined});
         }
@@ -3429,22 +3448,24 @@
         find('#fc-score').textContent=String(score);
         find('#fc-moves').textContent=String(moves);
         const top=find('#fc-top');
-        // Top row: the stock (tap to deal a new row), a gap, then the eight foundations, which take the
-        // complete runs in the order they are made. "Stock position" puts the stock on the right.
+        // Top row: the stock (a fan of backs, one per deal left; tap to deal a new row) and the eight
+        // foundations, which take the complete runs in the order they are made and show them as a
+        // staircase of Kings. "Stock position" on puts the stock on the right, the runs on the left.
         if(top.children.length!==10){
           top.replaceChildren();
           const stockSlot=document.createElement('div');stockSlot.className='slot stock-slot cursor-interaction';stockSlot.setAttribute('role','button');
           stockSlot.addEventListener('click',event=>{event.stopPropagation();settlePlayerFlight();dealStock()});
           const gap=document.createElement('div');gap.className='slot top-gap';gap.setAttribute('aria-hidden','true');
           top.append(stockSlot,gap);
-          for(let i=0;i<8;i++){const slot=document.createElement('div');slot.className='slot foundation-empty';slot.dataset.dest=encode({type:'foundation',pile:i,index:0});top.appendChild(slot)}
+          for(let i=0;i<8;i++){const slot=document.createElement('div');slot.className='slot foundation-empty';slot.dataset.dest=encode({type:'foundation',pile:i,index:0});slot.style.setProperty('--i',String(i));top.appendChild(slot)}
         }
         const stockSlot=top.children[0],dealsLeft=Math.ceil(stock.length/10);
         stockSlot.classList.toggle('has-cards',stock.length>0);stockSlot.dataset.count=dealsLeft?String(dealsLeft):'';
-        stockSlot.style.setProperty('--stock-depth',String(Math.max(0,dealsLeft-1)));
+        stockSlot.style.setProperty('--backs',String(Math.max(1,dealsLeft)));
+        if(stockSlot.childElementCount!==dealsLeft)stockSlot.replaceChildren(...Array.from({length:dealsLeft},(_,i)=>{const back=document.createElement('span');back.className='stock-back';back.style.setProperty('--i',String(i));return back}));
         stockSlot.setAttribute('aria-label',dealsLeft?t('stockAria',{number:dealsLeft}):t('stockEmpty'));
         for(let i=0;i<8;i++){
-          const foundationSlot=top.children[2+i];foundationSlot.setAttribute('aria-label',`${t('foundation')} ${i+1}`);
+          const foundationSlot=top.children[2+i];foundationSlot.setAttribute('aria-label',`${t('foundation')} ${i+1}`);foundationSlot.classList.toggle('filled',foundations[i]===13);
           placeChildren(foundationSlot,foundations[i]===13?[boardCard({s:done[i],r:13,up:true,id:`f${i}`},{type:'foundation',pile:i,index:0})]:[]);
         }
         const columns=find('#fc-columns');
@@ -3502,7 +3523,7 @@
           if(!onboardingTutorial&&FreeCellCore.reminderAskDue(reminders,gameConfig,{dailyWins:FreeCellCore.dailyWinCount(dailyHistory),now:Date.now()}))pendingReminderAsk=true;
           syncReminders();
         }
-        if(currentMode==='random'&&!quickWinUsed&&FreeCellCore.TIERS.includes(currentTier))adaptLevel=FreeCellCore.adaptAfter(adaptLevel,currentTier,true);
+        if(currentMode==='random'&&currentPool!=='first_games'&&!quickWinUsed&&FreeCellCore.TIERS.includes(currentTier))adaptLevel=FreeCellCore.adaptAfter(adaptLevel,currentTier,true);
         if(currentPool==='first_games'&&currentMode==='random')introIndex=FreeCellCore.advanceIntro(gameConfig.difficulty,introIndex,{event:'win',seed:currentSeed});
         const reward=FreeCellCore.winReward(gameConfig,{mode:currentMode,tier:currentTier,usedUndo:gameUsedUndo,seconds,dailyStreak});
         const dealKey=FreeCellCore.payKey({mode:currentMode,seed:currentSeed,dealId,dailyDate:currentDailyDate});
@@ -3586,7 +3607,7 @@
       // Dealt cards slide from the stock to their columns, one after the other, and turn over.
       function animateDealRow(cards){
         if(!cards.length||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
-        const from=find('.stock-slot')?.getBoundingClientRect();if(!from)return;
+        const from=(find('.stock-slot .stock-back:last-child')||find('.stock-slot'))?.getBoundingClientRect();if(!from)return;
         cards.forEach((card,index)=>{
           const element=boardCards.get(card.id??card.s*13+card.r);if(!element||typeof element.animate!=='function'||!element.isConnected)return;
           const to=element.getBoundingClientRect();
@@ -4230,19 +4251,23 @@
       }
       // Owner decision (2026-10-25): the hint animates only the card(s) to move and never shows
       // where they go: "Move 9♠".
+      // Spider (owner request 2026-11-17: the automatic hint was too easy to miss): the run to move and
+      // the card or empty column it goes to glow gold three times.
+      const HINT_GLOW_MS=1700;
       function markHintMove(move){
         if(move.from.type==='stock'){
-          const slot=find('.stock-slot');slot?.classList.add('hint');setTimeout(()=>slot?.classList.remove('hint'),1300);
-          showMessage(t('hintDeal'));return;
-        }
-        if(move.from.type==='stock'){
-          const slot=find('.stock-slot');slot?.classList.add('hint');setTimeout(()=>slot?.classList.remove('hint'),1300);
+          const slot=find('.stock-slot');slot?.classList.add('hint');setTimeout(()=>slot?.classList.remove('hint'),HINT_GLOW_MS);
           showMessage(t('hintDeal'));return;
         }
         const from={type:move.from.type,pile:move.from.pile,index:move.from.index||0},card=cardAt(from);if(!card)return;
         const count=from.type==='tableau'?tableau[from.pile].length-from.index:1;
-        Array.from({length:count},(_,offset)=>root.querySelector(`[data-loc="${encode({...from,index:from.index+offset})}"]`)).filter(Boolean)
-          .forEach(element=>{element.classList.add('hint');setTimeout(()=>element.classList.remove('hint'),1300)});
+        const glow=element=>{element.classList.add('hint');setTimeout(()=>element.classList.remove('hint'),HINT_GLOW_MS)};
+        Array.from({length:count},(_,offset)=>root.querySelector(`[data-loc="${encode({...from,index:from.index+offset})}"]`)).filter(Boolean).forEach(glow);
+        if(move.to?.type==='tableau'){
+          const target=tableau[move.to.pile]||[];
+          const element=target.length?root.querySelector(`[data-loc="${encode({type:'tableau',pile:move.to.pile,index:target.length-1})}"]`):find('#fc-columns')?.children[move.to.pile];
+          if(element){element.classList.add('hint-target');setTimeout(()=>element.classList.remove('hint-target'),HINT_GLOW_MS)}
+        }
         showMessage(t('hintMove',{card:`${rankOf(card.r)}${suitOf(card).mark}`}));
       }
       function undo(){

@@ -18,3 +18,12 @@ A deal number (1–9,999,999) is the seed of Microsoft's shuffle (LCG 214013/253
 - Game by Number: any number, in the player's current tier.
 
 FreeCell's catalog (FreeCell Solutions' lists, pools and mixes) is not used by Spider.
+
+## Version 3 (2026-11-17): ease for a person
+
+The lists are now sorted by `tools/rate_deal_ease.mjs`: a simple player plays every deal 24 times
+and the share of wins is the ease (easiest first). The solver-effort order of version 2
+(`tools/rank_deal_catalog.mjs`) did not match how hard a deal feels: the owner found the first
+games too hard. 400 `easy` and 200 `medium` deals are spread over the whole range of deals the
+simple player (or, for the old lists, the solver) wins, so the five adaptive bands run from deals
+it wins almost every time to deals that need care. The five warm-up deals are the easiest ones.

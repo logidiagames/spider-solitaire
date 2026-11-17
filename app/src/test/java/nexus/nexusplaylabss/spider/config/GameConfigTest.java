@@ -261,7 +261,7 @@ public final class GameConfigTest {
         JSONObject first = difficulty.getJSONObject("first_games");
         assertFalse(first.getBoolean("enabled"));
         assertEquals("win", first.getString("advance_on"));
-        assertEquals("[5965327,8898097,728965,6260071,1056576]", first.getJSONArray("seeds").toString());
+        assertEquals("[4191935,4931420,3437399,8831351,6156738]", first.getJSONArray("seeds").toString());
         remote.put(GameConfig.DIFFICULTY, "{\"first_games\":{\"advance_on\":\"start\",\"seeds\":[7,8]}}");
         first = sanitize(remote).getJSONObject(GameConfig.DIFFICULTY).getJSONObject("first_games");
         assertEquals("start", first.getString("advance_on"));
