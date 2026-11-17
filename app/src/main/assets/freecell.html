@@ -1216,7 +1216,8 @@
     #freecell-live-preview .game-phone:not(.stock-right) .top-row>.slot[data-dest]{left:calc(100% - var(--card-w,38px) * 3.1 + var(--i,0) * var(--card-w,38px) * .3)}
     #freecell-live-preview .top-row>.slot[data-dest]:not(.filled){visibility:hidden}
     #freecell-live-preview .top-row>.slot[data-dest]::before{display:none}
-    #freecell-live-preview .top-row>.slot[data-dest]{border:0;padding:0;box-sizing:border-box;background:none}
+    /* Each King of the staircase is its own layer (isolation), so the next King covers its corner. */
+    #freecell-live-preview .top-row>.slot[data-dest]{border:0;padding:0;box-sizing:border-box;background:none;isolation:isolate}
     #freecell-live-preview .top-row>.slot[data-dest]>.playing-card{position:absolute;inset:0;height:100%}
     #freecell-live-preview .playing-card,#freecell-live-preview .drag-ghost .playing-card{height:var(--card-h,58px)}
     #freecell-live-preview .column:empty::before{height:var(--card-h,58px)}
@@ -3460,16 +3461,14 @@
       let unmovableNow=new Set();
       function unmovableCards(){
         if(!options.highlight||isDealing||autoMoving||!gameplayActive||foundations.every(value=>value===13))return new Set();
-        // A face-up card can move when the run of one suit it heads fits on another column (a whole
-        // column into an empty one does not count); every card under it in that run moves with it.
-        const state=boardState(),stuck=new Set();
+        // Spider (owner request 2026-11-17): the built run at the end of each column stays lit (a
+        // run of one suit in order, down to the front card, which is always lit); every other
+        // face-up card is darkened.
+        const stuck=new Set();
         tableau.forEach((column,pile)=>{
-          for(let index=0;index<column.length;index++){
-            const from={type:'tableau',pile,index};
-            if(column[index].up!==false&&tableau.some((target,to)=>!(index===0&&!target.length)&&FreeCellCore.canMove(state,{from,to:{type:'tableau',pile:to}})))break;
-            // Owner request 2026-11-17: the front card of a column is never darkened.
-            if(column[index].up!==false&&index<column.length-1)stuck.add(encode(from));
-          }
+          let start=column.length-1;
+          while(start>0&&FreeCellCore.orderedFrom(column,start-1))start--;
+          for(let index=0;index<start;index++)if(column[index].up!==false)stuck.add(encode({type:'tableau',pile,index}));
         });
         return stuck;
       }
